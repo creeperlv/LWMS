@@ -1,4 +1,5 @@
-﻿using CLUNL.DirectedIO;
+﻿using CLUNL;
+using CLUNL.DirectedIO;
 using CLUNL.Pipeline;
 using System;
 using System.Collections.Generic;
@@ -10,18 +11,21 @@ namespace LWMS.Core
 {
     public class HttpPipelineProcessor : DefaultProcessor
     {
-
+    
+    }
+    public class HttpPipelineArguments
+    {
+        public bool isHandled = false;
     }
     public class DefaultStaticFileUnit : IPipedProcessUnit
     {
-        public static int BUF_LENGTH = 40960;
+        public static int BUF_LENGTH = 1048576;
         public DefaultStaticFileUnit()
         {
-            Console.WriteLine("Inited.");
         }
         public PipelineData Process(PipelineData Input)
         {
-
+            Console.WriteLine("Receieved.");
             HttpListenerContext context = Input.PrimaryData as HttpListenerContext;
             Console.WriteLine(context.Request.Url.LocalPath);
             var path0 = context.Request.Url.LocalPath.Substring(1);
@@ -35,6 +39,7 @@ namespace LWMS.Core
                 {
                     SendFile(Input.PrimaryData as HttpListenerContext, new FileInfo(DefaultPage));
                     //return Input;
+                    (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
                 }
                 else
                 {
@@ -45,15 +50,13 @@ namespace LWMS.Core
             else
             {
 
-                Console.WriteLine("Try:" + path1);
                 if (File.Exists(path1))
                 {
                     SendFile(context, new FileInfo(path1));
+                    (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
                 }
                 else
                 {
-                    Console.WriteLine("Try:" + path1);
-
                 }
                 //Console.WriteLine("Directory Not Found.");
             }

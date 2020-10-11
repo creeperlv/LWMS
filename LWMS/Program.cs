@@ -10,9 +10,9 @@ namespace LWMS
         {
             Console.WriteLine("LWMS - LightWeight Managed Server");
             LWMSCoreServer coreServer = new LWMSCoreServer();
-            coreServer.Bind("http://+:8080/");
-            coreServer.Start(100);
+            //coreServer.Bind("http://+:8080/");
             string p = Configuration.BasePath;
+            coreServer.Start(100);
             Console.ReadLine();
         }
     }

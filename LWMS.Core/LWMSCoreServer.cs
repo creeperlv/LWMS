@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,9 +25,37 @@ namespace LWMS.Core
         List<IPipedProcessUnit> processUnits = new List<IPipedProcessUnit>();
         public void Start(int MaxThread)
         {
-            RegisterProcessUnit(new DefaultStaticFileUnit());
-            ApplyProcessUnits();
             semaphore = new Semaphore(MaxThread, MaxThread);
+            //Add listening prefixes
+            foreach (var item in Configuration.ListenPrefixes)
+            {
+                Listener.Prefixes.Add(item);
+            }
+            //Load process units.
+            {
+                foreach (var item in Configuration.ProcessUnits.RootNode.Children)
+                {
+                    if (item.Value == "LWMS.Core.dll")
+                    {
+                        foreach (var UnitTypeName in item.Children)
+                        {
+                            var t=Type.GetType(UnitTypeName.Value);
+                            RegisterProcessUnit((IPipedProcessUnit)Activator.CreateInstance(t));
+                        }
+                    }
+                    else
+                    {
+                        Assembly.LoadFrom(item.Value);
+                        foreach (var UnitTypeName in item.Children)
+                        {
+                            var t=Type.GetType(UnitTypeName.Value);
+                            RegisterProcessUnit(Activator.CreateInstance(t) as IPipedProcessUnit);
+                        }
+                    }
+                }
+            }
+            //RegisterProcessUnit(new DefaultStaticFileUnit());
+            ApplyProcessUnits();
             Listener.Start();
             Task.Run(async () =>
             {
@@ -57,8 +86,7 @@ namespace LWMS.Core
         }
         public void ProcessContext(HttpListenerContext context)
         {
-            HttpPipelineProcessor.Process(new PipelineData(context, null, null, context.GetHashCode()), false);
-            Console.WriteLine("Completed.");
+            HttpPipelineProcessor.Process(new PipelineData(context, new HttpPipelineArguments(), null, context.GetHashCode()));
             context.Response.OutputStream.Close();
             //context.Response.OutputStream.Flush();
             //context.Response.OutputStream.Close();
