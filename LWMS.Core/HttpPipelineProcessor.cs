@@ -25,9 +25,7 @@ namespace LWMS.Core
         }
         public PipelineData Process(PipelineData Input)
         {
-            Console.WriteLine("Receieved.");
             HttpListenerContext context = Input.PrimaryData as HttpListenerContext;
-            Console.WriteLine(context.Request.Url.LocalPath);
             var path0 = context.Request.Url.LocalPath.Substring(1);
             var path1 = Path.Combine(Configuration.WebSiteContentRoot, path0);
             //Console.WriteLine("Try:"+path1);
@@ -64,15 +62,12 @@ namespace LWMS.Core
         }
         public void SendFile(HttpListenerContext c, FileInfo f)
         {
-
-            Console.WriteLine("Send:" + f.FullName);
             //using(FileStream fs=f.OpenRead())
             using (FileStream fs = f.OpenRead())
             {
                 //try
                 //{
                 byte[] buf = new byte[BUF_LENGTH];
-                Console.WriteLine(f.Extension);
                 if (f.Extension == ".html")
                 {
                     c.Response.ContentType = "text/html";
@@ -93,7 +88,6 @@ namespace LWMS.Core
 
                 //}
             }
-            Console.WriteLine("Transmited.");
         }
     }
 }

@@ -26,6 +26,8 @@ namespace LWMS.Core
         public void Start(int MaxThread)
         {
             semaphore = new Semaphore(MaxThread, MaxThread);
+            //Register Listener from beginning.
+            RegisterProcessUnit(new LogUnit());
             //Add listening prefixes
             foreach (var item in Configuration.ListenPrefixes)
             {
