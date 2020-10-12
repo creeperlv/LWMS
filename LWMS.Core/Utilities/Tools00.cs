@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace LWMS.Core.Utilities
 {
@@ -49,6 +50,19 @@ namespace LWMS.Core.Utilities
             c.Response.ContentEncoding = Encoding.UTF8;
             c.Response.OutputStream.Write(bytes);
             c.Response.OutputStream.Flush();
+        }
+        public static List<Match> CommandParse(string cmd)
+        {
+            //https://regexlib.com/REDetails.aspx?regexp_id=13053
+            //var m=Regex.Match(cmd, " *(?:-+([^= \\\'\\\"]+)[= ]?)?(?:([\\\'\\\"])([^2]+?)\\2|([^- \"\']+))?");
+            var m=Regex.Match(cmd, " *(?:-+([^=: \\\'\\\"]+)[= ]?)?(?:([\\\'\\\"])([^2]+?)\\2|([^- \"\']+))?");
+            List<Match> cmdList=new List<Match>();
+            while (m.Success)
+            {
+                cmdList.Add(m);
+                m = m.NextMatch();
+            }
+            return cmdList;
         }
     }
 }

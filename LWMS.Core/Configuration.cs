@@ -12,19 +12,13 @@ namespace LWMS.Core
 {
     public static class Configuration
     {
+        static string ConfigurationPath = null;
         static Configuration()
         {
             BasePath = new FileInfo(Assembly.GetAssembly(typeof(LWMSCoreServer)).Location).DirectoryName;
-            var ConfigurationPath = Path.Combine(BasePath, "Server.ini");
+            ConfigurationPath = Path.Combine(BasePath, "Server.ini");
             var PluginConfigPath = Path.Combine(BasePath, "Plugin.tsd");
-            if (File.Exists(ConfigurationPath))
-            {
-                ConfigurationData = INILikeData.LoadFromStream((new FileInfo(ConfigurationPath)).Open(FileMode.Open));
-            }
-            else
-            {
-                ConfigurationData = INILikeData.CreateToFile(new FileInfo(ConfigurationPath));
-            }
+            LoadConfiguation();
             if (File.Exists(PluginConfigPath))
             {
                 ProcessUnits = TreeStructureData.LoadFromFile(new FileInfo(PluginConfigPath));
@@ -48,6 +42,18 @@ namespace LWMS.Core
                 ProcessUnits.Serialize();
             }
         }
+        internal static void LoadConfiguation()
+        {
+            if (File.Exists(ConfigurationPath))
+            {
+                ConfigurationData = INILikeData.LoadFromStream((new FileInfo(ConfigurationPath)).Open(FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite));
+            }
+            else
+            {
+                ConfigurationData = INILikeData.CreateToFile(new FileInfo(ConfigurationPath));
+            }
+
+        }
         public static TreeStructureData ProcessUnits;
         public static INILikeData ConfigurationData;
         public readonly static string BasePath;
@@ -56,30 +62,46 @@ namespace LWMS.Core
         static string _Page404 = null;
         static int _BUF_LENGTH = 0;
         static List<string> _ListenPrefixes = new List<string>();
+        internal static void ClearLoadedSettings()
+        {
+            _WebSiteContentRoot = null;
+            _DefultPage = null;
+            _Page404 = null;
+            _BUF_LENGTH = 0;
+            _ListenPrefixes = new List<string>();
+        }
         public static int BUF_LENGTH
         {
             get
             {
                 if (_BUF_LENGTH == 0)
                 {
+                    try
+                    {
 
-                    var cs = ConfigurationData.FindValue("BUF_LENGTH");
-                    if (cs == null)
-                    {
-                        _BUF_LENGTH = 1024 * 128;//128KB per buf.
-                        ConfigurationData.AddValue("BUF_LENGTH", _BUF_LENGTH + "", AutoSave: true);
-                    }
-                    else
-                    {
-                        try
+                        var cs = ConfigurationData.FindValue("BUF_LENGTH");
+                        if (cs == null)
                         {
-                            _BUF_LENGTH = int.Parse(cs);
-                        }
-                        catch (Exception)
-                        {
-                            _BUF_LENGTH = 1024 * 128;//128KB per buf.
+                            _BUF_LENGTH = 1048576;//1MB per buf.
                             ConfigurationData.AddValue("BUF_LENGTH", _BUF_LENGTH + "", AutoSave: true);
                         }
+                        else
+                        {
+                            try
+                            {
+                                _BUF_LENGTH = int.Parse(cs);
+                            }
+                            catch (Exception)
+                            {
+                                _BUF_LENGTH = 1048576;//1MB per buf.
+                                ConfigurationData.AddValue("BUF_LENGTH", _BUF_LENGTH + "", AutoSave: true);
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        Trace.WriteLine("Cannot save configuration.");
+
                     }
 
                 }
@@ -88,7 +110,8 @@ namespace LWMS.Core
             set
             {
                 _BUF_LENGTH = value;
-                ConfigurationData.AddValue("BUF_LENGTH", _BUF_LENGTH + "", AutoSave: true);
+                if (ConfigurationData != null)
+                    ConfigurationData.AddValue("BUF_LENGTH", _BUF_LENGTH + "", AutoSave: true);
             }
         }
         public static string Page404
@@ -109,9 +132,7 @@ namespace LWMS.Core
                     }
                     catch
                     {
-                        Trace.WriteLine("Generating default 404 page path.");
-                        _Page404 = Path.Combine(WebSiteContentRoot, "Page_404.html");
-                        ConfigurationData.AddValue("Page_404", _Page404, AutoSave: true);
+                        Trace.WriteLine("Cannot save configuration.");
                     }
                     ConfigurationData.Flush();
                 }
@@ -120,8 +141,10 @@ namespace LWMS.Core
             set
             {
                 _Page404 = value;
-                ConfigurationData.AddValue("Page_404", _Page404, AutoSave: true);
-                ConfigurationData.Flush();
+                if (ConfigurationData != null)
+                    ConfigurationData.AddValue("Page_404", _Page404, AutoSave: true);
+                if (ConfigurationData != null)
+                    ConfigurationData.Flush();
             }
         }
         public static List<string> ListenPrefixes
@@ -149,13 +172,18 @@ namespace LWMS.Core
             set
             {
                 _ListenPrefixes = value;
-                ConfigurationData.AddValue("Prefix.Count", _ListenPrefixes.Count + "", true, false);
-                for (int i = 0; i < _ListenPrefixes.Count; i++)
+
+                if (ConfigurationData != null)
                 {
-                    ConfigurationData.AddValue($"Prefix.{i}", _ListenPrefixes[i], true, false);
+
+                    ConfigurationData.AddValue("Prefix.Count", _ListenPrefixes.Count + "", true, false);
+                    for (int i = 0; i < _ListenPrefixes.Count; i++)
+                    {
+                        ConfigurationData.AddValue($"Prefix.{i}", _ListenPrefixes[i], true, false);
+                    }
+                    ConfigurationData.RemoveOldDuplicatedItems();
+                    ConfigurationData.Flush();
                 }
-                ConfigurationData.RemoveOldDuplicatedItems();
-                ConfigurationData.Flush();
             }
         }
         public static string WebSiteContentRoot
@@ -175,8 +203,8 @@ namespace LWMS.Core
                     }
                     catch
                     {
-                        _WebSiteContentRoot = Path.Combine(BasePath, "webroot");
-                        ConfigurationData.AddValue("WebContentRoot", _WebSiteContentRoot, AutoSave: true);
+                        Trace.WriteLine("Cannot save configuration.");
+
                     }
                     ConfigurationData.Flush();
 
@@ -186,8 +214,10 @@ namespace LWMS.Core
             set
             {
                 _WebSiteContentRoot = value;
-                ConfigurationData.AddValue("WebContentRoot", _WebSiteContentRoot, AutoSave: true);
-                ConfigurationData.Flush();
+                if (ConfigurationData != null)
+                    ConfigurationData.AddValue("WebContentRoot", _WebSiteContentRoot, AutoSave: true);
+                if (ConfigurationData != null)
+                    ConfigurationData.Flush();
             }
         }
         public static string DefaultPage
@@ -204,15 +234,23 @@ namespace LWMS.Core
                             _DefultPage = "index.html"; ConfigurationData.AddValue("DefaultPage", _DefultPage, AutoSave: true);
                         }
                     }
-                    catch { _DefultPage = "index.html"; ConfigurationData.AddValue("DefaultPage", _DefultPage, AutoSave: true); }
+                    catch
+                    {
+                        Trace.WriteLine("Cannot save configuration.");
+
+                    }
                     ConfigurationData.Flush();
                 }
                 return _DefultPage;
             }
             set
             {
-                _DefultPage = value; ConfigurationData.AddValue("DefaultPage", _DefultPage, AutoSave: true);
-                ConfigurationData.Flush();
+                _DefultPage = value;
+                if (ConfigurationData != null)
+                {
+                    ConfigurationData.AddValue("DefaultPage", _DefultPage, AutoSave: true);
+                    ConfigurationData.Flush();
+                }
             }
         }
     }

@@ -30,9 +30,11 @@ namespace LWMS.Core
     public class LWMSTraceListener : TraceListener
     {
         string LogFile;
+        public static string LogDir { get; internal set; }
         public LWMSTraceListener()
         {
             var LogBasePath = Path.Combine(Configuration.BasePath, "Logs");
+            LogDir = LogBasePath;
             if (!Directory.Exists(LogBasePath))
             {
                 Directory.CreateDirectory(LogBasePath);
