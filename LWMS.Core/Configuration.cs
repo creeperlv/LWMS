@@ -3,6 +3,7 @@ using CLUNL.Data.Layer1;
 using CLUNL.DirectedIO;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -53,7 +54,43 @@ namespace LWMS.Core
         static string _WebSiteContentRoot = null;
         static string _DefultPage = null;
         static string _Page404 = null;
+        static int _BUF_LENGTH = 0;
         static List<string> _ListenPrefixes = new List<string>();
+        public static int BUF_LENGTH
+        {
+            get
+            {
+                if (_BUF_LENGTH == 0)
+                {
+
+                    var cs = ConfigurationData.FindValue("BUF_LENGTH");
+                    if (cs == null)
+                    {
+                        _BUF_LENGTH = 1024 * 128;//128KB per buf.
+                        ConfigurationData.AddValue("BUF_LENGTH", _BUF_LENGTH + "", AutoSave: true);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            _BUF_LENGTH = int.Parse(cs);
+                        }
+                        catch (Exception)
+                        {
+                            _BUF_LENGTH = 1024 * 128;//128KB per buf.
+                            ConfigurationData.AddValue("BUF_LENGTH", _BUF_LENGTH + "", AutoSave: true);
+                        }
+                    }
+
+                }
+                return _BUF_LENGTH;
+            }
+            set
+            {
+                _BUF_LENGTH = value;
+                ConfigurationData.AddValue("BUF_LENGTH", _BUF_LENGTH + "", AutoSave: true);
+            }
+        }
         public static string Page404
         {
             get
@@ -63,15 +100,17 @@ namespace LWMS.Core
                     try
                     {
                         _Page404 = ConfigurationData.FindValue("Page_404");
-                        if (_WebSiteContentRoot == null)
+                        if (_Page404 == null)
                         {
-                            _Page404 = Path.Combine(WebSiteContentRoot, "Page_404");
+                            Trace.WriteLine("Generating default 404 page path.");
+                            _Page404 = Path.Combine(WebSiteContentRoot, "Page_404.html");
                             ConfigurationData.AddValue("Page_404", _Page404, AutoSave: true);
                         }
                     }
                     catch
                     {
-                        _Page404 = Path.Combine(WebSiteContentRoot, "Page_404");
+                        Trace.WriteLine("Generating default 404 page path.");
+                        _Page404 = Path.Combine(WebSiteContentRoot, "Page_404.html");
                         ConfigurationData.AddValue("Page_404", _Page404, AutoSave: true);
                     }
                     ConfigurationData.Flush();
@@ -82,7 +121,7 @@ namespace LWMS.Core
             {
                 _Page404 = value;
                 ConfigurationData.AddValue("Page_404", _Page404, AutoSave: true);
-                    ConfigurationData.Flush();
+                ConfigurationData.Flush();
             }
         }
         public static List<string> ListenPrefixes
@@ -111,7 +150,7 @@ namespace LWMS.Core
             {
                 _ListenPrefixes = value;
                 ConfigurationData.AddValue("Prefix.Count", _ListenPrefixes.Count + "", true, false);
-                for (int i = 0; i < ConfigurationData.Count; i++)
+                for (int i = 0; i < _ListenPrefixes.Count; i++)
                 {
                     ConfigurationData.AddValue($"Prefix.{i}", _ListenPrefixes[i], true, false);
                 }

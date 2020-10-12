@@ -56,6 +56,7 @@ namespace LWMS.Core
                     }
                 }
             }
+            RegisterProcessUnit(new ErrorResponseUnit());
             //RegisterProcessUnit(new DefaultStaticFileUnit());
             ApplyProcessUnits();
             Listener.Start();
