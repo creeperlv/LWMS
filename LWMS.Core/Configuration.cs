@@ -42,7 +42,7 @@ namespace LWMS.Core
                         unit.Value = "LWMS.Core.DefaultStaticFileUnit";
                         treeNode.AddChildren(unit);
                     }
-                ProcessUnits.RootNode.AddChildren(treeNode);
+                    ProcessUnits.RootNode.AddChildren(treeNode);
                 }
                 ProcessUnits.Serialize();
             }
@@ -74,13 +74,15 @@ namespace LWMS.Core
                         _Page404 = Path.Combine(WebSiteContentRoot, "Page_404");
                         ConfigurationData.AddValue("Page_404", _Page404, AutoSave: true);
                     }
+                    ConfigurationData.Flush();
                 }
                 return _Page404;
             }
             set
             {
                 _Page404 = value;
-                        ConfigurationData.AddValue("Page_404", _Page404, AutoSave: true);
+                ConfigurationData.AddValue("Page_404", _Page404, AutoSave: true);
+                    ConfigurationData.Flush();
             }
         }
         public static List<string> ListenPrefixes
@@ -137,6 +139,8 @@ namespace LWMS.Core
                         _WebSiteContentRoot = Path.Combine(BasePath, "webroot");
                         ConfigurationData.AddValue("WebContentRoot", _WebSiteContentRoot, AutoSave: true);
                     }
+                    ConfigurationData.Flush();
+
                 }
                 return _WebSiteContentRoot;
             }
@@ -144,6 +148,7 @@ namespace LWMS.Core
             {
                 _WebSiteContentRoot = value;
                 ConfigurationData.AddValue("WebContentRoot", _WebSiteContentRoot, AutoSave: true);
+                ConfigurationData.Flush();
             }
         }
         public static string DefaultPage
@@ -161,10 +166,15 @@ namespace LWMS.Core
                         }
                     }
                     catch { _DefultPage = "index.html"; ConfigurationData.AddValue("DefaultPage", _DefultPage, AutoSave: true); }
+                    ConfigurationData.Flush();
                 }
                 return _DefultPage;
             }
-            set { _DefultPage = value; ConfigurationData.AddValue("DefaultPage", _DefultPage, AutoSave: true); }
+            set
+            {
+                _DefultPage = value; ConfigurationData.AddValue("DefaultPage", _DefultPage, AutoSave: true);
+                ConfigurationData.Flush();
+            }
         }
     }
 }
