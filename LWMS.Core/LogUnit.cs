@@ -32,6 +32,7 @@ namespace LWMS.Core
         string LogFile;
         public static bool BeautifyConsoleOutput = false;
         public static bool EnableConsoleOutput = true;
+        public static bool WriteToFile = true;
         public static string LogDir { get; internal set; }
         public LWMSTraceListener()
         {
@@ -77,6 +78,7 @@ namespace LWMS.Core
                     Console.Write(message);
                 }
             }
+            if(WriteToFile)
             File.AppendAllText(LogFile, stringBuilder.ToString());
         }
 
@@ -113,7 +115,8 @@ namespace LWMS.Core
                     Console.Write(Environment.NewLine);
                 }
             }
-            File.AppendAllText(LogFile, stringBuilder.ToString());
+            if (WriteToFile)
+                File.AppendAllText(LogFile, stringBuilder.ToString());
         }
     }
 }

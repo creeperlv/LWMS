@@ -126,6 +126,11 @@ namespace LWMS.Core
                     {
                         LWMSTraceListener.EnableConsoleOutput = false;
                     }
+                    else
+                    if (args[i].PackTotal.ToUpper() == "/DISABLELOGTOFILE")
+                    {
+                        LWMSTraceListener.WriteToFile = false;
+                    }
                     else if (args[i].PackParted[0].ToUpper() == "BUF_LENGTH")
                     {
                         
