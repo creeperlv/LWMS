@@ -14,7 +14,7 @@ namespace LWMS.Core
         public static void Control(params string[] args)
         {
             Trace.WriteLine("Received Command:" + args[0]);
-            if (args[0] == "Shutdown")
+            if (args[0].ToUpper() == "SHUTDOWN" || args[0].ToUpper() == "EXIT" || args[0].ToUpper() == "CLOSE")
             {
                 Trace.WriteLine("Goodbye.");
                 Environment.Exit(0);
@@ -75,9 +75,24 @@ namespace LWMS.Core
                             break;
                     }
                 }
-            }else if (args[0].ToUpper() == "CLS" || args[0].ToUpper() == "CLEAR")
+            }
+            else if (args[0].ToUpper() == "CLS" || args[0].ToUpper() == "CLEAR")
             {
                 Console.Clear();
+            }
+            else if (args[0].ToUpper() == "RUNTIMECONFIG")
+            {
+                foreach (var item in args)
+                {
+                    if (item.ToUpper() == "/DISABLEBEAUTIFYCONSOLE")
+                    {
+                        LWMSTraceListener.BeautifyConsoleOutput = false;
+                    }
+                    if (item.ToUpper() == "/DISABLECONSOLE")
+                    {
+                        LWMSTraceListener.EnableConsoleOutput = false;
+                    }
+                }
             }
             else
             {

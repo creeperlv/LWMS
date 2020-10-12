@@ -10,6 +10,9 @@ namespace LWMS
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Copyright (C) 2020 Creeper Lv");
+            Console.WriteLine("This software is licensed under the MIT License");
+            Console.WriteLine();
             if (args.Length > 0)
             {
                 if (args[0] == "/PreBoot")
@@ -26,9 +29,16 @@ namespace LWMS
                     return;
                 }
                 else { }
-                
+
             }
+            LWMSTraceListener.BeautifyConsoleOutput = true;
+            Console.BackgroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("This software is in active development and extremely unstable, do not use it in production environment!");
+            Console.ResetColor();
+            Console.WriteLine();
             Console.WriteLine("LWMS - LightWeight Managed Server");
+            Console.WriteLine();
             Check00();
             LWMSCoreServer coreServer = new LWMSCoreServer();
             //coreServer.Bind("http://+:8080/");
@@ -43,9 +53,10 @@ namespace LWMS
         }
         static void CommandListener()
         {
+            PrintHint();
             while (true)
             {
-                var cmd=Console.ReadLine();
+                var cmd = Console.ReadLine();
                 var dcmd = Tools00.CommandParse(cmd);
                 List<string> cmdList = new List<string>();
                 foreach (var item in dcmd)
@@ -53,7 +64,17 @@ namespace LWMS
                     cmdList.Add(item.Value);
                 }
                 ServerController.Control(cmdList.ToArray());
+                PrintHint();
             }
+        }
+        static void PrintHint()
+        {
+
+            Console.Write("[");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("Local");
+            Console.ResetColor();
+            Console.Write("]>");
         }
         static void Check00()
         {

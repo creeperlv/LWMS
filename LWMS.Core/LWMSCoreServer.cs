@@ -77,7 +77,7 @@ namespace LWMS.Core
         public void RegisterProcessUnit(IPipedProcessUnit unit)
         {
             processUnits.Add(unit);
-            Console.WriteLine("Registered:" + unit.GetType());
+            Trace.WriteLine("Registered:" + unit.GetType());
         }
         public void UnregisterProcessUnit(IPipedProcessUnit unit)
         {

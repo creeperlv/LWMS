@@ -30,6 +30,8 @@ namespace LWMS.Core
     public class LWMSTraceListener : TraceListener
     {
         string LogFile;
+        public static bool BeautifyConsoleOutput = false;
+        public static bool EnableConsoleOutput = true;
         public static string LogDir { get; internal set; }
         public LWMSTraceListener()
         {
@@ -40,22 +42,41 @@ namespace LWMS.Core
                 Directory.CreateDirectory(LogBasePath);
             }
             var Now = DateTime.Now;
-            LogFile = Path.Combine(LogBasePath,$"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log");
+            LogFile = Path.Combine(LogBasePath, $"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log");
             File.Create(LogFile).Close();
-            File.WriteAllText(LogFile,"");
+            File.WriteAllText(LogFile, "");
         }
         public override void Write(string message)
         {
             StackTrace stackTrace = new StackTrace(4);
             StringBuilder stringBuilder = new StringBuilder();
+            var now = DateTime.Now;
             stringBuilder.Append("[");
-            stringBuilder.Append(DateTime.Now);
+            stringBuilder.Append(now);
             stringBuilder.Append("]");
             stringBuilder.Append("[");
             stringBuilder.Append(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName);
             stringBuilder.Append("]");
             stringBuilder.Append(message);
-            Console.Write(stringBuilder);
+            if (EnableConsoleOutput == true)
+            {
+                if (BeautifyConsoleOutput == false)
+                    Console.Write(stringBuilder);
+                else
+                {
+                    Console.Write("[");
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.Write(now);
+                    Console.ResetColor();
+                    Console.Write("]");
+                    Console.Write("[");
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName); 
+                    Console.ResetColor();
+                    Console.Write("]");
+                    Console.Write(message);
+                }
+            }
             File.AppendAllText(LogFile, stringBuilder.ToString());
         }
 
@@ -63,15 +84,35 @@ namespace LWMS.Core
         {
             StackTrace stackTrace = new StackTrace(4);
             StringBuilder stringBuilder = new StringBuilder();
+            var now = DateTime.Now;
             stringBuilder.Append("[");
-            stringBuilder.Append(DateTime.Now);
+            stringBuilder.Append(now);
             stringBuilder.Append("]");
             stringBuilder.Append("[");
             stringBuilder.Append(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName);
             stringBuilder.Append("]");
             stringBuilder.Append(message);
             stringBuilder.Append(Environment.NewLine);
-            Console.Write(stringBuilder);
+            if (EnableConsoleOutput == true)
+            {
+                if (BeautifyConsoleOutput == false)
+                    Console.Write(stringBuilder);
+                else
+                {
+                    Console.Write("[");
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.Write(now);
+                    Console.ResetColor();
+                    Console.Write("]");
+                    Console.Write("[");
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName);
+                    Console.ResetColor();
+                    Console.Write("]");
+                    Console.Write(message);
+                    Console.Write(Environment.NewLine);
+                }
+            }
             File.AppendAllText(LogFile, stringBuilder.ToString());
         }
     }
