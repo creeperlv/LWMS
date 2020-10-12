@@ -12,20 +12,19 @@ namespace LWMS
         {
             Console.WriteLine("Copyright (C) 2020 Creeper Lv");
             Console.WriteLine("This software is licensed under the MIT License");
-            Console.WriteLine();
-            if (args.Length > 0)
+            var _commands = Tools00.ResolveCommand(Environment.CommandLine);
+            _commands.RemoveAt(0);//Remove start command.
+            if (_commands.Count > 0)
             {
-                if (args[0] == "/PreBoot")
+                if (_commands[0].PackTotal.ToUpper() == "/PREBOOT")
                 {
-                    var cmd = new List<string>(args);
-                    cmd.RemoveAt(0);
-                    ServerController.Control(cmd.ToArray());
+                    _commands.RemoveAt(0);
+                    ServerController.Control(_commands.ToArray());
                 }
-                else if (args[0] == "/NoBoot")
+                else if (_commands[0].PackTotal.ToUpper() == "/NOBOOT")
                 {
-                    var cmd = new List<string>(args);
-                    cmd.RemoveAt(0);
-                    ServerController.Control(cmd.ToArray());
+                    _commands.RemoveAt(0);
+                    ServerController.Control(_commands.ToArray());
                     return;
                 }
                 else { }
@@ -47,7 +46,12 @@ namespace LWMS
             Console.WriteLine("The server is now running good.");
             if (args.Length > 0)
             {
-                ServerController.Control(args);
+                var cmd = new List<CommandPack>();
+                foreach (var item in _commands)
+                {
+                    cmd.Add(item);
+                }
+                ServerController.Control(cmd.ToArray());
             }
             CommandListener();
         }
@@ -57,12 +61,7 @@ namespace LWMS
             while (true)
             {
                 var cmd = Console.ReadLine();
-                var dcmd = Tools00.CommandParse(cmd);
-                List<string> cmdList = new List<string>();
-                foreach (var item in dcmd)
-                {
-                    cmdList.Add(item.Value);
-                }
+                var cmdList = Tools00.ResolveCommand(cmd);
                 ServerController.Control(cmdList.ToArray());
                 PrintHint();
             }

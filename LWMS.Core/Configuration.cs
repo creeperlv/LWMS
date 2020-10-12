@@ -57,11 +57,11 @@ namespace LWMS.Core
         public static TreeStructureData ProcessUnits;
         public static INILikeData ConfigurationData;
         public readonly static string BasePath;
-        static string _WebSiteContentRoot = null;
-        static string _DefultPage = null;
-        static string _Page404 = null;
-        static int _BUF_LENGTH = 0;
-        static List<string> _ListenPrefixes = new List<string>();
+        internal static string _WebSiteContentRoot = null;
+        internal static string _DefultPage = null;
+        internal static string _Page404 = null;
+        internal static int _BUF_LENGTH = 0;
+        internal static List<string> _ListenPrefixes = new List<string>();
         internal static void ClearLoadedSettings()
         {
             _WebSiteContentRoot = null;

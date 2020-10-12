@@ -64,5 +64,16 @@ namespace LWMS.Core.Utilities
             }
             return cmdList;
         }
+        public static List<CommandPack> ResolveCommand(string cmd)
+        {
+            List<CommandPack> cmdps = new List<CommandPack>(); 
+            foreach (var item in CommandParse(cmd))
+            {
+                var cmdp = CommandPack.FromRegexMatch(item);
+                if(cmdp.PackTotal!="")
+                cmdps.Add(cmdp);
+            }
+            return cmdps;
+        }
     }
 }
