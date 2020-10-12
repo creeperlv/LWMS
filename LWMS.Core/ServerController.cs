@@ -130,7 +130,7 @@ namespace LWMS.Core
                     {
                         
                         int.TryParse(args[i].PackParted[1], out Configuration._BUF_LENGTH);
-                        Trace.WriteLine("BUT_LENGTH is set to" + Configuration._BUF_LENGTH + ", without saving to configuration file.");
+                        Trace.WriteLine($"BUT_LENGTH is set to {Configuration._BUF_LENGTH} Byte(s), without saving to configuration file.");
                     }
                 }
             }
