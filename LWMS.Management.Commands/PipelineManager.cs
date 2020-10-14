@@ -49,7 +49,6 @@ namespace LWMS.Management.Commands
                         if (Hit == false)
                         {
                             {
-                                //LWMS.Core.dll
                                 TreeNode treeNode = new TreeNode();
                                 treeNode.Name = "DLL";
                                 treeNode.Value = DLL;
@@ -68,6 +67,41 @@ namespace LWMS.Management.Commands
                     {
                         Trace.WriteLine($"Cannot register pipeline unit:{ENTRY}={DLL}");
                     }
+                }else if (args[i].ToUpper() == "UNREG" || args[i].ToUpper() == "UNREGISTER")
+                {
+                    string TARGETENTRY = args[i + 1];
+                    i++;
+                    bool B=false;
+                    foreach (var item in Configuration.ProcessUnits.RootNode.Children)
+                    {
+                        for (int a = 0; a < item.Children.Count; a++)
+                        {
+                            if (item.Children[a].Value == TARGETENTRY)
+                            {
+                                item.Children.RemoveAt(a);
+                                B = true;
+                                break;
+                            }
+                        }
+                        if (B == true)
+                        {
+                            break;
+                        }
+                    }
+                    Configuration.ProcessUnits.Serialize();
+                }else if (args[i].ToUpper() == "REMOVE" || args[i].ToUpper() == "RM")
+                {
+                    string TARGETDLL = args[i + 1];
+                    i++;
+                    for (int a = 0; a < Configuration.ProcessUnits.RootNode.Children.Count; a++)
+                    {
+                        if (Configuration.ProcessUnits.RootNode.Children[a].Value == TARGETDLL)
+                        {
+                            Configuration.ProcessUnits.RootNode.Children.RemoveAt(a);
+                            break;
+                        }
+                    }
+                    Configuration.ProcessUnits.Serialize();
                 }
             }
         }
