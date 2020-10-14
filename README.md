@@ -33,6 +33,8 @@ In auto created class by `dotnet sdk`, type:
 public class Sample : IManageCommand
     {
         public string CommandName => "Sample";
+        public List<string> Alias=>new List<string>();
+        public int Version=1;
 
         public void Invoke(params CommandPack[] args)
         {
@@ -44,6 +46,8 @@ public class Sample : IManageCommand
 After build it, copy generated `dll` file to your LWMS installation location. Then, open `ManageModules.ini`, add the absoulte path of that `dll` file to it, then you can type `Sample` to test the manage command you just made.
 
 ## Improve Performance
+
+**Note:** Following steps requires `LWMS.Management.Commands.dll` registered in `ManageModules.ini`.
 
 ### Ajust Console Output
 You can improve performance by disabling console beautification or console output. To do this you can use `LWMS.exe /preboot runtimeconfig /disablebeautifyconsole` or `LWMS.exe /preboot runtimeconfig /disableconsole`.
