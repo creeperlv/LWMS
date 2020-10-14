@@ -9,7 +9,15 @@ namespace LWMS.Management.Commands
 {
     public class Log : IManageCommand
     {
-        public string CommandName => "log";
+        public string CommandName => "ManageLog";
+
+        List<string> alias = new List<string>();
+        public int Version => 1;
+        public Log()
+        {
+            alias.Add("log");
+        }
+        public List<string> Alias => alias;
 
         public void Invoke(params CommandPack[] args)
         {

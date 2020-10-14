@@ -54,7 +54,7 @@ namespace LWMS.Core
                 ProcessUnits.Serialize();
             }
         }
-        internal static void LoadConfiguation()
+        public static void LoadConfiguation()
         {
             if (File.Exists(ConfigurationPath))
             {
@@ -77,7 +77,7 @@ namespace LWMS.Core
         internal static string _Page404 = null;
         internal static int _BUF_LENGTH = 0;
         internal static List<string> _ListenPrefixes = new List<string>();
-        internal static void ClearLoadedSettings()
+        public static void ClearLoadedSettings()
         {
             _WebSiteContentRoot = null;
             _DefultPage = null;

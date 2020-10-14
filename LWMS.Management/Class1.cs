@@ -10,6 +10,8 @@ namespace LWMS.Management
     public interface IManageCommand
     {
         string CommandName { get; }
+        List<string> Alias { get; }
+        int Version { get; }
         void Invoke(params CommandPack[] args);
     }
     /// <summary>

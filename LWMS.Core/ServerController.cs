@@ -14,6 +14,36 @@ namespace LWMS.Core
     public static class ServerController
     {
         public static Dictionary<string, IManageCommand> ManageCommands = new Dictionary<string, IManageCommand>();
+        public static Dictionary<string, IManageCommand> ManageCommandAliases = new Dictionary<string, IManageCommand>();
+        public static bool Register(string item)
+        {
+            try
+            {
+                var asm = Assembly.LoadFrom(item);
+                var TPS = asm.GetTypes();
+                foreach (var TP in TPS)
+                {
+                    if (typeof(IManageCommand).IsAssignableFrom(TP))
+                    {
+                        var MC = (IManageCommand)Activator.CreateInstance(TP);
+                        Trace.WriteLine("Found Manage Command:" + MC.CommandName + "," + TP);
+                        ManageCommands.Add(MC.CommandName, MC);
+                        var alias = MC.Alias;
+                        foreach (var MCA in alias)
+                        {
+                            ManageCommandAliases.Add(MCA, MC);
+                        }
+                    }
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                Trace.Write($"Cannot load management module:{item}");
+                return false;
+            }
+        }
+
         public static void Control(params CommandPack[] args)
         {
             Trace.WriteLine("Received Command:" + args[0]);
@@ -21,22 +51,6 @@ namespace LWMS.Core
             {
                 Trace.WriteLine("Goodbye.");
                 Environment.Exit(0);
-            }
-            else if (args[0].ToUpper() == "CONFIG")
-            {
-                if (args[1].ToUpper() == "RELEASE")
-                {
-                    Configuration.ConfigurationData.Dispose();
-                    Configuration.ConfigurationData = null;
-                    Trace.WriteLine("Configuration file is released and changes will not be saved.");
-                }
-                else if (args[1].ToUpper() == "RESUME")
-                {
-                    Configuration.LoadConfiguation();
-                    Configuration.ClearLoadedSettings();
-                    Trace.WriteLine("Resume");
-                    Trace.WriteLine("Configuration changes will be automatically saved now.");
-                }
             }
             else if (args[0].ToUpper() == "VER" || args[0].ToUpper() == "VERSION")
             {
@@ -69,7 +83,7 @@ namespace LWMS.Core
                     }
                     else if (args[i].PackParted[0].ToUpper() == "BUF_LENGTH")
                     {
-                        
+
                         int.TryParse(args[i].PackParted[1], out Configuration._BUF_LENGTH);
                         Trace.WriteLine($"BUT_LENGTH is set to {Configuration._BUF_LENGTH} Byte(s), without saving to configuration file.");
                     }
@@ -85,18 +99,41 @@ namespace LWMS.Core
                         try
                         {
                             ManageCommandArgs.RemoveAt(0);
-                            item.Value.Invoke(ManageCommandArgs.ToArray());
-                        }
-                        catch (Exception)
-                        {
                             try
                             {
-                                item.Value.Invoke();
+                                item.Value.Invoke(ManageCommandArgs.ToArray());
                             }
                             catch (Exception e)
                             {
-                                Trace.WriteLine("Cannot invoke manage command:"+e);
+                                Trace.Write($"Error in {item.Value}: {e}");
                             }
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                        return;
+                    }
+                }
+                foreach (var item in ManageCommandAliases)
+                {
+                    if (item.Key.ToUpper() == args[0].PackTotal.ToUpper())
+                    {
+                        List<CommandPack> ManageCommandArgs = new List<CommandPack>(args);
+                        try
+                        {
+                            ManageCommandArgs.RemoveAt(0);
+                            try
+                            {
+                                item.Value.Invoke(ManageCommandArgs.ToArray());
+                            }
+                            catch (Exception e)
+                            {
+                                Trace.Write($"Error in {item.Value}: {e}");
+                            }
+                        }
+                        catch (Exception)
+                        {
                         }
                         return;
                     }

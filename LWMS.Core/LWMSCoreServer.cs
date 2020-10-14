@@ -77,25 +77,8 @@ namespace LWMS.Core
             //Load Manage Modules
             foreach (string item in Configuration.ManageCommandModules)
             {
-                try
-                {
-                    var asm = Assembly.LoadFrom(item);
-                    var TPS = asm.GetTypes();
-                    foreach (var TP in TPS)
-                    {
-                        if (typeof(IManageCommand).IsAssignableFrom(TP))
-                        {
-                            var MC = (IManageCommand)Activator.CreateInstance(TP);
-                            Trace.WriteLine("Found Manage Command:" + MC.CommandName+","+TP);
-                            ServerController.ManageCommands.Add(MC.CommandName, MC);
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    Trace.Write($"Cannot load management module:{item}");
-                }
-            }
+                ServerController.Register(item);
+            }  
         }
         public void RegisterProcessUnit(IPipedProcessUnit unit)
         {
