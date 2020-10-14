@@ -1,5 +1,6 @@
 ﻿using CLUNL.Data.Layer1;
 using CLUNL.DirectedIO;
+using LWMS.Management;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,40 +11,9 @@ using System.Text.RegularExpressions;
 
 namespace LWMS.Core
 {
-    public class CommandPack
+    public static class ServerController
     {
-        public string PackTotal;
-        public List<string> PackParted = new List<string>();
-        public static CommandPack FromRegexMatch(Match m)
-        {
-            CommandPack cp = new CommandPack();
-            cp.PackTotal = m.Value.Trim();
-            string _ = null;
-            for (int i = 1; i < m.Groups.Count; i++)
-            {
-                if ((_ = m.Groups[i].Value.Trim()) != "")
-                {
-                    cp.PackParted.Add(_);
-                }
-
-            }
-            return cp;
-        }
-        public static implicit operator string(CommandPack p)
-        {
-            return p.PackTotal;
-        }
-        public static implicit operator CommandPack(Match m)
-        {
-            return FromRegexMatch(m);
-        }
-        public string ToUpper()
-        {
-            return PackTotal.ToUpper();
-        }
-    }
-    public class ServerController
-    {
+        public static Dictionary<string, IManageCommand> ManageCommands = new Dictionary<string, IManageCommand>();
         public static void Control(params CommandPack[] args)
         {
             Trace.WriteLine("Received Command:" + args[0]);
@@ -141,6 +111,16 @@ namespace LWMS.Core
             }
             else
             {
+                foreach (var item in ManageCommands)
+                {
+                    if (item.Key.ToUpper() == args[0].PackTotal)
+                    {
+                        List<CommandPack> ManageCommandArgs = new List<CommandPack>(args);
+                        ManageCommandArgs.RemoveAt(0);
+                        item.Value.Invoke(ManageCommandArgs.ToArray());
+                        return;
+                    }
+                }
                 Trace.WriteLine("Command Not Found.");
             }
         }

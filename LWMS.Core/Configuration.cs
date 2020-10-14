@@ -1,5 +1,6 @@
 ﻿using CLUNL.Data.Layer0;
 using CLUNL.Data.Layer1;
+using CLUNL.Data.Layer2;
 using CLUNL.DirectedIO;
 using System;
 using System.Collections.Generic;
@@ -54,8 +55,11 @@ namespace LWMS.Core
             }
 
         }
+
         public static TreeStructureData ProcessUnits;
         public static INILikeData ConfigurationData;
+        public static ListData<string> ManageCommandModules;
+
         public readonly static string BasePath;
         internal static string _WebSiteContentRoot = null;
         internal static string _DefultPage = null;
