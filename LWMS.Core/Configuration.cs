@@ -19,7 +19,18 @@ namespace LWMS.Core
             BasePath = new FileInfo(Assembly.GetAssembly(typeof(LWMSCoreServer)).Location).DirectoryName;
             ConfigurationPath = Path.Combine(BasePath, "Server.ini");
             var PluginConfigPath = Path.Combine(BasePath, "Plugin.tsd");
+            var ManageModulePath = Path.Combine(BasePath, "ManageModules.ini");
             LoadConfiguation();
+            if (File.Exists(ManageModulePath))
+            {
+                ManageCommandModules = ListData<string>.LoadFromStream(File.Open(ManageModulePath, FileMode.Open, FileAccess.ReadWrite));
+            }
+            else
+            {
+                ManageCommandModules = ListData<string>.CreateToFile(new FileInfo(ManageModulePath));
+                ManageCommandModules.Add(Path.Combine(BasePath, "LWMS.Management.Commands.dll"));
+                ManageCommandModules.Save();
+            }
             if (File.Exists(PluginConfigPath))
             {
                 ProcessUnits = TreeStructureData.LoadFromFile(new FileInfo(PluginConfigPath));

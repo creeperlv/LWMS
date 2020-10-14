@@ -72,26 +72,30 @@ namespace LWMS.Core
                     Console.Write("]");
                     Console.Write("[");
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName); 
+                    Console.Write(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName);
                     Console.ResetColor();
                     Console.Write("]");
                     Console.Write(message);
                 }
             }
-            if(WriteToFile)
-            File.AppendAllText(LogFile, stringBuilder.ToString());
+            if (WriteToFile)
+                File.AppendAllText(LogFile, stringBuilder.ToString());
         }
 
         public override void WriteLine(string message)
         {
-            StackTrace stackTrace = new StackTrace(4);
+            StackTrace stackTrace = new StackTrace(true);
             StringBuilder stringBuilder = new StringBuilder();
+            var t = stackTrace.GetFrame(3).GetMethod().ReflectedType;
             var now = DateTime.Now;
             stringBuilder.Append("[");
             stringBuilder.Append(now);
             stringBuilder.Append("]");
             stringBuilder.Append("[");
-            stringBuilder.Append(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName);
+            if (t != typeof(Trace))
+                stringBuilder.Append(t.FullName);
+            else
+                stringBuilder.Append(stackTrace.GetFrame(4).GetMethod().ReflectedType.FullName);
             stringBuilder.Append("]");
             stringBuilder.Append(message);
             stringBuilder.Append(Environment.NewLine);
@@ -108,7 +112,10 @@ namespace LWMS.Core
                     Console.Write("]");
                     Console.Write("[");
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName);
+                    if (t != typeof(Trace))
+                        Console.Write(t.FullName);
+                    else
+                        Console.Write(stackTrace.GetFrame(4).GetMethod().ReflectedType.FullName);
                     Console.ResetColor();
                     Console.Write("]");
                     Console.Write(message);

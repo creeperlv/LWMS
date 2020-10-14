@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CLUNL" Version="0.0.2.1" />
+    <PackageReference Include="CLUNL" Version="0.0.2.2" />
     <PackageReference Include="CLUNL.Pipeline" Version="0.0.2" />
   </ItemGroup>
 

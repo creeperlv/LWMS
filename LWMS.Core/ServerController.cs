@@ -45,40 +45,6 @@ namespace LWMS.Core
                 Trace.WriteLine("Core:" + Assembly.GetExecutingAssembly());
                 Trace.WriteLine("");
             }
-            else if (args[0].ToUpper() == "LOG")
-            {
-                if (args.Length > 1)
-                {
-                    switch (args[1].PackTotal.ToUpper())
-                    {
-                        case "LS":
-                            {
-                                foreach (var item in Directory.EnumerateFiles(LWMSTraceListener.LogDir))
-                                {
-                                    Trace.WriteLine(item);
-                                }
-                            }
-                            break;
-                        case "CLEAR":
-                            {
-                                try
-                                {
-                                    foreach (var item in Directory.EnumerateFiles(LWMSTraceListener.LogDir))
-                                    {
-                                        File.Delete(item);
-                                        Trace.WriteLine("[Subprogram]Log>>Delete:" + item);
-                                    }
-                                }
-                                catch (Exception)
-                                {
-                                }
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
             else if (args[0].ToUpper() == "CLS" || args[0].ToUpper() == "CLEAR")
             {
                 Console.Clear();
@@ -113,11 +79,25 @@ namespace LWMS.Core
             {
                 foreach (var item in ManageCommands)
                 {
-                    if (item.Key.ToUpper() == args[0].PackTotal)
+                    if (item.Key.ToUpper() == args[0].PackTotal.ToUpper())
                     {
                         List<CommandPack> ManageCommandArgs = new List<CommandPack>(args);
-                        ManageCommandArgs.RemoveAt(0);
-                        item.Value.Invoke(ManageCommandArgs.ToArray());
+                        try
+                        {
+                            ManageCommandArgs.RemoveAt(0);
+                            item.Value.Invoke(ManageCommandArgs.ToArray());
+                        }
+                        catch (Exception)
+                        {
+                            try
+                            {
+                                item.Value.Invoke();
+                            }
+                            catch (Exception e)
+                            {
+                                Trace.WriteLine("Cannot invoke manage command:"+e);
+                            }
+                        }
                         return;
                     }
                 }

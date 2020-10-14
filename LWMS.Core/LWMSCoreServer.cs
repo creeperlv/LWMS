@@ -1,5 +1,6 @@
 ﻿using CLUNL.Data.Layer0.Buffers;
 using CLUNL.Pipeline;
+using LWMS.Management;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,7 +42,7 @@ namespace LWMS.Core
                     {
                         foreach (var UnitTypeName in item.Children)
                         {
-                            var t=Type.GetType(UnitTypeName.Value);
+                            var t = Type.GetType(UnitTypeName.Value);
                             RegisterProcessUnit((IPipedProcessUnit)Activator.CreateInstance(t));
                         }
                     }
@@ -50,7 +51,7 @@ namespace LWMS.Core
                         Assembly.LoadFrom(item.Value);
                         foreach (var UnitTypeName in item.Children)
                         {
-                            var t=Type.GetType(UnitTypeName.Value);
+                            var t = Type.GetType(UnitTypeName.Value);
                             RegisterProcessUnit(Activator.CreateInstance(t) as IPipedProcessUnit);
                         }
                     }
@@ -73,6 +74,28 @@ namespace LWMS.Core
                       });
                 }
             });
+            //Load Manage Modules
+            foreach (string item in Configuration.ManageCommandModules)
+            {
+                try
+                {
+                    var asm = Assembly.LoadFrom(item);
+                    var TPS = asm.GetTypes();
+                    foreach (var TP in TPS)
+                    {
+                        if (typeof(IManageCommand).IsAssignableFrom(TP))
+                        {
+                            var MC = (IManageCommand)Activator.CreateInstance(TP);
+                            Trace.WriteLine("Found Manage Command:" + MC.CommandName+","+TP);
+                            ServerController.ManageCommands.Add(MC.CommandName, MC);
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    Trace.Write($"Cannot load management module:{item}");
+                }
+            }
         }
         public void RegisterProcessUnit(IPipedProcessUnit unit)
         {
