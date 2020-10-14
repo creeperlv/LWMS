@@ -76,6 +76,10 @@ namespace LWMS.Core
         internal static string _DefultPage = null;
         internal static string _Page404 = null;
         internal static int _BUF_LENGTH = 0;
+        public static void Set_BUF_LENGTH_RT(int VALUE)
+        {
+            _BUF_LENGTH = VALUE;
+        }
         internal static List<string> _ListenPrefixes = new List<string>();
         public static void ClearLoadedSettings()
         {

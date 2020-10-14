@@ -63,32 +63,6 @@ namespace LWMS.Core
             {
                 Console.Clear();
             }
-            else if (args[0].ToUpper() == "RUNTIMECONFIG")
-            {
-                for (int i = 0; i < args.Length; i++)
-                {
-                    if (args[i].PackTotal.ToUpper() == "/DISABLEBEAUTIFYCONSOLE")
-                    {
-                        LWMSTraceListener.BeautifyConsoleOutput = false;
-                    }
-                    else
-                    if (args[i].PackTotal.ToUpper() == "/DISABLECONSOLE")
-                    {
-                        LWMSTraceListener.EnableConsoleOutput = false;
-                    }
-                    else
-                    if (args[i].PackTotal.ToUpper() == "/DISABLELOGTOFILE")
-                    {
-                        LWMSTraceListener.WriteToFile = false;
-                    }
-                    else if (args[i].PackParted[0].ToUpper() == "BUF_LENGTH")
-                    {
-
-                        int.TryParse(args[i].PackParted[1], out Configuration._BUF_LENGTH);
-                        Trace.WriteLine($"BUT_LENGTH is set to {Configuration._BUF_LENGTH} Byte(s), without saving to configuration file.");
-                    }
-                }
-            }
             else
             {
                 foreach (var item in ManageCommands)

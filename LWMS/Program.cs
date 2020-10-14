@@ -11,6 +11,7 @@ namespace LWMS
     {
         static void Main(string[] args)
         {
+            
             Console.WriteLine("Copyright (C) 2020 Creeper Lv");
             Console.WriteLine("This software is licensed under the MIT License");
             var _commands = Tools00.ResolveCommand(Environment.CommandLine);
@@ -20,11 +21,13 @@ namespace LWMS
                 if (_commands[0].PackTotal.ToUpper() == "/PREBOOT")
                 {
                     _commands.RemoveAt(0);
+                    LWMSCoreServer.LoadCommandsFromManifest();
                     ServerController.Control(_commands.ToArray());
                 }
                 else if (_commands[0].PackTotal.ToUpper() == "/NOBOOT")
                 {
                     _commands.RemoveAt(0);
+                    LWMSCoreServer.LoadCommandsFromManifest();
                     ServerController.Control(_commands.ToArray());
                     return;
                 }

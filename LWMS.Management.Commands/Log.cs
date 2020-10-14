@@ -26,6 +26,7 @@ namespace LWMS.Management.Commands
                 switch (args[0].PackTotal.ToUpper())
                 {
                     case "LS":
+                    case "LIST":
                         {
                             foreach (var item in Directory.EnumerateFiles(LWMSTraceListener.LogDir))
                             {
@@ -40,7 +41,7 @@ namespace LWMS.Management.Commands
                                 foreach (var item in Directory.EnumerateFiles(LWMSTraceListener.LogDir))
                                 {
                                     File.Delete(item);
-                                    Trace.WriteLine("[Subprogram]Log>>Delete:" + item);
+                                    Trace.WriteLine("Log>>Delete:" + item);
                                 }
                             }
                             catch (Exception)

@@ -4,6 +4,7 @@ using LWMS.Management;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -48,11 +49,19 @@ namespace LWMS.Core
                     }
                     else
                     {
-                        Assembly.LoadFrom(item.Value);
-                        foreach (var UnitTypeName in item.Children)
+                        try
                         {
-                            var t = Type.GetType(UnitTypeName.Value);
-                            RegisterProcessUnit(Activator.CreateInstance(t) as IPipedProcessUnit);
+                            FileInfo AssemblyFile = new FileInfo(item.Value);
+                            Assembly.LoadFrom(AssemblyFile.FullName);
+                            foreach (var UnitTypeName in item.Children)
+                            {
+                                var t = Type.GetType(UnitTypeName.Value);
+                                RegisterProcessUnit(Activator.CreateInstance(t) as IPipedProcessUnit);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            Trace.WriteLine("Cannot pipeline units from:"+item.Value);
                         }
                     }
                 }
@@ -75,10 +84,16 @@ namespace LWMS.Core
                 }
             });
             //Load Manage Modules
+            LoadCommandsFromManifest();
+        }
+        public static void LoadCommandsFromManifest()
+        {
+            ServerController.ManageCommands.Clear();
+            ServerController.ManageCommandAliases.Clear();
             foreach (string item in Configuration.ManageCommandModules)
             {
                 ServerController.Register(item);
-            }  
+            }
         }
         public void RegisterProcessUnit(IPipedProcessUnit unit)
         {
