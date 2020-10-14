@@ -20,7 +20,7 @@ namespace LWMS.Management.Commands
         }
         public List<string> Alias { get => vs; }
 
-        public int Version => throw new NotImplementedException();
+        public int Version => 1;
 
         public void Invoke(params CommandPack[] args)
         {
