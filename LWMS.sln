@@ -9,12 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Core", "LWMS.Core\LWMS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{140835F2-83EF-4625-A05C-866C244C5281}"
 	ProjectSection(SolutionItems) = preProject
+		BuildDebug.ps1 = BuildDebug.ps1
+		BuildRelease.ps1 = BuildRelease.ps1
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWMS.Management.Commands", "LWMS.Management.Commands\LWMS.Management.Commands.csproj", "{A4B5AE6A-8EC8-4A52-B9EB-CF26CD72098F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Management.Commands", "LWMS.Management.Commands\LWMS.Management.Commands.csproj", "{A4B5AE6A-8EC8-4A52-B9EB-CF26CD72098F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWMS.Management", "LWMS.Management\LWMS.Management.csproj", "{64534E8B-F1F4-4E6F-93E7-94DA0539B516}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Management", "LWMS.Management\LWMS.Management.csproj", "{64534E8B-F1F4-4E6F-93E7-94DA0539B516}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

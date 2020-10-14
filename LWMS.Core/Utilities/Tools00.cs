@@ -38,7 +38,7 @@ namespace LWMS.Core.Utilities
                 }
                 catch (Exception e)
                 {
-
+                    Trace.WriteLine("Cannot send file:" + e);
                 }
             }
         }
