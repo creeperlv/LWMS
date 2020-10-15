@@ -28,6 +28,16 @@ namespace LWMS.Management.Commands
                 Configuration.ClearLoadedSettings();
                 Trace.WriteLine("Resume");
                 Trace.WriteLine("Configuration changes will be automatically saved now.");
+            }else if (args[0].ToUpper() == "SET")
+            {
+                if (args.Length >= 3)
+                {
+
+                }
+                else
+                {
+                    Trace.WriteLine("arguments does not match: Config set <key> <value>");
+                }
             }
         }
     }

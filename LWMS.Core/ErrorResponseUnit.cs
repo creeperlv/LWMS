@@ -13,6 +13,7 @@ namespace LWMS.Core
     {
         public PipelineData Process(PipelineData Input)
         {
+            //if (((HttpPipelineArguments)Input.SecondaryData).isHandled == true) return Input;
             Trace.WriteLine("Unhandled Http Pipeline. R:"+(Input.PrimaryData as HttpListenerContext).Request.RawUrl);
             if (File.Exists(Configuration.Page404))
             {

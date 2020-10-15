@@ -15,6 +15,11 @@ namespace LWMS.Core
     {
         public static Dictionary<string, IManageCommand> ManageCommands = new Dictionary<string, IManageCommand>();
         public static Dictionary<string, IManageCommand> ManageCommandAliases = new Dictionary<string, IManageCommand>();
+        /// <summary>
+        /// Register and initialize a specified module.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public static bool Register(string item)
         {
             try

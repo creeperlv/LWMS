@@ -52,7 +52,6 @@ namespace LWMS.Core
 
         public PipelineData Process(PipelineData Input, bool IgnoreError)
         {
-            if ((Input.SecondaryData as HttpPipelineArguments).isHandled == true) return Input;
             if (IgnoreError)
             {
 
@@ -60,6 +59,7 @@ namespace LWMS.Core
                 {
                     try
                     {
+                        if (((HttpPipelineArguments)Input.SecondaryData).isHandled == true) return Input;
                         var output = item.Process(Input);
                         if (Input.CheckContinuity(output))
                         {
@@ -77,6 +77,7 @@ namespace LWMS.Core
 
                 foreach (var item in processUnits)
                 {
+                    if (((HttpPipelineArguments)Input.SecondaryData).isHandled == true) return Input;
                     var output = item.Process(Input);
                     if (Input.CheckContinuity(output))
                     {
@@ -138,6 +139,6 @@ namespace LWMS.Core
             }
             return Input;
         }
-       
+
     }
 }

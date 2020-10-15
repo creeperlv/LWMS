@@ -62,16 +62,18 @@ namespace LWMS.Management.Commands
                             }
                         }
                         Configuration.ProcessUnits.Serialize();
+                        Trace.WriteLine($"Registered:{ENTRY}={DLL}");
                     }
                     else
                     {
                         Trace.WriteLine($"Cannot register pipeline unit:{ENTRY}={DLL}");
                     }
-                }else if (args[i].ToUpper() == "UNREG" || args[i].ToUpper() == "UNREGISTER")
+                }
+                else if (args[i].ToUpper() == "UNREG" || args[i].ToUpper() == "UNREGISTER")
                 {
                     string TARGETENTRY = args[i + 1];
                     i++;
-                    bool B=false;
+                    bool B = false;
                     foreach (var item in Configuration.ProcessUnits.RootNode.Children)
                     {
                         for (int a = 0; a < item.Children.Count; a++)
@@ -89,7 +91,9 @@ namespace LWMS.Management.Commands
                         }
                     }
                     Configuration.ProcessUnits.Serialize();
-                }else if (args[i].ToUpper() == "REMOVE" || args[i].ToUpper() == "RM")
+                    Trace.WriteLine($"Unregistered:{TARGETENTRY}");
+                }
+                else if (args[i].ToUpper() == "REMOVE" || args[i].ToUpper() == "RM")
                 {
                     string TARGETDLL = args[i + 1];
                     i++;
@@ -102,6 +106,7 @@ namespace LWMS.Management.Commands
                         }
                     }
                     Configuration.ProcessUnits.Serialize();
+                    Trace.WriteLine($"Removed:{TARGETENTRY}");
                 }
             }
         }

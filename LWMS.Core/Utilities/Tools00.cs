@@ -11,6 +11,12 @@ namespace LWMS.Core.Utilities
 {
     public class Tools00
     {
+        /// <summary>
+        /// Send a file to specific http listener context with given status code.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="f"></param>
+        /// <param name="StatusCode"></param>
         public static void SendFile(HttpListenerContext c, FileInfo f, int StatusCode = 200)
         {
             //using(FileStream fs=f.OpenRead())
@@ -42,6 +48,12 @@ namespace LWMS.Core.Utilities
                 }
             }
         }
+        /// <summary>
+        /// Send a message to specific http listener context with given status code.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="Message"></param>
+        /// <param name="StatusCode"></param>
         public static void SendMessage(HttpListenerContext c, string Message, int StatusCode = 200)
         {
             var bytes = Encoding.UTF8.GetBytes(Message);
