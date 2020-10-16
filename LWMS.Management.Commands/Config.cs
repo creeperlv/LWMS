@@ -10,7 +10,7 @@ namespace LWMS.Management.Commands
     {
         public string CommandName => "Config";
 
-        public List<string> Alias =>new List<string>();
+        public List<string> Alias => new List<string>();
 
         public int Version => 1;
 
@@ -28,15 +28,54 @@ namespace LWMS.Management.Commands
                 Configuration.ClearLoadedSettings();
                 Trace.WriteLine("Resume");
                 Trace.WriteLine("Configuration changes will be automatically saved now.");
-            }else if (args[0].ToUpper() == "SET")
+            }
+            else if (args[0].ToUpper() == "RELOAD")
+            {
+                Configuration.LoadConfiguation();
+                Configuration.ClearLoadedSettings();
+            }
+            else if (args[0].ToUpper() == "SET")
             {
                 if (args.Length >= 3)
                 {
-
+                    string setitem = args[1].ToUpper();
+                    if (setitem == "BUF_LENGTH")
+                    {
+                        Configuration.BUF_LENGTH = int.Parse(args[2]);
+                    }
+                    else if (setitem == "WEBROOT" || setitem == "WEBSITEROOT" || setitem == "WEBSITECONTENTROOT" || setitem == "WEBCONTENTROOT" || setitem == "CONTENTROOT")
+                    {
+                        Configuration.WebSiteContentRoot = args[2];
+                    }
+                    else if (setitem == "DEFAULTPAGE")
+                    {
+                        Configuration.DefaultPage = args[2];
+                    }
+                    else if (setitem == "404PAGE")
+                    {
+                        Configuration.Page404 = args[2];
+                    }
                 }
                 else
                 {
                     Trace.WriteLine("arguments does not match: Config set <key> <value>");
+                }
+            }
+            else if (args[0].ToUpper() == "ADD")
+            {
+                if (args.Length >= 3)
+                {
+                    string setitem = args[1].ToUpper();
+                    if (setitem == "LISTENPREFIX" || setitem == "LISTEN")
+                    {
+                        var prefixes = Configuration.ListenPrefixes;
+                        prefixes.Add(args[2]);
+                        Configuration.ListenPrefixes = prefixes;
+                    }
+                }
+                else
+                {
+                    Trace.WriteLine("arguments does not match: Config add <key> <value>");
                 }
             }
         }

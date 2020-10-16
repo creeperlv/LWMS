@@ -28,7 +28,7 @@ namespace LWMS.Management.Commands
             {
                 if (args[i].ToUpper() == "REG" || args[i].ToUpper() == "REGISTER")
                 {
-                    string TYPE = args[i + 1];
+                    string TYPE = args[i + 1].ToUpper();
                     string DLL = args[i + 2];
                     string ENTRY = args[i + 3];
                     
@@ -113,27 +113,50 @@ namespace LWMS.Management.Commands
                 }
                 else if (args[i].ToUpper() == "UNREG" || args[i].ToUpper() == "UNREGISTER")
                 {
-                    string TARGETENTRY = args[i + 1];
-                    i++;
+                    string TYPE = args[i + 1].ToUpper();
+                    string TARGETENTRY = args[i + 2];
+                    i+=2;
                     bool B = false;
-                    foreach (var item in Configuration.RProcessUnits.RootNode.Children)
+                    if (TYPE == "R" || TYPE == "/R" || TYPE == "REQUEST")
                     {
-                        for (int a = 0; a < item.Children.Count; a++)
+                        foreach (var item in Configuration.RProcessUnits.RootNode.Children)
                         {
-                            if (item.Children[a].Value == TARGETENTRY)
+                            for (int a = 0; a < item.Children.Count; a++)
                             {
-                                item.Children.RemoveAt(a);
-                                B = true;
+                                if (item.Children[a].Value == TARGETENTRY)
+                                {
+                                    item.Children.RemoveAt(a);
+                                    B = true;
+                                    break;
+                                }
+                            }
+                            if (B == true)
+                            {
                                 break;
                             }
                         }
-                        if (B == true)
+                    }
+                    else if (TYPE=="W"||TYPE=="/W"||TYPE=="WRITE")
+                    {
+                        foreach (var item in Configuration.WProcessUnits.RootNode.Children)
                         {
-                            break;
+                            for (int a = 0; a < item.Children.Count; a++)
+                            {
+                                if (item.Children[a].Value == TARGETENTRY)
+                                {
+                                    item.Children.RemoveAt(a);
+                                    B = true;
+                                    break;
+                                }
+                            }
+                            if (B == true)
+                            {
+                                break;
+                            }
                         }
                     }
                     Configuration.RProcessUnits.Serialize();
-                    Trace.WriteLine($"Unregistered:{TARGETENTRY}");
+                    Trace.WriteLine($"Unregistered:{TARGETENTRY} At:{TYPE} pipeline");
                 }
                 else if (args[i].ToUpper() == "REMOVE" || args[i].ToUpper() == "RM")
                 {
