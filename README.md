@@ -45,11 +45,40 @@ public class Sample : IManageCommand
 
 After build it, copy generated `dll` file to your LWMS installation location. Then, open `ManageModules.ini`, add the absoulte path of that `dll` file to it, then you can type `Sample` to test the manage command you just made.
 
+### Extend Pipeline
+
+LWMS allows user to load their own pipeline unit. Currently LWMS handles request and send out stream through pipeline. (Based on `CLUNL.Pipeline`)
+#### Pipeline Types
+
+##### R pipeline
+
+**R** stands for requeset, R pipline means this pipeline processes http request.
+
+##### W pipeline
+
+**W** stands for write, W pipeline means this pipeline processes output stream.
+
+#### Build your own pipeline
+
+ To build up your own unit, please look into `LWMS.Core\DefaultStaicFileUnit.cs` `LWMS.Core\ErrorResponseUnit.cs` for R pipeline, `LWMS.Core\HttpRoutedLayer\DefaultStreamProcessUnit.cs` for W pipeline.
+
+**Note:** You must refer LWMS.Core.dll to your project, different types of pipeline units can exists in one dll file.
+
+#### Register your pipeline
+
+##### Method 1 : Edit configuration file.
+
+You can directly edit configuration file to register your pipeline manually. `RPipelineUnit.tsd` records R pipeline units, `WPipelineUnit.tsd` recrods W pipeline units.
+
+##### Method 2 : Register through manage commands
+
+`ppl reg -w/r <dll-file> <type-fullname>`
+
 ## Improve Performance
 
 **Note:** Following steps requires `LWMS.Management.Commands.dll` registered in `ManageModules.ini`.
 
-### Ajust Console Output
+### Adjust Console Output
 You can improve performance by disabling console beautification or console output. To do this you can use `LWMS.exe /preboot runtimeconfig /disablebeautifyconsole` or `LWMS.exe /preboot runtimeconfig /disableconsole`.
 
 ### Disable writing to log file

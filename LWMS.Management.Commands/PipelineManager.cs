@@ -28,40 +28,82 @@ namespace LWMS.Management.Commands
             {
                 if (args[i].ToUpper() == "REG" || args[i].ToUpper() == "REGISTER")
                 {
-                    string DLL = args[i + 1];
-                    string ENTRY = args[i + 2];
-                    i += 2;
+                    string TYPE = args[i + 1];
+                    string DLL = args[i + 2];
+                    string ENTRY = args[i + 3];
+                    
+                    i += 3;
                     if (File.Exists(DLL))
                     {
                         bool Hit = false;
-                        Configuration.RProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
+                        if (TYPE == "W" || TYPE == "/W" || TYPE == "WRITE")
                         {
-                            if (item.Value == DLL)
-                            {
 
-                                TreeNode unit = new TreeNode();
-                                unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
-                                unit.Value = ENTRY;
-                                item.AddChildren(unit);
-                                Hit = true;
-                            }
-                        });
-                        if (Hit == false)
-                        {
+                            Configuration.WProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
                             {
-                                TreeNode treeNode = new TreeNode();
-                                treeNode.Name = "DLL";
-                                treeNode.Value = DLL;
+                                if (item.Value == DLL)
                                 {
+
                                     TreeNode unit = new TreeNode();
                                     unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
                                     unit.Value = ENTRY;
-                                    treeNode.AddChildren(unit);
+                                    item.AddChildren(unit);
+                                    Hit = true;
                                 }
-                                Configuration.RProcessUnits.RootNode.AddChildren(treeNode);
+                            });
+                            if (Hit == false)
+                            {
+                                {
+                                    TreeNode treeNode = new TreeNode();
+                                    treeNode.Name = "DLL";
+                                    treeNode.Value = DLL;
+                                    {
+                                        TreeNode unit = new TreeNode();
+                                        unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
+                                        unit.Value = ENTRY;
+                                        treeNode.AddChildren(unit);
+                                    }
+                                    Configuration.WProcessUnits.RootNode.AddChildren(treeNode);
+                                }
                             }
+                            Configuration.WProcessUnits.Serialize();
                         }
-                        Configuration.RProcessUnits.Serialize();
+                        else if(TYPE == "R" || TYPE == "/R" || TYPE == "REQUEST")
+                        {
+
+                            Configuration.RProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
+                            {
+                                if (item.Value == DLL)
+                                {
+
+                                    TreeNode unit = new TreeNode();
+                                    unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
+                                    unit.Value = ENTRY;
+                                    item.AddChildren(unit);
+                                    Hit = true;
+                                }
+                            });
+                            if (Hit == false)
+                            {
+                                {
+                                    TreeNode treeNode = new TreeNode();
+                                    treeNode.Name = "DLL";
+                                    treeNode.Value = DLL;
+                                    {
+                                        TreeNode unit = new TreeNode();
+                                        unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
+                                        unit.Value = ENTRY;
+                                        treeNode.AddChildren(unit);
+                                    }
+                                    Configuration.RProcessUnits.RootNode.AddChildren(treeNode);
+                                }
+                            }
+                            Configuration.RProcessUnits.Serialize();
+                        }
+                        else
+                        {
+                            Trace.WriteLine("Unknown pipeline type:"+TYPE);
+                        }
                         Trace.WriteLine($"Registered:{ENTRY}={DLL}");
                     }
                     else
