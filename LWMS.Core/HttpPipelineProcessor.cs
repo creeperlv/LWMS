@@ -1,6 +1,7 @@
 ﻿using CLUNL;
 using CLUNL.DirectedIO;
 using CLUNL.Pipeline;
+using LWMS.Core.HttpRoutedLayer;
 using LWMS.Core.Utilities;
 using System;
 using System.Collections.Generic;
@@ -104,7 +105,7 @@ namespace LWMS.Core
         }
         public PipelineData Process(PipelineData Input)
         {
-            HttpListenerContext context = Input.PrimaryData as HttpListenerContext;
+            HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
             var path0 = context.Request.Url.LocalPath.Substring(1);
             var path1 = Path.Combine(Configuration.WebSiteContentRoot, path0);
             //Console.WriteLine("Try:"+path1);
@@ -114,7 +115,7 @@ namespace LWMS.Core
                 //Console.WriteLine("Try:" + DefaultPage);
                 if (File.Exists(DefaultPage))
                 {
-                    Tools00.SendFile(Input.PrimaryData as HttpListenerContext, new FileInfo(DefaultPage));
+                    Tools00.SendFile(context, new FileInfo(DefaultPage));
                     //return Input;
                     (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
                 }

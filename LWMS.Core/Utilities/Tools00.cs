@@ -1,9 +1,9 @@
-﻿using LWMS.Management;
+﻿using LWMS.Core.HttpRoutedLayer;
+using LWMS.Management;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -14,10 +14,10 @@ namespace LWMS.Core.Utilities
         /// <summary>
         /// Send a file to specific http listener context with given status code.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="context"></param>
         /// <param name="f"></param>
         /// <param name="StatusCode"></param>
-        public static void SendFile(HttpListenerContext c, FileInfo f, int StatusCode = 200)
+        public static void SendFile(HttpListenerRoutedContext context, FileInfo f, int StatusCode = 200)
         {
             using (FileStream fs = f.OpenRead())
             {
@@ -29,16 +29,16 @@ namespace LWMS.Core.Utilities
                     byte[] buf = new byte[BUF_LENGTH];
                     if (f.Extension == ".html")
                     {
-                        c.Response.ContentType = "text/html";
+                        context.Response.ContentType = "text/html";
                     }
-                    c.Response.ContentLength64 = f.Length;
-                    c.Response.StatusCode = StatusCode;
-                    c.Response.ContentEncoding = Encoding.UTF8;
+                    context.Response.ContentLength64 = f.Length;
+                    context.Response.StatusCode = StatusCode;
+                    context.Response.ContentEncoding = Encoding.UTF8;
                     int L = 0;
                     while ((L = fs.Read(buf, 0, BUF_LENGTH)) != 0)
                     {
-                        c.Response.OutputStream.Write(buf, 0, L);
-                        c.Response.OutputStream.Flush();
+                        context.Response.OutputStream.Write(buf, 0, L);
+                        context.Response.OutputStream.Flush();
                     }
                 }
                 catch (Exception e)
@@ -50,18 +50,18 @@ namespace LWMS.Core.Utilities
         /// <summary>
         /// Send a message to specific http listener context with given status code.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="context"></param>
         /// <param name="Message"></param>
         /// <param name="StatusCode"></param>
-        public static void SendMessage(HttpListenerContext c, string Message, int StatusCode = 200)
+        public static void SendMessage(HttpListenerRoutedContext context, string Message, int StatusCode = 200)
         {
             var bytes = Encoding.UTF8.GetBytes(Message);
-            c.Response.ContentType = "text/html";
-            c.Response.ContentLength64 = bytes.Length;
-            c.Response.StatusCode = StatusCode;
-            c.Response.ContentEncoding = Encoding.UTF8;
-            c.Response.OutputStream.Write(bytes);
-            c.Response.OutputStream.Flush();
+            context.Response.ContentType = "text/html";
+            context.Response.ContentLength64 = bytes.Length;
+            context.Response.StatusCode = StatusCode;
+            context.Response.ContentEncoding = Encoding.UTF8;
+            context.Response.OutputStream.Write(bytes);
+            context.Response.OutputStream.Flush();
         }
         public static List<Match> CommandParse(string cmd)
         {

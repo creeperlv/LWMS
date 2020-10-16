@@ -1,4 +1,5 @@
-﻿using CLUNL.Data.Layer0;
+﻿using CLUNL;
+using CLUNL.Data.Layer0;
 using CLUNL.Data.Layer1;
 using CLUNL.Data.Layer2;
 using CLUNL.DirectedIO;
@@ -16,9 +17,11 @@ namespace LWMS.Core
         static string ConfigurationPath = null;
         static Configuration()
         {
+            LibraryInfo.SetFlag(FeatureFlags.Pipeline_AutoID_Random, 1);
             BasePath = new FileInfo(Assembly.GetAssembly(typeof(LWMSCoreServer)).Location).DirectoryName;
             ConfigurationPath = Path.Combine(BasePath, "Server.ini");
-            var PluginConfigPath = Path.Combine(BasePath, "Plugin.tsd");
+            var PluginConfigPath = Path.Combine(BasePath, "RPipelineUnit.tsd");
+            var WPipelineUnitsPath = Path.Combine(BasePath, "WPipelineUnit.tsd");
             var ManageModulePath = Path.Combine(BasePath, "ManageModules.ini");
             LoadConfiguation();
             if (File.Exists(ManageModulePath))
@@ -31,27 +34,55 @@ namespace LWMS.Core
                 ManageCommandModules.Add(Path.Combine(BasePath, "LWMS.Management.Commands.dll"));
                 ManageCommandModules.Save();
             }
-            if (File.Exists(PluginConfigPath))
             {
-                ProcessUnits = TreeStructureData.LoadFromFile(new FileInfo(PluginConfigPath));
-            }
-            else
-            {
-                ProcessUnits = TreeStructureData.CreateToFile(new FileInfo(PluginConfigPath));
+                //Load Request Pipeline Units.
+                if (File.Exists(PluginConfigPath))
                 {
-                    //LWMS.Core.dll
-                    TreeNode treeNode = new TreeNode();
-                    treeNode.Name = "DLL";
-                    treeNode.Value = "LWMS.Core.dll";
-                    {
-                        TreeNode unit = new TreeNode();
-                        unit.Name = "Unit.0";
-                        unit.Value = "LWMS.Core.DefaultStaticFileUnit";
-                        treeNode.AddChildren(unit);
-                    }
-                    ProcessUnits.RootNode.AddChildren(treeNode);
+                    RProcessUnits = TreeStructureData.LoadFromFile(new FileInfo(PluginConfigPath));
                 }
-                ProcessUnits.Serialize();
+                else
+                {
+                    RProcessUnits = TreeStructureData.CreateToFile(new FileInfo(PluginConfigPath));
+                    {
+                        //LWMS.Core.dll
+                        TreeNode treeNode = new TreeNode();
+                        treeNode.Name = "DLL";
+                        treeNode.Value = "LWMS.Core.dll";
+                        {
+                            TreeNode unit = new TreeNode();
+                            unit.Name = "Unit.0";
+                            unit.Value = "LWMS.Core.DefaultStaticFileUnit";
+                            treeNode.AddChildren(unit);
+                        }
+                        RProcessUnits.RootNode.AddChildren(treeNode);
+                    }
+                    RProcessUnits.Serialize();
+                }
+            }
+            {
+                //Load W Pipelne units.
+                if (File.Exists(WPipelineUnitsPath))
+                {
+                    WProcessUnits = TreeStructureData.LoadFromFile(new FileInfo(WPipelineUnitsPath));
+                }
+                else
+                {
+                    WProcessUnits = TreeStructureData.CreateToFile(new FileInfo(WPipelineUnitsPath));
+                    {
+                        //LWMS.Core.dll
+                        TreeNode treeNode = new TreeNode();
+                        treeNode.Name = "DLL";
+                        treeNode.Value = "LWMS.Core.dll";
+                        {
+                            TreeNode unit = new TreeNode();
+                            unit.Name = "DefaultUnit";
+                            unit.Value = "LWMS.Core.HttpRoutedLayer.DefaultStreamProcessUnit";
+                            treeNode.AddChildren(unit);
+                        }
+                        WProcessUnits.RootNode.AddChildren(treeNode);
+                    }
+                    WProcessUnits.Serialize();
+                }
             }
         }
         public static void LoadConfiguation()
@@ -67,7 +98,8 @@ namespace LWMS.Core
 
         }
 
-        public static TreeStructureData ProcessUnits;
+        public static TreeStructureData RProcessUnits;
+        public static TreeStructureData WProcessUnits;
         public static INILikeData ConfigurationData;
         public static ListData<string> ManageCommandModules;
 

@@ -65,6 +65,7 @@ namespace LWMS
             while (true)
             {
                 var cmd = Console.ReadLine();
+                if (cmd == "") continue;//Skip blank line.
                 var cmdList = Tools00.ResolveCommand(cmd);
                 ServerController.Control(cmdList.ToArray());
                 PrintHint();

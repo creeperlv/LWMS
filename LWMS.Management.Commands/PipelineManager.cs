@@ -34,7 +34,7 @@ namespace LWMS.Management.Commands
                     if (File.Exists(DLL))
                     {
                         bool Hit = false;
-                        Configuration.ProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
+                        Configuration.RProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
                         {
                             if (item.Value == DLL)
                             {
@@ -58,10 +58,10 @@ namespace LWMS.Management.Commands
                                     unit.Value = ENTRY;
                                     treeNode.AddChildren(unit);
                                 }
-                                Configuration.ProcessUnits.RootNode.AddChildren(treeNode);
+                                Configuration.RProcessUnits.RootNode.AddChildren(treeNode);
                             }
                         }
-                        Configuration.ProcessUnits.Serialize();
+                        Configuration.RProcessUnits.Serialize();
                         Trace.WriteLine($"Registered:{ENTRY}={DLL}");
                     }
                     else
@@ -74,7 +74,7 @@ namespace LWMS.Management.Commands
                     string TARGETENTRY = args[i + 1];
                     i++;
                     bool B = false;
-                    foreach (var item in Configuration.ProcessUnits.RootNode.Children)
+                    foreach (var item in Configuration.RProcessUnits.RootNode.Children)
                     {
                         for (int a = 0; a < item.Children.Count; a++)
                         {
@@ -90,23 +90,23 @@ namespace LWMS.Management.Commands
                             break;
                         }
                     }
-                    Configuration.ProcessUnits.Serialize();
+                    Configuration.RProcessUnits.Serialize();
                     Trace.WriteLine($"Unregistered:{TARGETENTRY}");
                 }
                 else if (args[i].ToUpper() == "REMOVE" || args[i].ToUpper() == "RM")
                 {
                     string TARGETDLL = args[i + 1];
                     i++;
-                    for (int a = 0; a < Configuration.ProcessUnits.RootNode.Children.Count; a++)
+                    for (int a = 0; a < Configuration.RProcessUnits.RootNode.Children.Count; a++)
                     {
-                        if (Configuration.ProcessUnits.RootNode.Children[a].Value == TARGETDLL)
+                        if (Configuration.RProcessUnits.RootNode.Children[a].Value == TARGETDLL)
                         {
-                            Configuration.ProcessUnits.RootNode.Children.RemoveAt(a);
+                            Configuration.RProcessUnits.RootNode.Children.RemoveAt(a);
                             break;
                         }
                     }
-                    Configuration.ProcessUnits.Serialize();
-                    Trace.WriteLine($"Removed:{TARGETENTRY}");
+                    Configuration.RProcessUnits.Serialize();
+                    Trace.WriteLine($"Removed:{TARGETDLL}");
                 }
             }
         }

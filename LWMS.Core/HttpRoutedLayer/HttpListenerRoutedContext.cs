@@ -62,7 +62,7 @@ namespace LWMS.Core.HttpRoutedLayer
         {
             this.context = context;
             CoreResponse = this.context.CoreContext.Response;
-            OutputStream = new RoutedPipelineStream(CoreResponse.OutputStream,context);
+            OutputStream = new RoutedPipelineStream(CoreResponse.OutputStream, context);
         }
         public void Abort()
         {
@@ -104,12 +104,25 @@ namespace LWMS.Core.HttpRoutedLayer
     }
     public class RoutedPipelineStream : Stream
     {
-        public static PipelineStreamProcessor DefaultPublicStreamProcessor = new PipelineStreamProcessor();
         Stream CoreStream;
         HttpListenerRoutedContext CoreContext;
-        public RoutedPipelineStream(Stream stream,HttpListenerRoutedContext Core)
+        public RoutedPipelineStream(Stream stream, HttpListenerRoutedContext Core)
         {
             CoreStream = stream;
+            CoreContext = Core;
+        }
+        public override void Close()
+        {
+            base.Close();
+            CoreStream.Close();
+        }
+        public override ValueTask DisposeAsync()
+        {
+            return CoreStream.DisposeAsync();
+        }
+        public new void Dispose()
+        {
+            CoreStream.Dispose();
         }
         public override bool CanRead => CoreStream.CanRead;
 
@@ -123,31 +136,39 @@ namespace LWMS.Core.HttpRoutedLayer
 
         public override void Flush()
         {
-            DefaultPublicStreamProcessor.Process(new PipelineData(CoreStream, null, new RoutedPipelineStreamOptions() { Method = RoutedPipelineStreamMethod.FLUSH, Context=CoreContext }));
+            PipelineStreamProcessor.DefaultPublicStreamProcessor.Process(new PipelineData(CoreStream, null, new RoutedPipelineStreamOptions(RoutedPipelineStreamMethod.FLUSH, CoreContext)));
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
             int Result = 0;
-            ReadArguments _result = (ReadArguments)DefaultPublicStreamProcessor.Process(new PipelineData(CoreStream,new ReadArguments(buffer, offset, count,Result), new RoutedPipelineStreamOptions() { Method = RoutedPipelineStreamMethod.READ, Context = CoreContext })).SecondaryData;
+            ReadArguments _result = (ReadArguments)PipelineStreamProcessor.DefaultPublicStreamProcessor.Process(
+                new PipelineData(CoreStream,
+                new ReadArguments(buffer, offset, count, Result), new RoutedPipelineStreamOptions(RoutedPipelineStreamMethod.READ, CoreContext))
+                ).SecondaryData;
             return _result.Result;
         }
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            long Result=0;
-            var _result=(SeekArguments)DefaultPublicStreamProcessor.Process(new PipelineData(CoreStream,new SeekArguments(offset,origin,Result), new RoutedPipelineStreamOptions() { Method = RoutedPipelineStreamMethod.SETLENGTH, Context = CoreContext })).SecondaryData;
+            long Result = 0;
+            var _result = (SeekArguments)PipelineStreamProcessor.DefaultPublicStreamProcessor.Process(new PipelineData(CoreStream, new SeekArguments(offset, origin, Result),
+                new RoutedPipelineStreamOptions(RoutedPipelineStreamMethod.SEEK, CoreContext))).SecondaryData;
             return _result.Result;
         }
 
         public override void SetLength(long value)
         {
-            DefaultPublicStreamProcessor.Process(new PipelineData(CoreStream, value, new RoutedPipelineStreamOptions() { Method = RoutedPipelineStreamMethod.SETLENGTH, Context = CoreContext }));
+            PipelineStreamProcessor.DefaultPublicStreamProcessor.Process(new PipelineData(CoreStream, value, new RoutedPipelineStreamOptions(RoutedPipelineStreamMethod.SETLENGTH, CoreContext)));
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            DefaultPublicStreamProcessor.Process(new PipelineData(CoreStream,new WriteArguments(buffer, offset, count), new RoutedPipelineStreamOptions() { Method = RoutedPipelineStreamMethod.WRITE, Context = CoreContext }));
+            PipelineStreamProcessor.DefaultPublicStreamProcessor.Process(
+                new PipelineData(
+                    CoreStream,
+                    new WriteArguments(buffer, offset, count), new RoutedPipelineStreamOptions(RoutedPipelineStreamMethod.WRITE, CoreContext)
+                ));
         }
     }
     public class SeekArguments
@@ -155,7 +176,7 @@ namespace LWMS.Core.HttpRoutedLayer
         public long Offset;
         public SeekOrigin Origin;
         public long Result;
-        public SeekArguments(long offset,SeekOrigin origin,long result)
+        public SeekArguments(long offset, SeekOrigin origin, long result)
         {
             Offset = offset;
             Origin = origin;
@@ -168,7 +189,7 @@ namespace LWMS.Core.HttpRoutedLayer
         public int Offset;
         public int Count;
         public int Result;
-        public ReadArguments(byte[] buffer,int offset,int count,int result)
+        public ReadArguments(byte[] buffer, int offset, int count, int result)
         {
             Buffer = buffer;
             Offset = offset;
@@ -181,7 +202,7 @@ namespace LWMS.Core.HttpRoutedLayer
         public byte[] Buffer;
         public int Offset;
         public int Count;
-        public WriteArguments(byte[] buffer,int offset,int count)
+        public WriteArguments(byte[] buffer, int offset, int count)
         {
             Buffer = buffer;
             Offset = offset;
@@ -190,6 +211,7 @@ namespace LWMS.Core.HttpRoutedLayer
     }
     public class PipelineStreamProcessor : IPipelineProcessor
     {
+        public static PipelineStreamProcessor DefaultPublicStreamProcessor = new PipelineStreamProcessor();
         List<IPipedProcessUnit> processUnits = new List<IPipedProcessUnit>();
         public void Init(params IPipedProcessUnit[] units)
         {
@@ -270,11 +292,16 @@ namespace LWMS.Core.HttpRoutedLayer
     }
     public class RoutedPipelineStreamOptions
     {
+        public RoutedPipelineStreamOptions(RoutedPipelineStreamMethod method, HttpListenerRoutedContext context)
+        {
+            Method = method;
+            Context = context;
+        }
         public HttpListenerRoutedContext Context { get; internal set; }
         public RoutedPipelineStreamMethod Method { get; internal set; }
     }
     public enum RoutedPipelineStreamMethod
     {
-        READ, SEEK, SETLENGTH, WRITE,FLUSH
+        READ, SEEK, SETLENGTH, WRITE, FLUSH
     }
 }

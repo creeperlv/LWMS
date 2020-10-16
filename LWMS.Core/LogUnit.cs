@@ -1,4 +1,5 @@
 ﻿using CLUNL.Pipeline;
+using LWMS.Core.HttpRoutedLayer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,7 +18,7 @@ namespace LWMS.Core
         public PipelineData Process(PipelineData Input)
         {
             StringBuilder b = new StringBuilder();
-            var c = Input.PrimaryData as HttpListenerContext;
+            var c = Input.PrimaryData as HttpListenerRoutedContext;
             b.Append(c.Request.RemoteEndPoint);
             b.Append(">>");
             b.Append(c.Request.HttpMethod);

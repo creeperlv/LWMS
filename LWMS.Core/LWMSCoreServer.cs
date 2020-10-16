@@ -1,5 +1,6 @@
 ﻿using CLUNL.Data.Layer0.Buffers;
 using CLUNL.Pipeline;
+using LWMS.Core.HttpRoutedLayer;
 using LWMS.Management;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace LWMS.Core
         bool WillStop = false;
 
         List<IPipedProcessUnit> processUnits = new List<IPipedProcessUnit>();
+        List<IPipedProcessUnit> WprocessUnits = new List<IPipedProcessUnit>();
         public void Start(int MaxThread)
         {
             semaphore = new Semaphore(MaxThread, MaxThread);
@@ -37,7 +39,7 @@ namespace LWMS.Core
             }
             //Load process units.
             {
-                foreach (var item in Configuration.ProcessUnits.RootNode.Children)
+                foreach (var item in Configuration.RProcessUnits.RootNode.Children)
                 {
                     if (item.Value == "LWMS.Core.dll")
                     {
@@ -61,14 +63,46 @@ namespace LWMS.Core
                         }
                         catch (Exception)
                         {
-                            Trace.WriteLine("Cannot pipeline units from:"+item.Value);
+                            Trace.WriteLine("Cannot pipeline units from:" + item.Value);
                         }
                     }
                 }
             }
             RegisterProcessUnit(new ErrorResponseUnit());
-            //RegisterProcessUnit(new DefaultStaticFileUnit());
+            //Load W process units.
+            {
+                foreach (var item in Configuration.WProcessUnits.RootNode.Children)
+                {
+                    if (item.Value == "LWMS.Core.dll")
+                    {
+                        foreach (var UnitTypeName in item.Children)
+                        {
+                            var t = Type.GetType(UnitTypeName.Value);
+                            RegisterWProcessUnit((IPipedProcessUnit)Activator.CreateInstance(t));
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            FileInfo AssemblyFile = new FileInfo(item.Value);
+                            Assembly.LoadFrom(AssemblyFile.FullName);
+                            foreach (var UnitTypeName in item.Children)
+                            {
+                                var t = Type.GetType(UnitTypeName.Value);
+                                RegisterWProcessUnit(Activator.CreateInstance(t) as IPipedProcessUnit);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            Trace.WriteLine("Cannot W pipeline units from:" + item.Value);
+                        }
+                    }
+                }
+            }
+            //Apply units
             ApplyProcessUnits();
+            ApplyWProcessUnits();
             Listener.Start();
             Task.Run(async () =>
             {
@@ -95,6 +129,7 @@ namespace LWMS.Core
                 ServerController.Register(item);
             }
         }
+
         public void RegisterProcessUnit(IPipedProcessUnit unit)
         {
             processUnits.Add(unit);
@@ -104,13 +139,27 @@ namespace LWMS.Core
         {
             processUnits.Remove(unit);
         }
+
+        public void RegisterWProcessUnit(IPipedProcessUnit unit)
+        {
+            WprocessUnits.Add(unit);
+            Trace.WriteLine("Registered W Unit:" + unit.GetType());
+        }
+        public void UnregisterWProcessUnit(IPipedProcessUnit unit)
+        {
+            WprocessUnits.Remove(unit);
+        }
         public void ApplyProcessUnits()
         {
             HttpPipelineProcessor.Init(processUnits.ToArray());
         }
+        public void ApplyWProcessUnits()
+        {
+            PipelineStreamProcessor.DefaultPublicStreamProcessor.Init(WprocessUnits.ToArray());
+        }
         public void ProcessContext(HttpListenerContext context)
         {
-            HttpPipelineProcessor.Process(new PipelineData(context, new HttpPipelineArguments(), null, context.GetHashCode()));
+            HttpPipelineProcessor.Process(new PipelineData(new HttpListenerRoutedContext(context), new HttpPipelineArguments(), null, context.GetHashCode()));
             context.Response.OutputStream.Close();
             //context.Response.OutputStream.Flush();
             //context.Response.OutputStream.Close();
@@ -128,4 +177,5 @@ namespace LWMS.Core
             Listener.Prefixes.Add(URL);
         }
     }
+
 }
