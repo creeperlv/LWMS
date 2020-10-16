@@ -19,13 +19,12 @@ namespace LWMS.Core.Utilities
         /// <param name="StatusCode"></param>
         public static void SendFile(HttpListenerContext c, FileInfo f, int StatusCode = 200)
         {
-            //using(FileStream fs=f.OpenRead())
             using (FileStream fs = f.OpenRead())
             {
                 try
                 {
                     Trace.WriteLine("Access:" + f.FullName.Substring(Configuration.WebSiteContentRoot.Length));
-
+                    
                     var BUF_LENGTH = Configuration.BUF_LENGTH;
                     byte[] buf = new byte[BUF_LENGTH];
                     if (f.Extension == ".html")
