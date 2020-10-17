@@ -60,7 +60,7 @@ namespace LWMS.Management.Commands
                     foreach (var item in ServerController.ManageCommands)
                     {
                         Trace.WriteLine("Type:"+item.Value);
-                        Trace.WriteLine($"\t\tStandard Command:{item.Key},DLL={item.Value.GetType().Assembly.Location}");
+                        Trace.WriteLine($"\t\tCommand:{item.Key},DLL={item.Value.GetType().Assembly.Location}");
                         Trace.WriteLine($"\t\tVersion:{item.Value.Version}");
                         StringBuilder stringBuilder = new StringBuilder();
                         foreach (string alias in item.Value.Alias)
@@ -79,7 +79,16 @@ namespace LWMS.Management.Commands
         }
         public void OutputHelp()
         {
-
+            Trace.WriteLine("Usage:");
+            Trace.WriteLine("ManageCommand <Operations> [Option1] [Option2] ...");
+            Trace.WriteLine("");
+            Trace.WriteLine("Operations:");
+            Trace.WriteLine("\tRegister <Path-to-DLL>");
+            Trace.WriteLine("\t\tRegister a dll to find all availiable commands.");
+            Trace.WriteLine("\tUnregister <Path-to-DLL>");
+            Trace.WriteLine("\t\tUnregister a dll, need restart to effect.");
+            Trace.WriteLine("\tLs/List");
+            Trace.WriteLine("\t\tList all commands, their assembly files and aliases.");
         }
     }
 }

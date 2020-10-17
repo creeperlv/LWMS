@@ -78,6 +78,32 @@ namespace LWMS.Management.Commands
                     Trace.WriteLine("arguments does not match: Config add <key> <value>");
                 }
             }
+            else if (args[0].ToUpper() == "RM" ||[0].ToUpper() == "REMOVE")
+            {
+
+                if (args.Length >= 3)
+                {
+                    string setitem = args[1].ToUpper();
+                    if (setitem == "LISTENPREFIX" || setitem == "LISTEN")
+                    {
+                        try
+                        {
+
+                            var prefixes = Configuration.ListenPrefixes;
+                            prefixes.Remove(args[2]);
+                            Configuration.ListenPrefixes = prefixes;
+
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+                }
+                else
+                {
+                    Trace.WriteLine("arguments does not match: Config add <key> <value>");
+                }
+            }
         }
     }
 }

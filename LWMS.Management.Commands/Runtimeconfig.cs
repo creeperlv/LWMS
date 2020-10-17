@@ -28,8 +28,14 @@ namespace LWMS.Management.Commands
                     case "/DISABLEBEAUTIFYCONSOLE":
                         LWMSTraceListener.BeautifyConsoleOutput = false;
                         break;
+                    case "/ENABLEBEAUTIFYCONSOLE":
+                        LWMSTraceListener.BeautifyConsoleOutput = true;
+                        break;
                     case "/DISABLECONSOLE":
                         LWMSTraceListener.EnableConsoleOutput = false;
+                        break;
+                    case "/ENABLECONSOLE":
+                        LWMSTraceListener.EnableConsoleOutput = true;
                         break;
                     case "BUF_LENGTH":
                         {
