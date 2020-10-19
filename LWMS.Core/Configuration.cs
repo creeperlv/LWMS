@@ -112,6 +112,10 @@ namespace LWMS.Core
         {
             _BUF_LENGTH = VALUE;
         }
+        public static void Set_WebRoot_RT(string Path)
+        {
+            _WebSiteContentRoot = Path;
+        }
         internal static List<string> _ListenPrefixes = new List<string>();
         public static void ClearLoadedSettings()
         {

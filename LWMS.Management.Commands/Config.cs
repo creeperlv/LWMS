@@ -78,7 +78,7 @@ namespace LWMS.Management.Commands
                     Trace.WriteLine("arguments does not match: Config add <key> <value>");
                 }
             }
-            else if (args[0].ToUpper() == "RM" ||[0].ToUpper() == "REMOVE")
+            else if (args[0].ToUpper() == "RM" ||args[0].ToUpper() == "REMOVE")
             {
 
                 if (args.Length >= 3)
