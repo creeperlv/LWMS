@@ -185,9 +185,18 @@ namespace LWMS.Core.HttpRoutedLayer
     }
     public class ReadArguments
     {
+        /// <summary>
+        /// Stores read bytes.
+        /// </summary>
         public byte[] Buffer;
         public int Offset;
+        /// <summary>
+        /// Target length to read.
+        /// </summary>
         public int Count;
+        /// <summary>
+        /// Should be identical with the reture value of Stream.Read(...). Returns the actual length that the RoutedStream reads.
+        /// </summary>
         public int Result;
         public ReadArguments(byte[] buffer, int offset, int count, int result)
         {
@@ -199,8 +208,17 @@ namespace LWMS.Core.HttpRoutedLayer
     }
     public class WriteArguments
     {
+        /// <summary>
+        /// Stores bytes to write.
+        /// </summary>
         public byte[] Buffer;
+        /// <summary>
+        /// Offset
+        /// </summary>
         public int Offset;
+        /// <summary>
+        /// Length that will write.
+        /// </summary>
         public int Count;
         public WriteArguments(byte[] buffer, int offset, int count)
         {

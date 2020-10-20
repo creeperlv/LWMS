@@ -30,7 +30,7 @@ namespace LWMS.Core
     }
     public class LWMSTraceListener : TraceListener
     {
-        string LogFile;
+        public static string CurrentLogFile;
         public static bool BeautifyConsoleOutput = false;
         public static bool EnableConsoleOutput = true;
         public static bool WriteToFile = true;
@@ -44,9 +44,9 @@ namespace LWMS.Core
                 Directory.CreateDirectory(LogBasePath);
             }
             var Now = DateTime.Now;
-            LogFile = Path.Combine(LogBasePath, $"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log");
-            File.Create(LogFile).Close();
-            File.WriteAllText(LogFile, "");
+            CurrentLogFile = Path.Combine(LogBasePath, $"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log");
+            File.Create(CurrentLogFile).Close();
+            File.WriteAllText(CurrentLogFile, "");
         }
         public override void Write(string message)
         {
@@ -80,7 +80,7 @@ namespace LWMS.Core
                 }
             }
             if (WriteToFile)
-                File.AppendAllText(LogFile, stringBuilder.ToString());
+                File.AppendAllText(CurrentLogFile, stringBuilder.ToString());
         }
 
         public override void WriteLine(string message)
@@ -124,7 +124,7 @@ namespace LWMS.Core
                 }
             }
             if (WriteToFile)
-                File.AppendAllText(LogFile, stringBuilder.ToString());
+                File.AppendAllText(CurrentLogFile, stringBuilder.ToString());
         }
     }
 }
