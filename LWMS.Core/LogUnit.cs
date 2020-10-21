@@ -21,6 +21,11 @@ namespace LWMS.Core
             var c = Input.PrimaryData as HttpListenerRoutedContext;
             b.Append(c.Request.RemoteEndPoint);
             b.Append(">>");
+            if (Configuration.LogUA)
+            {
+                b.Append(c.Request.UserAgent);
+                b.Append(">>");
+            }
             b.Append(c.Request.HttpMethod);
             b.Append(">>");
             b.Append(c.Request.RawUrl);

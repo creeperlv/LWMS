@@ -107,6 +107,7 @@ namespace LWMS.Core
         internal static string _WebSiteContentRoot = null;
         internal static string _DefultPage = null;
         internal static string _Page404 = null;
+        internal static bool? _LogUA = null;
         internal static int _BUF_LENGTH = 0;
         public static void Set_BUF_LENGTH_RT(int VALUE)
         {
@@ -124,6 +125,33 @@ namespace LWMS.Core
             _Page404 = null;
             _BUF_LENGTH = 0;
             _ListenPrefixes = new List<string>();
+        }
+        public static bool LogUA
+        {
+            get
+            {
+                if (_LogUA == null)
+                {
+                    var value = ConfigurationData.FindValue("LogUA");
+                    if (value == null)
+                    {
+                        _LogUA = false;
+                        ConfigurationData.AddValue("LogUA", _LogUA + "", true, true);
+                    }
+                    else
+                    {
+                        _LogUA = bool.Parse(value);
+                    }
+                }
+
+                return _LogUA == true ? true : false;
+            }
+            set
+            {
+                _LogUA = value;
+                ConfigurationData.AddValue("LogUA", _LogUA + "", true, true);
+
+            }
         }
         public static int BUF_LENGTH
         {
