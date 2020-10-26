@@ -10,7 +10,7 @@ namespace LWMS.Management.Commands
     public class CommandManager : IManageCommand
     {
         public string CommandName => "ManageCommand";
-        public int Version => 1;
+        public int Version => 2;
 
         public List<string> Alias => new List<string>(new string[] { "commands", "cmds" });
 
@@ -60,7 +60,8 @@ namespace LWMS.Management.Commands
                     foreach (var item in ServerController.ManageCommands)
                     {
                         Trace.WriteLine("Type:"+item.Value);
-                        Trace.WriteLine($"\t\tCommand:{item.Key},DLL={item.Value.GetType().Assembly.Location}");
+                        Trace.WriteLine($"\t\tCommand:{item.Key}");
+                        Trace.WriteLine($"\t\tDLL:{item.Value.GetType().Assembly.Location}");
                         Trace.WriteLine($"\t\tVersion:{item.Value.Version}");
                         StringBuilder stringBuilder = new StringBuilder();
                         foreach (string alias in item.Value.Alias)

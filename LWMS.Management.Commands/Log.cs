@@ -12,7 +12,7 @@ namespace LWMS.Management.Commands
         public string CommandName => "ManageLog";
 
         List<string> alias = new List<string>();
-        public int Version => 1;
+        public int Version => 2;
         public Log()
         {
             alias.Add("log");
@@ -36,17 +36,43 @@ namespace LWMS.Management.Commands
                         break;
                     case "CLEAR":
                         {
-                            try
+                            foreach (var item in Directory.EnumerateFiles(LWMSTraceListener.LogDir))
                             {
-                                foreach (var item in Directory.EnumerateFiles(LWMSTraceListener.LogDir))
+                                try
                                 {
                                     File.Delete(item);
                                     Trace.WriteLine("Log>>Delete:" + item);
                                 }
+                                catch (Exception)
+                                {
+                                }
                             }
-                            catch (Exception)
-                            {
-                            }
+
+                        }
+                        break;
+                    case "NEW":
+                        {
+                            LWMSTraceListener.NewLogFile();
+                        }
+                        break;
+                    case "HELP":
+                    case "?":
+                    case "-?":
+                    case "--?":
+                    case "--H":
+                    case "-H":
+                        {
+                            Trace.WriteLine("Log Unit");
+                            Trace.WriteLine("Usage:");
+                            Trace.WriteLine("LOG <OPERATION>");
+                            Trace.WriteLine("Operations:");
+                            Trace.WriteLine("\tList/LS");
+                            Trace.WriteLine("\t\tList all log files.");
+                            Trace.WriteLine("\tClear");
+                            Trace.WriteLine("\t\tDelete all old logs.(Except current using log file)");
+                            Trace.WriteLine("\tNEW");
+                            Trace.WriteLine("\t\tCreate a new log file and log contents to new log file.");
+                            Trace.WriteLine("\t\t*This operation is experimental.");
                         }
                         break;
                     default:

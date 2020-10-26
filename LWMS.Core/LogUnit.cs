@@ -47,8 +47,8 @@ namespace LWMS.Core
         /// Do not operate this, it will be operated by LogWatcher task.
         /// </summary>
         internal static IBaseWR LogFile;
-        public ConcurrentQueue<string> ContentToLog = new ConcurrentQueue<string>();
-        public static Task LogTask;
+        public static ConcurrentQueue<string> ContentToLog = new ConcurrentQueue<string>();
+        public static Task LogTask = null;
         static int OperatingID = 0;
         public LWMSTraceListener()
         {
@@ -67,7 +67,25 @@ namespace LWMS.Core
             OperatingID = random.Next();
             LogTask = Task.Run(LogWatcher);
         }
-        public void LogWatcher()
+        public static void NewLogFile()
+        {
+            var LogBasePath = Path.Combine(Configuration.BasePath, "Logs");
+            LogDir = LogBasePath;
+            if (!Directory.Exists(LogBasePath))
+            {
+                Directory.CreateDirectory(LogBasePath);
+            }
+            Random random = new Random();
+            OperatingID = random.Next();//ID Varied, task should exit immediately.
+            if(LogTask!=null)LogTask.Wait();
+            var Now = DateTime.Now;
+            CurrentLogFile = Path.Combine(LogBasePath, $"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log");
+            File.Create(CurrentLogFile).Close();
+            File.WriteAllText(CurrentLogFile, "");
+            LogFile = new FileWR(new FileInfo(CurrentLogFile));
+            LogTask = Task.Run(LogWatcher);
+        }
+        static void LogWatcher()
         {
             int TID = OperatingID;
             while (TID==OperatingID)
@@ -83,6 +101,7 @@ namespace LWMS.Core
                         }
                     }
             }
+            LogFile.Dispose();
         }
         public override void Write(string message)
         {
