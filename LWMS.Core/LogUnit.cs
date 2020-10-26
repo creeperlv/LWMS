@@ -1,11 +1,14 @@
-﻿using CLUNL.Pipeline;
+﻿using CLUNL.DirectedIO;
+using CLUNL.Pipeline;
 using LWMS.Core.HttpRoutedLayer;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LWMS.Core
 {
@@ -40,6 +43,13 @@ namespace LWMS.Core
         public static bool EnableConsoleOutput = true;
         public static bool WriteToFile = true;
         public static string LogDir { get; internal set; }
+        /// <summary>
+        /// Do not operate this, it will be operated by LogWatcher task.
+        /// </summary>
+        internal static IBaseWR LogFile;
+        public ConcurrentQueue<string> ContentToLog = new ConcurrentQueue<string>();
+        public static Task LogTask;
+        static int OperatingID = 0;
         public LWMSTraceListener()
         {
             var LogBasePath = Path.Combine(Configuration.BasePath, "Logs");
@@ -52,6 +62,27 @@ namespace LWMS.Core
             CurrentLogFile = Path.Combine(LogBasePath, $"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log");
             File.Create(CurrentLogFile).Close();
             File.WriteAllText(CurrentLogFile, "");
+            LogFile = new FileWR(new FileInfo(CurrentLogFile));
+            Random random = new Random();
+            OperatingID = random.Next();
+            LogTask = Task.Run(LogWatcher);
+        }
+        public void LogWatcher()
+        {
+            int TID = OperatingID;
+            while (TID==OperatingID)
+            {
+                if (WriteToFile == true)
+                    if (ContentToLog.IsEmpty == false)
+                    {
+                        string content;
+                        if (ContentToLog.TryDequeue(out content))
+                        {
+                            LogFile.Write(content);
+                            LogFile.Flush();
+                        }
+                    }
+            }
         }
         public override void Write(string message)
         {
@@ -84,8 +115,9 @@ namespace LWMS.Core
                     Console.Write(message);
                 }
             }
-            if (WriteToFile)
-                File.AppendAllText(CurrentLogFile, stringBuilder.ToString());
+            if (WriteToFile) ContentToLog.Enqueue(stringBuilder.ToString());
+            //LogFile.WriteLine(stringBuilder.ToString());
+            //File.AppendAllText(CurrentLogFile, stringBuilder.ToString());
         }
 
         public override void WriteLine(string message)
@@ -128,8 +160,9 @@ namespace LWMS.Core
                     Console.Write(Environment.NewLine);
                 }
             }
-            if (WriteToFile)
-                File.AppendAllText(CurrentLogFile, stringBuilder.ToString());
+            if (WriteToFile) ContentToLog.Enqueue(stringBuilder.ToString());
+            //if (WriteToFile)
+            //    if (WriteToFile) LogFile.WriteLine(stringBuilder.ToString());
         }
     }
 }
