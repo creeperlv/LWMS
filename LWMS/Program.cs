@@ -37,8 +37,9 @@ namespace LWMS
             LWMSTraceListener.BeautifyConsoleOutput = true;
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("This software is in active development and extremely unstable, do not use it in production environment!");
+            Console.Write("This software is in active development and extremely unstable, do not use it in production environment!");
             Console.ResetColor();
+            Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine("LWMS - LightWeight Managed Server");
             Console.WriteLine();
