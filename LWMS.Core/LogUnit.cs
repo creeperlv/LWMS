@@ -103,6 +103,35 @@ namespace LWMS.Core
             }
             LogFile.Dispose();
         }
+        public static void WriteFile(string message)
+        {
+            StackTrace stackTrace = new StackTrace(4);
+            StringBuilder stringBuilder = new StringBuilder();
+            var now = DateTime.Now;
+            stringBuilder.Append("[");
+            stringBuilder.Append(now);
+            stringBuilder.Append("]");
+            stringBuilder.Append("[");
+            stringBuilder.Append(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName);
+            stringBuilder.Append("]");
+            stringBuilder.Append(message);
+            if (WriteToFile) ContentToLog.Enqueue(stringBuilder.ToString());
+        }
+        public static void WriteFileLine(string message)
+        {
+            StackTrace stackTrace = new StackTrace(4);
+            StringBuilder stringBuilder = new StringBuilder();
+            var now = DateTime.Now;
+            stringBuilder.Append("[");
+            stringBuilder.Append(now);
+            stringBuilder.Append("]");
+            stringBuilder.Append("[");
+            stringBuilder.Append(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName);
+            stringBuilder.Append("]");
+            stringBuilder.Append(message);
+            stringBuilder.Append(Environment.NewLine);
+            if (WriteToFile) ContentToLog.Enqueue(stringBuilder.ToString());
+        }
         public override void Write(string message)
         {
             StackTrace stackTrace = new StackTrace(4);

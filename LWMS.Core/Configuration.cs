@@ -22,6 +22,7 @@ namespace LWMS.Core
             ConfigurationPath = Path.Combine(BasePath, "Server.ini");
             var PluginConfigPath = Path.Combine(BasePath, "RPipelineUnit.tsd");
             var WPipelineUnitsPath = Path.Combine(BasePath, "WPipelineUnit.tsd");
+            var CMDOUTPipelineUnitsPath = Path.Combine(BasePath, "CMDOUTPipelineUnit.tsd");
             var ManageModulePath = Path.Combine(BasePath, "ManageModules.ini");
             LoadConfiguation();
             if (File.Exists(ManageModulePath))
@@ -84,6 +85,37 @@ namespace LWMS.Core
                     WProcessUnits.Serialize();
                 }
             }
+            if(false){
+                //Load CMDOUT Pipelne units.
+                if (File.Exists(CMDOUTPipelineUnitsPath))
+                {
+                    CMDOUTProcessUnits = TreeStructureData.LoadFromFile(new FileInfo(CMDOUTPipelineUnitsPath));
+                }
+                else
+                {
+                    WProcessUnits = TreeStructureData.CreateToFile(new FileInfo(CMDOUTPipelineUnitsPath));
+                    {
+                        //LWMS.Core.dll
+                        TreeNode treeNode = new TreeNode();
+                        treeNode.Name = "DLL";
+                        treeNode.Value = "LWMS.Management.dll";
+                        {
+                            TreeNode unit = new TreeNode();
+                            unit.Name = "ConsoleOutput";
+                            unit.Value = "LWMS.Management.ConsoleOut";
+                            treeNode.AddChildren(unit);
+                        }
+                        {
+                            TreeNode unit = new TreeNode();
+                            unit.Name = "LogOutput";
+                            unit.Value = "LWMS.Management.LogOut";
+                            treeNode.AddChildren(unit);
+                        }
+                        WProcessUnits.RootNode.AddChildren(treeNode);
+                    }
+                    WProcessUnits.Serialize();
+                }
+            }
         }
         public static void LoadConfiguation()
         {
@@ -100,6 +132,7 @@ namespace LWMS.Core
 
         public static TreeStructureData RProcessUnits;
         public static TreeStructureData WProcessUnits;
+        public static TreeStructureData CMDOUTProcessUnits;
         public static INILikeData ConfigurationData;
         public static ListData<string> ManageCommandModules;
 
