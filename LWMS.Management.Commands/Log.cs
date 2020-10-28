@@ -1,4 +1,5 @@
 ﻿using LWMS.Core;
+using LWMS.Core.Log;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,7 +31,7 @@ namespace LWMS.Management.Commands
                         {
                             foreach (var item in Directory.EnumerateFiles(LWMSTraceListener.LogDir))
                             {
-                                Trace.WriteLine(item);
+                                Output.WriteLine(item);
                             }
                         }
                         break;
@@ -41,7 +42,7 @@ namespace LWMS.Management.Commands
                                 try
                                 {
                                     File.Delete(item);
-                                    Trace.WriteLine("Log>>Delete:" + item);
+                                    Output.WriteLine("Log>>Delete:" + item);
                                 }
                                 catch (Exception)
                                 {
@@ -62,17 +63,17 @@ namespace LWMS.Management.Commands
                     case "--H":
                     case "-H":
                         {
-                            Trace.WriteLine("Log Unit");
-                            Trace.WriteLine("Usage:");
-                            Trace.WriteLine("LOG <OPERATION>");
-                            Trace.WriteLine("Operations:");
-                            Trace.WriteLine("\tList/LS");
-                            Trace.WriteLine("\t\tList all log files.");
-                            Trace.WriteLine("\tClear");
-                            Trace.WriteLine("\t\tDelete all old logs.(Except current using log file)");
-                            Trace.WriteLine("\tNEW");
-                            Trace.WriteLine("\t\tCreate a new log file and log contents to new log file.");
-                            Trace.WriteLine("\t\t*This operation is experimental.");
+                            Output.WriteLine("Log Unit");
+                            Output.WriteLine("Usage:");
+                            Output.WriteLine("LOG <OPERATION>");
+                            Output.WriteLine("Operations:");
+                            Output.WriteLine("\tList/LS");
+                            Output.WriteLine("\t\tList all log files.");
+                            Output.WriteLine("\tClear");
+                            Output.WriteLine("\t\tDelete all old logs.(Except current using log file)");
+                            Output.WriteLine("\tNEW");
+                            Output.WriteLine("\t\tCreate a new log file and log contents to new log file.");
+                            Output.WriteLine("\t\t*This operation is experimental.");
                         }
                         break;
                     default:

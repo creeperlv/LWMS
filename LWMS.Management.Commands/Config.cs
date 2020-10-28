@@ -20,14 +20,14 @@ namespace LWMS.Management.Commands
             {
                 Configuration.ConfigurationData.Dispose();
                 Configuration.ConfigurationData = null;
-                Trace.WriteLine("Configuration file is released and changes will not be saved.");
+                Output.WriteLine("Configuration file is released and changes will not be saved.");
             }
             else if (args[0].ToUpper() == "RESUME")
             {
                 Configuration.LoadConfiguation();
                 Configuration.ClearLoadedSettings();
-                Trace.WriteLine("Resume");
-                Trace.WriteLine("Configuration changes will be automatically saved now.");
+                Output.WriteLine("Resume");
+                Output.WriteLine("Configuration changes will be automatically saved now.");
             }
             else if (args[0].ToUpper() == "RELOAD")
             {
@@ -58,7 +58,7 @@ namespace LWMS.Management.Commands
                 }
                 else
                 {
-                    Trace.WriteLine("arguments does not match: Config set <key> <value>");
+                    Output.WriteLine("arguments does not match: Config set <key> <value>");
                 }
             }
             else if (args[0].ToUpper() == "ADD")
@@ -75,7 +75,7 @@ namespace LWMS.Management.Commands
                 }
                 else
                 {
-                    Trace.WriteLine("arguments does not match: Config add <key> <value>");
+                    Output.WriteLine("arguments does not match: Config add <key> <value>");
                 }
             }
             else if (args[0].ToUpper() == "RM" ||args[0].ToUpper() == "REMOVE")
@@ -101,7 +101,7 @@ namespace LWMS.Management.Commands
                 }
                 else
                 {
-                    Trace.WriteLine("arguments does not match: Config add <key> <value>");
+                    Output.WriteLine("arguments does not match: Config add <key> <value>");
                 }
             }
         }

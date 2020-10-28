@@ -102,13 +102,13 @@ namespace LWMS.Management.Commands
                         }
                         else
                         {
-                            Trace.WriteLine("Unknown pipeline type:"+TYPE);
+                            Output.WriteLine("Unknown pipeline type:"+TYPE);
                         }
-                        Trace.WriteLine($"Registered:{ENTRY}={DLL}");
+                        Output.WriteLine($"Registered:{ENTRY}={DLL}");
                     }
                     else
                     {
-                        Trace.WriteLine($"Cannot register pipeline unit:{ENTRY}={DLL}");
+                        Output.WriteLine($"Cannot register pipeline unit:{ENTRY}={DLL}");
                     }
                 }
                 else if (args[i].ToUpper() == "UNREG" || args[i].ToUpper() == "UNREGISTER")
@@ -156,7 +156,7 @@ namespace LWMS.Management.Commands
                         }
                     }
                     Configuration.RProcessUnits.Serialize();
-                    Trace.WriteLine($"Unregistered:{TARGETENTRY} At:{TYPE} pipeline");
+                    Output.WriteLine($"Unregistered:{TARGETENTRY} At:{TYPE} pipeline");
                 }
                 else if (args[i].ToUpper() == "REMOVE" || args[i].ToUpper() == "RM")
                 {
@@ -171,7 +171,7 @@ namespace LWMS.Management.Commands
                         }
                     }
                     Configuration.RProcessUnits.Serialize();
-                    Trace.WriteLine($"Removed:{TARGETDLL}");
+                    Output.WriteLine($"Removed:{TARGETDLL}");
                 }
             }
         }

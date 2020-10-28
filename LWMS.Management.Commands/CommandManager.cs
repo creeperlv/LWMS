@@ -22,12 +22,12 @@ namespace LWMS.Management.Commands
                 {
                     if (args.Length == 1)
                     {
-                        Trace.WriteLine("You must specify module to register");
+                        Output.WriteLine("You must specify module to register");
                     }
                     FileInfo target = new FileInfo(args[1].PackTotal);
                     if (target.Exists == false)
                     {
-                        Trace.WriteLine("Target Module not found:" + target);
+                        Output.WriteLine("Target Module not found:" + target);
                     }
                     else
                     {
@@ -37,7 +37,7 @@ namespace LWMS.Management.Commands
                         }
                         else
                         {
-                            Trace.WriteLine("Cannot register target module: Not a validate module.");
+                            Output.WriteLine("Cannot register target module: Not a validate module.");
                         }
                     }
                 }
@@ -46,7 +46,7 @@ namespace LWMS.Management.Commands
 
                     if (args.Length == 1)
                     {
-                        Trace.WriteLine("You must specify module to unregister");
+                        Output.WriteLine("You must specify module to unregister");
                     }
 
                     for (int i = 0; i < Configuration.ManageCommandModules.Count; i++)
@@ -59,17 +59,17 @@ namespace LWMS.Management.Commands
                 }else if (args[0].PackTotal.ToUpper() == "LS"|| args[0].PackTotal.ToUpper() == "LIST"){
                     foreach (var item in ServerController.ManageCommands)
                     {
-                        Trace.WriteLine("Type:"+item.Value);
-                        Trace.WriteLine($"\t\tCommand:{item.Key}");
-                        Trace.WriteLine($"\t\tDLL:{item.Value.GetType().Assembly.Location}");
-                        Trace.WriteLine($"\t\tVersion:{item.Value.Version}");
+                        Output.WriteLine("Type:"+item.Value);
+                        Output.WriteLine($"\t\tCommand:{item.Key}");
+                        Output.WriteLine($"\t\tDLL:{item.Value.GetType().Assembly.Location}");
+                        Output.WriteLine($"\t\tVersion:{item.Value.Version}");
                         StringBuilder stringBuilder = new StringBuilder();
                         foreach (string alias in item.Value.Alias)
                         {
                             stringBuilder.Append(" ");
                             stringBuilder.Append(alias);
                         }
-                        Trace.WriteLine($"\t\tAliases:{stringBuilder}");
+                        Output.WriteLine($"\t\tAliases:{stringBuilder}");
                     }
                 }
             }
@@ -80,16 +80,16 @@ namespace LWMS.Management.Commands
         }
         public void OutputHelp()
         {
-            Trace.WriteLine("Usage:");
-            Trace.WriteLine("ManageCommand <Operations> [Option1] [Option2] ...");
-            Trace.WriteLine("");
-            Trace.WriteLine("Operations:");
-            Trace.WriteLine("\tRegister <Path-to-DLL>");
-            Trace.WriteLine("\t\tRegister a dll to find all availiable commands.");
-            Trace.WriteLine("\tUnregister <Path-to-DLL>");
-            Trace.WriteLine("\t\tUnregister a dll, need restart to effect.");
-            Trace.WriteLine("\tLs/List");
-            Trace.WriteLine("\t\tList all commands, their assembly files and aliases.");
+            Output.WriteLine("Usage:");
+            Output.WriteLine("ManageCommand <Operations> [Option1] [Option2] ...");
+            Output.WriteLine("");
+            Output.WriteLine("Operations:");
+            Output.WriteLine("\tRegister <Path-to-DLL>");
+            Output.WriteLine("\t\tRegister a dll to find all availiable commands.");
+            Output.WriteLine("\tUnregister <Path-to-DLL>");
+            Output.WriteLine("\t\tUnregister a dll, need restart to effect.");
+            Output.WriteLine("\tLs/List");
+            Output.WriteLine("\t\tList all commands, their assembly files and aliases.");
         }
     }
 }

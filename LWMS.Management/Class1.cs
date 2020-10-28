@@ -21,7 +21,7 @@ namespace LWMS.Management
     }
     public static class Output
     {
-        public static IBaseWR CoreStream;
+        public static PipedRoutedWR CoreStream;
         static Output()
         {
             CoreStream = new PipedRoutedWR();
@@ -43,7 +43,7 @@ namespace LWMS.Management
         /// <summary>
         /// Should be initialized out side.
         /// </summary>
-        internal IPipelineProcessor Processor;
+        public IPipelineProcessor Processor;
         public long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
         public long Length { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
         public bool AutoFlush { get; set; }

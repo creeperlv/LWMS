@@ -1,6 +1,7 @@
 ﻿using CLUNL.DirectedIO;
 using CLUNL.Pipeline;
 using LWMS.Core.HttpRoutedLayer;
+using LWMS.Core.Log;
 using System;
 using System.Collections.Generic;
 using System.Text;

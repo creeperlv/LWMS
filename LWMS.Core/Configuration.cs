@@ -85,7 +85,7 @@ namespace LWMS.Core
                     WProcessUnits.Serialize();
                 }
             }
-            if(false){
+            {
                 //Load CMDOUT Pipelne units.
                 if (File.Exists(CMDOUTPipelineUnitsPath))
                 {
@@ -93,7 +93,7 @@ namespace LWMS.Core
                 }
                 else
                 {
-                    WProcessUnits = TreeStructureData.CreateToFile(new FileInfo(CMDOUTPipelineUnitsPath));
+                    CMDOUTProcessUnits = TreeStructureData.CreateToFile(new FileInfo(CMDOUTPipelineUnitsPath));
                     {
                         //LWMS.Core.dll
                         TreeNode treeNode = new TreeNode();
@@ -102,18 +102,18 @@ namespace LWMS.Core
                         {
                             TreeNode unit = new TreeNode();
                             unit.Name = "ConsoleOutput";
-                            unit.Value = "LWMS.Management.ConsoleOut";
+                            unit.Value = "LWMS.Management.ConsoleCmdOutUnit";
                             treeNode.AddChildren(unit);
                         }
                         {
                             TreeNode unit = new TreeNode();
                             unit.Name = "LogOutput";
-                            unit.Value = "LWMS.Management.LogOut";
+                            unit.Value = "LWMS.Management.LogCmdOutUnit";
                             treeNode.AddChildren(unit);
                         }
-                        WProcessUnits.RootNode.AddChildren(treeNode);
+                        CMDOUTProcessUnits.RootNode.AddChildren(treeNode);
                     }
-                    WProcessUnits.Serialize();
+                    CMDOUTProcessUnits.Serialize();
                 }
             }
         }

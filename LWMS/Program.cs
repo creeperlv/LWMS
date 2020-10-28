@@ -1,4 +1,5 @@
 ﻿using LWMS.Core;
+using LWMS.Core.Log;
 using LWMS.Core.Utilities;
 using LWMS.Management;
 using System;

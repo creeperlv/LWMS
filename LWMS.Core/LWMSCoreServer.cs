@@ -26,6 +26,7 @@ namespace LWMS.Core
         bool WillStop = false;
 
         List<IPipedProcessUnit> processUnits = new List<IPipedProcessUnit>();
+        List<IPipedProcessUnit> CmdOutprocessUnits = new List<IPipedProcessUnit>();
         List<IPipedProcessUnit> WprocessUnits = new List<IPipedProcessUnit>();
         public void Start(int MaxThread)
         {
@@ -100,9 +101,44 @@ namespace LWMS.Core
                     }
                 }
             }
+            {
+                {
+                    foreach (var item in Configuration.CMDOUTProcessUnits.RootNode.Children)
+                    {
+                        if (item.Value == "LWMS.Management.dll")
+                        {
+                            var asm = Assembly.GetAssembly(typeof(Output));
+                            foreach (var UnitTypeName in item.Children)
+                            {
+                                
+                                var t = asm.GetType(UnitTypeName.Value);
+                                RegisterCmdOutProcessUnit((IPipedProcessUnit)Activator.CreateInstance(t));
+                            }
+                        }
+                        else
+                        {
+                            try
+                            {
+                                FileInfo AssemblyFile = new FileInfo(item.Value);
+                                Assembly.LoadFrom(AssemblyFile.FullName);
+                                foreach (var UnitTypeName in item.Children)
+                                {
+                                    var t = Type.GetType(UnitTypeName.Value);
+                                    RegisterCmdOutProcessUnit(Activator.CreateInstance(t) as IPipedProcessUnit);
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                Trace.WriteLine("Cannot pipeline units from:" + item.Value);
+                            }
+                        }
+                    }
+                }
+            }
             //Apply units
             ApplyProcessUnits();
             ApplyWProcessUnits();
+            ApplyCmdProcessUnits(); 
             Listener.Start();
             Task.Run(async () =>
             {
@@ -149,6 +185,15 @@ namespace LWMS.Core
         {
             WprocessUnits.Remove(unit);
         }
+        public void RegisterCmdOutProcessUnit(IPipedProcessUnit unit)
+        {
+            CmdOutprocessUnits.Add(unit);
+            Trace.WriteLine("Registered CmdOut Unit:" + unit.GetType());
+        }
+        public void UnregisterCmdOutProcessUnit(IPipedProcessUnit unit)
+        {
+            CmdOutprocessUnits.Remove(unit);
+        }
         public void ApplyProcessUnits()
         {
             HttpPipelineProcessor.Init(processUnits.ToArray());
@@ -156,6 +201,12 @@ namespace LWMS.Core
         public void ApplyWProcessUnits()
         {
             PipelineStreamProcessor.DefaultPublicStreamProcessor.Init(WprocessUnits.ToArray());
+        }
+        public void ApplyCmdProcessUnits()
+        {
+            var processor = new DefaultProcessor();
+            processor.Init(CmdOutprocessUnits.ToArray());
+            Output.CoreStream.Processor = processor;
         }
         public void ProcessContext(HttpListenerContext context)
         {

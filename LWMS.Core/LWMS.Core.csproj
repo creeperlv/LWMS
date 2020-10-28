@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LWMS.Core.Log\LWMS.Core.Log.csproj" />
     <ProjectReference Include="..\LWMS.Management\LWMS.Management.csproj" />
   </ItemGroup>
 
