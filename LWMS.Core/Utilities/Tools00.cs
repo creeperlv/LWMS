@@ -5,50 +5,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace LWMS.Core.Utilities
 {
-    public struct Range
-    {
-        public static Range Empty = new Range() { L = long.MinValue, R = long.MinValue };
-        public long L;
-        public long R;
-        public override string ToString()
-        {
-            if (L == long.MinValue)
-            {
-                if (R == long.MinValue)
-                    return $"-";
-                return $"-{R}";
-            }
-            else if (R == long.MinValue)
-                return $"{L}-";
-            else return $"{L}-{R}";
-        }
-        public override bool Equals(object obj)
-        {
-            if (obj is Range)
-            {
-                var item = (Range)obj;
-                return item.R == R && item.L == L;
-            }
-            else
-                return base.Equals(obj);
-        }
-        public static Range FromString(string str)
-        {
-            str = str.Trim();
-            var g = str.Split('-');
-            Range range = new Range();
-            if (g[0] == null || g[0] == "") range.L = long.MinValue; else range.L = long.Parse(g[0]);
-            if (g[1] == null || g[1] == "") range.R = long.MinValue; else range.R = long.Parse(g[0]);
-            return range;
-        }
-    }
     public class Tools00
     {
+        public static string Boundary = "sierra117";
         /// <summary>
         /// Send a file to specific http listener context with given status code.
         /// </summary>
@@ -62,28 +27,40 @@ namespace LWMS.Core.Utilities
                 try
                 {
                     Trace.WriteLine("Access:" + f.FullName.Substring(Configuration.WebSiteContentRoot.Length));
-
                     var BUF_LENGTH = Configuration.BUF_LENGTH;
                     byte[] buf = new byte[BUF_LENGTH];
                     if (f.Extension == ".html")
                     {
                         context.Response.ContentType = "text/html";
                     }
-                    context.Response.ContentLength64 = f.Length;
-                    context.Response.StatusCode = StatusCode;
+                    else
+                    {
+                        context.Response.ContentType = "application/octet-stream";
+                    }
                     context.Response.ContentEncoding = Encoding.UTF8;
-                    context.Response.AddHeader("Accept-Ranges", "true");
+                    context.Response.AddHeader("Accept-Ranges", "bytes");
+                    context.Response.Headers.Remove(HttpResponseHeader.Server);
+                    context.Response.Headers.Set(HttpResponseHeader.Server, "LWMS/" + LWMSCoreServer.ServerVersion);
                     string range = null;
                     List<Range> ranges = new List<Range>();
+                    if (context.Request.HttpMethod == HttpMethod.Head.Method)
+                    {
+                        context.Response.OutputStream.Flush();
+                        return;
+                    }
                     try
                     {
                         range = context.Request.Headers["Range"];
-                        range = range.Trim();
-                        range = range.Substring(6);
-                        var rs = range.Split(',');
-                        foreach (var item in rs)
+                        if (range != null)
                         {
-                            ranges.Add(Range.FromString(item));
+
+                            range = range.Trim();
+                            range = range.Substring(6);
+                            var rs = range.Split(',');
+                            foreach (var item in rs)
+                            {
+                                ranges.Add(Range.FromString(item));
+                            }
                         }
                     }
                     catch (Exception)
@@ -91,7 +68,8 @@ namespace LWMS.Core.Utilities
                     }
                     if (ranges.Count == 0)
                     {
-
+                        context.Response.ContentLength64 = f.Length;
+                        context.Response.StatusCode = StatusCode;
                         int L = 0;
                         while ((L = fs.Read(buf, 0, BUF_LENGTH)) != 0)
                         {
@@ -103,46 +81,71 @@ namespace LWMS.Core.Utilities
                     {
                         context.Response.StatusCode = 206;
                         context.Response.StatusDescription = "Partial Content";
+                        var OriginalContentType ="Content-Type: "+ context.Response.ContentType;
+                        context.Response.ContentType = "multipart/byteranges; boundary=" + Boundary;
+                        string _Boundary = "--" + Boundary;
+                        var NewLine = Environment.NewLine;
                         foreach (var item in ranges)
                         {
+                            //string header = _Boundary+"\r\n"+OriginalContentType + "\r\n" + "Content-Range: bytes " + item.ToString() + "/" + fs.Length+"\r\n\r\n" ;
+                            context.Response.Headers.Add(HttpResponseHeader.ContentRange, "bytes " + item.ToString() + "/" + fs.Length);
                             long length = 0;
                             long L = 0;
-                            if (item.R == long.MinValue)
                             {
-                                length = fs.Length - item.L;
-                            }else if (item.L == long.MinValue)
-                            {
-                                length = item.R;
-                            }
-                            else
-                            {
-                                length = item.R - item.L;
-                            }
-                            if (item.L != long.MinValue)
-                            {
-                                L = item.L;
-                            }
-                            fs.Position = L;
-                            byte[] b=null;
-                            while (L<length)
-                            {
-                                if (length - L > BUF_LENGTH)
+                                //Calculate length to send and left-starting index.
+                                if (item.R == long.MinValue || item.R > fs.Length)
                                 {
-                                    L+=fs.Read(b, 0, BUF_LENGTH);
+                                    length = fs.Length - item.L;
+                                }
+                                else if (item.L == long.MinValue || item.L < 0)
+                                {
+                                    length = item.R;
                                 }
                                 else
                                 {
-                                    L += fs.Read(b, 0,(int)( length - L));
+                                    length = item.R - item.L;
                                 }
-                                context.Response.OutputStream.Write(b, 0, b.Length);
+                                if (item.L != long.MinValue)
+                                {
+                                    L = item.L;
+                                }
+                            }
+                            fs.Seek(L, SeekOrigin.Begin);
+                            //var b = Encoding.ASCII.GetBytes(header);
+                            //context.Response.OutputStream.Write(b, 0, b.Length);
+                            //context.Response.OutputStream.Flush();
+                            int _Length;
+                            while (L < length)
+                            {
+                                if (length - L > BUF_LENGTH)
+                                {
+                                    L += (_Length = fs.Read(buf, 0, BUF_LENGTH));
+                                }
+                                else
+                                {
+                                    L += (_Length = fs.Read(buf, 0, (int)(length - L)));
+                                }
+                                context.Response.OutputStream.Write(buf, 0, _Length);
                                 context.Response.OutputStream.Flush();
                             }
+                            //{
+                            //    var v = Encoding.UTF8.GetBytes("\r\n");
+                            //    context.Response.OutputStream.Write(v, 0, v.Length);
+
+                            //}
+                            break;
                         }
+                        {
+                            //var v = Encoding.UTF8.GetBytes("\r\n");
+                            //context.Response.OutputStream.Write(v, 0, v.Length);
+
+                        }
+                        context.Response.OutputStream.Flush();
                     }
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine("Cannot send file:" + e);
+                    Trace.WriteLine("Cannot send file:" + e.HResult);
                 }
             }
         }

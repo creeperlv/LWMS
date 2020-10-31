@@ -320,6 +320,6 @@ namespace LWMS.Core.HttpRoutedLayer
     }
     public enum RoutedPipelineStreamMethod
     {
-        READ, SEEK, SETLENGTH, WRITE, FLUSH
+        READ, SEEK, SETLENGTH, WRITE, FLUSH,CLOSE
     }
 }

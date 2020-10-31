@@ -16,12 +16,14 @@ namespace LWMS.Core
 {
     public class LWMSCoreServer
     {
+        public static string ServerVersion="Undefined";
         Semaphore semaphore;
         HttpListener Listener;
         HttpPipelineProcessor HttpPipelineProcessor = new HttpPipelineProcessor();
         public LWMSCoreServer()
         {
             Listener = new HttpListener();
+            ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString()+"-Preview";
         }
         bool WillStop = false;
 
@@ -210,9 +212,10 @@ namespace LWMS.Core
         }
         public void ProcessContext(HttpListenerContext context)
         {
-            HttpPipelineProcessor.Process(new PipelineData(new HttpListenerRoutedContext(context), new HttpPipelineArguments(), null, context.GetHashCode()));
-            context.Response.OutputStream.Close();
-            //context.Response.OutputStream.Flush();
+            var a=new HttpListenerRoutedContext(context);
+            var output=HttpPipelineProcessor.Process(new PipelineData(a, new HttpPipelineArguments(), null, context.GetHashCode()));
+            (output.PrimaryData as HttpListenerRoutedContext).Response.OutputStream.Close();
+                //context.Response.OutputStream.Flush();
             //context.Response.OutputStream.Close();
             //var Response = context.Response;
             //Response.ContentType = "text/html";
