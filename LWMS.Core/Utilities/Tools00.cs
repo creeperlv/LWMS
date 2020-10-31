@@ -4,11 +4,49 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace LWMS.Core.Utilities
 {
+    public struct Range
+    {
+        public static Range Empty = new Range() { L = long.MinValue, R = long.MinValue };
+        public long L;
+        public long R;
+        public override string ToString()
+        {
+            if (L == long.MinValue)
+            {
+                if (R == long.MinValue)
+                    return $"-";
+                return $"-{R}";
+            }
+            else if (R == long.MinValue)
+                return $"{L}-";
+            else return $"{L}-{R}";
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is Range)
+            {
+                var item = (Range)obj;
+                return item.R == R && item.L == L;
+            }
+            else
+                return base.Equals(obj);
+        }
+        public static Range FromString(string str)
+        {
+            str = str.Trim();
+            var g = str.Split('-');
+            Range range = new Range();
+            if (g[0] == null || g[0] == "") range.L = long.MinValue; else range.L = long.Parse(g[0]);
+            if (g[1] == null || g[1] == "") range.R = long.MinValue; else range.R = long.Parse(g[0]);
+            return range;
+        }
+    }
     public class Tools00
     {
         /// <summary>
@@ -24,7 +62,7 @@ namespace LWMS.Core.Utilities
                 try
                 {
                     Trace.WriteLine("Access:" + f.FullName.Substring(Configuration.WebSiteContentRoot.Length));
-                    
+
                     var BUF_LENGTH = Configuration.BUF_LENGTH;
                     byte[] buf = new byte[BUF_LENGTH];
                     if (f.Extension == ".html")
@@ -34,11 +72,72 @@ namespace LWMS.Core.Utilities
                     context.Response.ContentLength64 = f.Length;
                     context.Response.StatusCode = StatusCode;
                     context.Response.ContentEncoding = Encoding.UTF8;
-                    int L = 0;
-                    while ((L = fs.Read(buf, 0, BUF_LENGTH)) != 0)
+                    context.Response.AddHeader("Accept-Ranges", "true");
+                    string range = null;
+                    List<Range> ranges = new List<Range>();
+                    try
                     {
-                        context.Response.OutputStream.Write(buf, 0, L);
-                        context.Response.OutputStream.Flush();
+                        range = context.Request.Headers["Range"];
+                        range = range.Trim();
+                        range = range.Substring(6);
+                        var rs = range.Split(',');
+                        foreach (var item in rs)
+                        {
+                            ranges.Add(Range.FromString(item));
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    if (ranges.Count == 0)
+                    {
+
+                        int L = 0;
+                        while ((L = fs.Read(buf, 0, BUF_LENGTH)) != 0)
+                        {
+                            context.Response.OutputStream.Write(buf, 0, L);
+                            context.Response.OutputStream.Flush();
+                        }
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = 206;
+                        context.Response.StatusDescription = "Partial Content";
+                        foreach (var item in ranges)
+                        {
+                            long length = 0;
+                            long L = 0;
+                            if (item.R == long.MinValue)
+                            {
+                                length = fs.Length - item.L;
+                            }else if (item.L == long.MinValue)
+                            {
+                                length = item.R;
+                            }
+                            else
+                            {
+                                length = item.R - item.L;
+                            }
+                            if (item.L != long.MinValue)
+                            {
+                                L = item.L;
+                            }
+                            fs.Position = L;
+                            byte[] b=null;
+                            while (L<length)
+                            {
+                                if (length - L > BUF_LENGTH)
+                                {
+                                    L+=fs.Read(b, 0, BUF_LENGTH);
+                                }
+                                else
+                                {
+                                    L += fs.Read(b, 0,(int)( length - L));
+                                }
+                                context.Response.OutputStream.Write(b, 0, b.Length);
+                                context.Response.OutputStream.Flush();
+                            }
+                        }
                     }
                 }
                 catch (Exception e)
@@ -67,8 +166,8 @@ namespace LWMS.Core.Utilities
         {
             //https://regexlib.com/REDetails.aspx?regexp_id=13053
             //var m=Regex.Match(cmd, " *(?:-+([^= \\\'\\\"]+)[= ]?)?(?:([\\\'\\\"])([^2]+?)\\2|([^- \"\']+))?");
-            var m=Regex.Match(cmd, " *(?:-+([^=: \\\'\\\"]+)[= ]?)?(?:([\\\'\\\"])([^2]+?)\\2|([^- \"\']+))?");
-            List<Match> cmdList=new List<Match>();
+            var m = Regex.Match(cmd, " *(?:-+([^=: \\\'\\\"]+)[= ]?)?(?:([\\\'\\\"])([^2]+?)\\2|([^- \"\']+))?");
+            List<Match> cmdList = new List<Match>();
             while (m.Success)
             {
                 cmdList.Add(m);
@@ -78,12 +177,12 @@ namespace LWMS.Core.Utilities
         }
         public static List<CommandPack> ResolveCommand(string cmd)
         {
-            List<CommandPack> cmdps = new List<CommandPack>(); 
+            List<CommandPack> cmdps = new List<CommandPack>();
             foreach (var item in CommandParse(cmd))
             {
                 var cmdp = CommandPack.FromRegexMatch(item);
-                if(cmdp.PackTotal!="")
-                cmdps.Add(cmdp);
+                if (cmdp.PackTotal != "")
+                    cmdps.Add(cmdp);
             }
             return cmdps;
         }

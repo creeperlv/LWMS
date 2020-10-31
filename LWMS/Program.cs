@@ -12,7 +12,6 @@ namespace LWMS
     {
         static void Main(string[] args)
         {
-            
             Console.WriteLine("Copyright (C) 2020 Creeper Lv");
             Console.WriteLine("This software is licensed under the MIT License");
             var _commands = Tools00.ResolveCommand(Environment.CommandLine);
