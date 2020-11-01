@@ -30,15 +30,15 @@ To make your own manage command, you need to create a dotnet library project, re
 In auto created class by `dotnet sdk`, type:
 
 ```csharp
-public class Sample : IManageCommand
+public class Sample : LWMS.Management.IManageCommand
     {
         public string CommandName => "Sample";
         public List<string> Alias=>new List<string>();
         public int Version=1;
 
-        public void Invoke(params CommandPack[] args)
+        public void Invoke(params LWMS.Management.CommandPack[] args)
         {
-            Console.WriteLine("Hello, LWMS!");
+            LWMS.Management.Output.WriteLine("Hello, LWMS!");
         }
     }
 ```
@@ -48,6 +48,7 @@ After build it, copy generated `dll` file to your LWMS installation location. Th
 ### Extend Pipeline
 
 LWMS allows user to load their own pipeline unit. Currently LWMS handles request and send out stream through pipeline. (Based on `CLUNL.Pipeline`)
+
 #### Pipeline Types
 
 ##### R pipeline
@@ -58,13 +59,17 @@ LWMS allows user to load their own pipeline unit. Currently LWMS handles request
 
 **W** stands for write, W pipeline means this pipeline processes output stream.
 
-#### Build your own pipeline
+#### CmdOut pipeline
 
- To build up your own unit, please look into `LWMS.Core\DefaultStaicFileUnit.cs` `LWMS.Core\ErrorResponseUnit.cs` for R pipeline, `LWMS.Core\HttpRoutedLayer\DefaultStreamProcessUnit.cs` for W pipeline.
+**CmdOut** stands for command output, CmdOut pipeline means this pipeline processes output of a manage command.
+
+#### Build your own pipeline unit
+
+ To build up your own unit, please look into `LWMS.Core\DefaultStaicFileUnit.cs` `LWMS.Core\ErrorResponseUnit.cs` for R pipeline, `LWMS.Core\HttpRoutedLayer\DefaultStreamProcessUnit.cs` for W pipeline, `LWMS.Management\ConsoleCmdOutUnit.cs` for CmdOut pipeline.
 
 **Note:** You must refer LWMS.Core.dll to your project, different types of pipeline units can exists in one dll file.
 
-#### Register your pipeline
+#### Register your pipeline unit
 
 ##### Method 1 : Edit configuration file.
 
@@ -72,7 +77,7 @@ You can directly edit configuration file to register your pipeline manually. `RP
 
 ##### Method 2 : Register through manage commands
 
-`ppl reg -w/r <dll-file> <type-fullname>`
+`ppl reg -w/r/c <dll-file> <type-fullname>`
 
 ## Improve Performance
 
