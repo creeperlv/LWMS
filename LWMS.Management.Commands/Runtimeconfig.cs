@@ -35,6 +35,9 @@ namespace LWMS.Management.Commands
                     case "/DISABLECONSOLE":
                         LWMSTraceListener.EnableConsoleOutput = false;
                         break;
+                    case "/DISABLELOGTOFILE":
+                        LWMSTraceListener.WriteToFile = false;
+                        break;
                     case "/ENABLECONSOLE":
                         LWMSTraceListener.EnableConsoleOutput = true;
                         break;

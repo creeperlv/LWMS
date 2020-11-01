@@ -22,7 +22,12 @@ namespace LWMS.Core.Log
         internal static IBaseWR LogFile;
         public static ConcurrentQueue<string> ContentToLog = new ConcurrentQueue<string>();
         public static Task LogTask = null;
+        static int RemainContents = 0;
         static int OperatingID = 0;
+        public static void StopWatch()
+        {
+            OperatingID = -1;
+        }
         public LWMSTraceListener(string BasePath)
         {
             var LogBasePath = Path.Combine(BasePath, "Logs");
@@ -62,15 +67,18 @@ namespace LWMS.Core.Log
             while (TID == OperatingID)
             {
                 if (WriteToFile == true)
-                    if (ContentToLog.IsEmpty == false)
-                    {
-                        string content;
-                        if (ContentToLog.TryDequeue(out content))
+                    if (RemainContents != 0)
+                        if (ContentToLog.IsEmpty == false)
                         {
-                            LogFile.Write(content);
-                            LogFile.Flush();
+                            string content;
+                            if (ContentToLog.TryDequeue(out content))
+                            {
+
+                                LogFile.Write(content);
+                                LogFile.Flush();
+                                RemainContents--;
+                            }
                         }
-                    }
             }
             LogFile.Dispose();
         }
@@ -91,14 +99,18 @@ namespace LWMS.Core.Log
             stringBuilder.Append(t.FullName);
             stringBuilder.Append("]");
             stringBuilder.Append(message);
-            if (WriteToFile) ContentToLog.Enqueue(stringBuilder.ToString());
+            if (WriteToFile)
+            {
+                ContentToLog.Enqueue(stringBuilder.ToString());
+                RemainContents++;
+            }
         }
         public static void WriteFileLine(string message)
         {
             StackTrace stackTrace = new StackTrace(4);
             StringBuilder stringBuilder = new StringBuilder();
             Type t = stackTrace.GetFrame(0).GetMethod().ReflectedType;
-            if(t== typeof(PipedRoutedWR))
+            if (t == typeof(PipedRoutedWR))
             {
                 t = stackTrace.GetFrame(2).GetMethod().ReflectedType;
             }
@@ -111,7 +123,11 @@ namespace LWMS.Core.Log
             stringBuilder.Append("]");
             stringBuilder.Append(message);
             stringBuilder.Append(Environment.NewLine);
-            if (WriteToFile) ContentToLog.Enqueue(stringBuilder.ToString());
+            if (WriteToFile)
+            {
+                ContentToLog.Enqueue(stringBuilder.ToString());
+                RemainContents++;
+            }
         }
         public override void Write(string message)
         {
@@ -144,7 +160,11 @@ namespace LWMS.Core.Log
                     Console.Write(message);
                 }
             }
-            if (WriteToFile) ContentToLog.Enqueue(stringBuilder.ToString());
+            if (WriteToFile)
+            {
+                ContentToLog.Enqueue(stringBuilder.ToString());
+                RemainContents++;
+            }
             //LogFile.WriteLine(stringBuilder.ToString());
             //File.AppendAllText(CurrentLogFile, stringBuilder.ToString());
         }
@@ -189,7 +209,11 @@ namespace LWMS.Core.Log
                     Console.Write(Environment.NewLine);
                 }
             }
-            if (WriteToFile) ContentToLog.Enqueue(stringBuilder.ToString());
+            if (WriteToFile)
+            {
+                ContentToLog.Enqueue(stringBuilder.ToString());
+                RemainContents++;
+            }
             //if (WriteToFile)
             //    if (WriteToFile) LogFile.WriteLine(stringBuilder.ToString());
         }

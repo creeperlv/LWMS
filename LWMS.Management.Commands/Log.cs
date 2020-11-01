@@ -56,6 +56,11 @@ namespace LWMS.Management.Commands
                             LWMSTraceListener.NewLogFile();
                         }
                         break;
+                    case "STOPWATCH":
+                        {
+                            LWMSTraceListener.StopWatch();
+                        }
+                        break;
                     case "HELP":
                     case "?":
                     case "-?":
