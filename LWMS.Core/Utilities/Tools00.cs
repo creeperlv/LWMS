@@ -38,7 +38,10 @@ namespace LWMS.Core.Utilities
                         context.Response.ContentType = "application/octet-stream";
                     }
                     context.Response.ContentEncoding = Encoding.UTF8;
-                    context.Response.AddHeader("Accept-Ranges", "bytes");
+                    if (Configuration.EnableRange == true)
+                        context.Response.AddHeader("Accept-Ranges", "bytes");
+                    else
+                        context.Response.AddHeader("Accept-Ranges", "none");
                     context.Response.Headers.Remove(HttpResponseHeader.Server);
                     context.Response.Headers.Set(HttpResponseHeader.Server, "LWMS/" + LWMSCoreServer.ServerVersion);
                     string range = null;
@@ -48,24 +51,25 @@ namespace LWMS.Core.Utilities
                         context.Response.OutputStream.Flush();
                         return;
                     }
-                    try
-                    {
-                        range = context.Request.Headers["Range"];
-                        if (range != null)
+                    if (Configuration.EnableRange == true)
+                        try
                         {
-
-                            range = range.Trim();
-                            range = range.Substring(6);
-                            var rs = range.Split(',');
-                            foreach (var item in rs)
+                            range = context.Request.Headers["Range"];
+                            if (range != null)
                             {
-                                ranges.Add(Range.FromString(item));
+
+                                range = range.Trim();
+                                range = range.Substring(6);
+                                var rs = range.Split(',');
+                                foreach (var item in rs)
+                                {
+                                    ranges.Add(Range.FromString(item));
+                                }
                             }
                         }
-                    }
-                    catch (Exception)
-                    {
-                    }
+                        catch (Exception)
+                        {
+                        }
                     if (ranges.Count == 0)
                     {
                         context.Response.ContentLength64 = f.Length;
@@ -81,7 +85,7 @@ namespace LWMS.Core.Utilities
                     {
                         context.Response.StatusCode = 206;
                         context.Response.StatusDescription = "Partial Content";
-                        var OriginalContentType ="Content-Type: "+ context.Response.ContentType;
+                        var OriginalContentType = "Content-Type: " + context.Response.ContentType;
                         context.Response.ContentType = "multipart/byteranges; boundary=" + Boundary;
                         string _Boundary = "--" + Boundary;
                         var NewLine = Environment.NewLine;

@@ -13,7 +13,7 @@ namespace LWMS.Management.Commands
         public List<string> Alias => new List<string>();
 
         public int Version => 2;
-        
+
         public static void OutputHelp()
         {
             Output.WriteLine("Usage:");
@@ -78,6 +78,18 @@ namespace LWMS.Management.Commands
                         else if (setitem == "404PAGE")
                         {
                             Configuration.Page404 = args[2];
+                        }
+                        else if (setitem == "EnableRange")
+                        {
+                            try
+                            {
+                                Configuration.EnableRange = bool.Parse(args[2]);
+
+                            }
+                            catch (Exception)
+                            {
+                                Output.WriteLine("Key \"EnableRange\" only accepts bool type(true and false)!");
+                            }
                         }
                     }
                     else

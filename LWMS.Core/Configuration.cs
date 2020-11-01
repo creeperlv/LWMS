@@ -140,6 +140,7 @@ namespace LWMS.Core
         internal static string _WebSiteContentRoot = null;
         internal static string _DefultPage = null;
         internal static string _Page404 = null;
+        internal static bool? _EnableRange = true;
         internal static bool? _LogUA = null;
         internal static int _BUF_LENGTH = 0;
         public static void Set_BUF_LENGTH_RT(int VALUE)
@@ -182,7 +183,36 @@ namespace LWMS.Core
             set
             {
                 _LogUA = value;
-                ConfigurationData.AddValue("LogUA", _LogUA + "", true, true);
+                if (ConfigurationData != null)
+                    ConfigurationData.AddValue("LogUA", _LogUA + "", true, true);
+
+            }
+        }
+        public static bool EnableRange
+        {
+            get
+            {
+                if (_EnableRange == null)
+                {
+                    var value = ConfigurationData.FindValue("EnableRange");
+                    if (value == null)
+                    {
+                        _EnableRange = true;
+                        ConfigurationData.AddValue("EnableRange", _EnableRange + "", true, true);
+                    }
+                    else
+                    {
+                        _EnableRange = bool.Parse(value);
+                    }
+                }
+
+                return _EnableRange == true ? true : false;
+            }
+            set
+            {
+                _EnableRange = value;
+                if (ConfigurationData != null)
+                    ConfigurationData.AddValue("EnableRange", _EnableRange + "", true, true);
 
             }
         }
