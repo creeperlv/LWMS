@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LWMS.Core.Log
@@ -43,8 +44,12 @@ namespace LWMS.Core.Log
             LogFile = new FileWR(new FileInfo(CurrentLogFile));
             Random random = new Random();
             OperatingID = random.Next();
-            LogTask = Task.Run(LogWatcher);
+            thread = new Thread(new ThreadStart(delegate () { LogWatcher(); }));
+            thread.Priority = ThreadPriority.Lowest;
+            thread.Start();
+            //LogTask = Task.Run(LogWatcher);
         }
+        static Thread thread;
         public static void NewLogFile()
         {
             if (!Directory.Exists(LogDir))
@@ -53,34 +58,50 @@ namespace LWMS.Core.Log
             }
             Random random = new Random();
             OperatingID = random.Next();//ID Varied, task should exit immediately.
-            if (LogTask != null) LogTask.Wait();
+            //if (LogTask != null) thread.;
             var Now = DateTime.Now;
             CurrentLogFile = Path.Combine(LogDir, $"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log");
             File.Create(CurrentLogFile).Close();
             File.WriteAllText(CurrentLogFile, "");
             LogFile = new FileWR(new FileInfo(CurrentLogFile));
-            LogTask = Task.Run(LogWatcher);
+            thread = new Thread(new ThreadStart(delegate () { LogWatcher(); }));
+            thread.Priority = ThreadPriority.Lowest;
+            thread.Start();
+            //LogTask = Task.Run(LogWatcher);
         }
         static void LogWatcher()
         {
+            IBaseWR UsingWR = LogFile;
             int TID = OperatingID;
             while (TID == OperatingID)
             {
                 if (WriteToFile == true)
+                {
+
                     if (RemainContents != 0)
+                    {
+
                         if (ContentToLog.IsEmpty == false)
                         {
                             string content;
                             if (ContentToLog.TryDequeue(out content))
                             {
 
-                                LogFile.Write(content);
-                                LogFile.Flush();
+                                UsingWR.Write(content);
+                                UsingWR.Flush();
                                 RemainContents--;
                             }
                         }
+                    }
+                    else
+                        Thread.Sleep(1);
+                }
+                else
+                {
+                    Thread.Sleep(1);
+                }
             }
-            LogFile.Dispose();
+            UsingWR.Dispose();
         }
         public static void WriteFile(string message)
         {
