@@ -5,10 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CLUNL" Version="0.0.2.2" />
+    <PackageReference Include="CLUNL.Pipeline" Version="0.0.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LWMS.Core.WR\LWMS.Core.WR.csproj" />
-  </ItemGroup>
 </Project>

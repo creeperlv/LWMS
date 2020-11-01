@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CLUNL.Pipeline;
+using LWMS.Core.WR;
 
 namespace LWMS.Management
 {

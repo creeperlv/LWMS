@@ -1,4 +1,5 @@
 ﻿using CLUNL.DirectedIO;
+using LWMS.Core.WR;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -77,12 +78,17 @@ namespace LWMS.Core.Log
         {
             StackTrace stackTrace = new StackTrace(4);
             StringBuilder stringBuilder = new StringBuilder();
+            Type t = stackTrace.GetFrame(0).GetMethod().ReflectedType;
+            if (t == typeof(PipedRoutedWR))
+            {
+                t = stackTrace.GetFrame(2).GetMethod().ReflectedType;
+            }
             var now = DateTime.Now;
             stringBuilder.Append("[");
             stringBuilder.Append(now);
             stringBuilder.Append("]");
             stringBuilder.Append("[");
-            stringBuilder.Append(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName);
+            stringBuilder.Append(t.FullName);
             stringBuilder.Append("]");
             stringBuilder.Append(message);
             if (WriteToFile) ContentToLog.Enqueue(stringBuilder.ToString());
@@ -91,12 +97,17 @@ namespace LWMS.Core.Log
         {
             StackTrace stackTrace = new StackTrace(4);
             StringBuilder stringBuilder = new StringBuilder();
+            Type t = stackTrace.GetFrame(0).GetMethod().ReflectedType;
+            if(t== typeof(PipedRoutedWR))
+            {
+                t = stackTrace.GetFrame(2).GetMethod().ReflectedType;
+            }
             var now = DateTime.Now;
             stringBuilder.Append("[");
             stringBuilder.Append(now);
             stringBuilder.Append("]");
             stringBuilder.Append("[");
-            stringBuilder.Append(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName);
+            stringBuilder.Append(t.FullName);
             stringBuilder.Append("]");
             stringBuilder.Append(message);
             stringBuilder.Append(Environment.NewLine);
