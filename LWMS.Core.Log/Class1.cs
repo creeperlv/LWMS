@@ -25,6 +25,7 @@ namespace LWMS.Core.Log
         public static Task LogTask = null;
         static int RemainContents = 0;
         static int OperatingID = 0;
+        public static int _MAX_LOG_SIZE = 0;
         public static void StopWatch()
         {
             OperatingID = -1;
@@ -89,7 +90,13 @@ namespace LWMS.Core.Log
 
                                 UsingWR.Write(content);
                                 UsingWR.Flush();
+
                                 RemainContents--;
+                                if (_MAX_LOG_SIZE != -1)
+                                    if (UsingWR.Length >= _MAX_LOG_SIZE)
+                                    {
+                                        NewLogFile();
+                                    }
                             }
                         }
                     }

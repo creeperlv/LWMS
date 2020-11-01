@@ -3,6 +3,7 @@ using CLUNL.Data.Layer0;
 using CLUNL.Data.Layer1;
 using CLUNL.Data.Layer2;
 using CLUNL.DirectedIO;
+using LWMS.Core.Log;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -116,6 +117,13 @@ namespace LWMS.Core
                     CMDOUTProcessUnits.Serialize();
                 }
             }
+            {
+                int l = MAX_LOG_SIZE;
+                if (l == 0)
+                {
+
+                }
+            }
         }
         public static void LoadConfiguation()
         {
@@ -143,6 +151,7 @@ namespace LWMS.Core
         internal static bool? _EnableRange = true;
         internal static bool? _LogUA = null;
         internal static int _BUF_LENGTH = 0;
+        internal static int _MAX_LOG_SIZE = 0;
         public static void Set_BUF_LENGTH_RT(int VALUE)
         {
             _BUF_LENGTH = VALUE;
@@ -258,6 +267,52 @@ namespace LWMS.Core
                 _BUF_LENGTH = value;
                 if (ConfigurationData != null)
                     ConfigurationData.AddValue("BUF_LENGTH", _BUF_LENGTH + "", AutoSave: true);
+            }
+        }
+        public static int MAX_LOG_SIZE
+        {
+            get
+            {
+                if (_MAX_LOG_SIZE == 0)
+                {
+                    try
+                    {
+
+                        var cs = ConfigurationData.FindValue("MAX_LOG_SIZE");
+                        if (cs == null)
+                        {
+                            _MAX_LOG_SIZE = 10485760;//10 MB per log.
+                            ConfigurationData.AddValue("MAX_LOG_SIZE", _MAX_LOG_SIZE + "", AutoSave: true);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                _MAX_LOG_SIZE = int.Parse(cs);
+                            }
+                            catch (Exception)
+                            {
+                                _MAX_LOG_SIZE = 10485760;//10 MB per log.
+                                ConfigurationData.AddValue("MAX_LOG_SIZE", _MAX_LOG_SIZE + "", AutoSave: true);
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        Trace.WriteLine("Cannot save configuration.");
+
+                    }
+
+                }
+                LWMSTraceListener._MAX_LOG_SIZE = _MAX_LOG_SIZE;
+                return _MAX_LOG_SIZE;
+            }
+            set
+            {
+                _MAX_LOG_SIZE = value;
+                LWMSTraceListener._MAX_LOG_SIZE = _MAX_LOG_SIZE;
+                if (ConfigurationData != null)
+                    ConfigurationData.AddValue("MAX_LOG_SIZE", _MAX_LOG_SIZE + "", AutoSave: true);
             }
         }
         public static string Page404
