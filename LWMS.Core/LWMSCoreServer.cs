@@ -16,14 +16,14 @@ namespace LWMS.Core
 {
     public class LWMSCoreServer
     {
-        public static string ServerVersion="Undefined";
+        public static string ServerVersion = "Undefined";
         Semaphore semaphore;
         HttpListener Listener;
         HttpPipelineProcessor HttpPipelineProcessor = new HttpPipelineProcessor();
         public LWMSCoreServer()
         {
             Listener = new HttpListener();
-            ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString()+"-Preview";
+            ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString() + "-Preview";
         }
         bool WillStop = false;
 
@@ -112,7 +112,7 @@ namespace LWMS.Core
                             var asm = Assembly.GetAssembly(typeof(Output));
                             foreach (var UnitTypeName in item.Children)
                             {
-                                
+
                                 var t = asm.GetType(UnitTypeName.Value);
                                 RegisterCmdOutProcessUnit((IPipedProcessUnit)Activator.CreateInstance(t));
                             }
@@ -140,7 +140,11 @@ namespace LWMS.Core
             //Apply units
             ApplyProcessUnits();
             ApplyWProcessUnits();
-            ApplyCmdProcessUnits(); 
+            ApplyCmdProcessUnits();
+            {
+                //Catach all exceptions.
+                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            }
             Listener.Start();
             Task.Run(async () =>
             {
@@ -158,6 +162,26 @@ namespace LWMS.Core
             //Load Manage Modules
             LoadCommandsFromManifest();
         }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                Output.WriteLine("Unhandled Exception in:");
+                Output.WriteLine(e.ExceptionObject.ToString());
+                if (e.IsTerminating)
+                    Output.WriteLine("LWMS will terminate.");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Unhandled Exception in:");
+                Console.WriteLine("!Warning!Output pipeline is broken!");
+                Console.WriteLine(e.ExceptionObject.ToString());
+                if (e.IsTerminating)
+                    Console.WriteLine("LWMS will terminate.");
+            }
+        }
+
         public static void LoadCommandsFromManifest()
         {
             ServerController.ManageCommands.Clear();
@@ -212,10 +236,10 @@ namespace LWMS.Core
         }
         public void ProcessContext(HttpListenerContext context)
         {
-            var a=new HttpListenerRoutedContext(context);
-            var output=HttpPipelineProcessor.Process(new PipelineData(a, new HttpPipelineArguments(), null, context.GetHashCode()));
+            var a = new HttpListenerRoutedContext(context);
+            var output = HttpPipelineProcessor.Process(new PipelineData(a, new HttpPipelineArguments(), null, context.GetHashCode()));
             (output.PrimaryData as HttpListenerRoutedContext).Response.OutputStream.Close();
-                //context.Response.OutputStream.Flush();
+            //context.Response.OutputStream.Flush();
             //context.Response.OutputStream.Close();
             //var Response = context.Response;
             //Response.ContentType = "text/html";

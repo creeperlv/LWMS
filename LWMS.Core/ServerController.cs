@@ -59,10 +59,10 @@ namespace LWMS.Core
             }
             else if (args[0].ToUpper() == "VER" || args[0].ToUpper() == "VERSION")
             {
-                Trace.WriteLine("");
-                Trace.WriteLine("Shell:" + Assembly.GetEntryAssembly());
-                Trace.WriteLine("Core:" + Assembly.GetExecutingAssembly());
-                Trace.WriteLine("");
+                Output.WriteLine("");
+                Output.WriteLine("Shell:" + Assembly.GetEntryAssembly());
+                Output.WriteLine("Core:" + Assembly.GetExecutingAssembly());
+                Output.WriteLine("");
             }
             else if (args[0].ToUpper() == "CLS" || args[0].ToUpper() == "CLEAR")
             {
