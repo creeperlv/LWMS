@@ -66,6 +66,12 @@ namespace LWMS.Management.Commands
                         if (setitem == "BUF_LENGTH")
                         {
                             Configuration.BUF_LENGTH = int.Parse(args[2]);
+                        }else if (setitem == "LOG_WATCH_INTERVAL")
+                        {
+                            Configuration.LOG_WATCH_INTERVAL = int.Parse(args[2]);
+                        }else if (setitem == "MAX_LOG_SIZE")
+                        {
+                            Configuration.MAX_LOG_SIZE = int.Parse(args[2]);
                         }
                         else if (setitem == "WEBROOT" || setitem == "WEBSITEROOT" || setitem == "WEBSITECONTENTROOT" || setitem == "WEBCONTENTROOT" || setitem == "CONTENTROOT")
                         {

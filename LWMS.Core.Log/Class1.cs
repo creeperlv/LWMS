@@ -25,6 +25,7 @@ namespace LWMS.Core.Log
         public static Task LogTask = null;
         static int RemainContents = 0;
         static int OperatingID = 0;
+        public static int _LOG_WATCH_INTERVAL = 5;
         public static int _MAX_LOG_SIZE = 0;
         public static void StopWatch()
         {
@@ -101,11 +102,11 @@ namespace LWMS.Core.Log
                         }
                     }
                     else
-                        Thread.Sleep(1);
+                        Thread.Sleep(_LOG_WATCH_INTERVAL);
                 }
                 else
                 {
-                    Thread.Sleep(1);
+                    Thread.Sleep(_LOG_WATCH_INTERVAL);
                 }
             }
             UsingWR.Dispose();

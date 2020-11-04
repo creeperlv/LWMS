@@ -119,6 +119,7 @@ namespace LWMS.Core
             }
             {
                 int l = MAX_LOG_SIZE;
+                l = LOG_WATCH_INTERVAL;
                 if (l == 0)
                 {
 
@@ -152,6 +153,7 @@ namespace LWMS.Core
         internal static bool? _LogUA = null;
         internal static int _BUF_LENGTH = 0;
         internal static int _MAX_LOG_SIZE = 0;
+        internal static int _LOG_WATCH_INTERVAL = 0;
         public static void Set_BUF_LENGTH_RT(int VALUE)
         {
             _BUF_LENGTH = VALUE;
@@ -313,6 +315,52 @@ namespace LWMS.Core
                 LWMSTraceListener._MAX_LOG_SIZE = _MAX_LOG_SIZE;
                 if (ConfigurationData != null)
                     ConfigurationData.AddValue("MAX_LOG_SIZE", _MAX_LOG_SIZE + "", AutoSave: true);
+            }
+        }
+        public static int LOG_WATCH_INTERVAL
+        {
+            get
+            {
+                if (_LOG_WATCH_INTERVAL == 0)
+                {
+                    try
+                    {
+
+                        var cs = ConfigurationData.FindValue("LOG_WATCH_INTERVAL");
+                        if (cs == null)
+                        {
+                            _LOG_WATCH_INTERVAL = 5;//5 ms by default
+                            ConfigurationData.AddValue("LOG_WATCH_INTERVAL", _LOG_WATCH_INTERVAL + "", AutoSave: true);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                _LOG_WATCH_INTERVAL = int.Parse(cs);
+                            }
+                            catch (Exception)
+                            {
+                                _LOG_WATCH_INTERVAL = 5;//5 ms by default
+                                ConfigurationData.AddValue("LOG_WATCH_INTERVAL", _LOG_WATCH_INTERVAL + "", AutoSave: true);
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        Trace.WriteLine("Cannot save configuration.");
+
+                    }
+
+                }
+                LWMSTraceListener._LOG_WATCH_INTERVAL = _LOG_WATCH_INTERVAL;
+                return _MAX_LOG_SIZE;
+            }
+            set
+            {
+                _LOG_WATCH_INTERVAL = value;
+                LWMSTraceListener._LOG_WATCH_INTERVAL = _LOG_WATCH_INTERVAL;
+                if (ConfigurationData != null)
+                    ConfigurationData.AddValue("LOG_WATCH_INTERVAL", _LOG_WATCH_INTERVAL + "", AutoSave: true);
             }
         }
         public static string Page404
