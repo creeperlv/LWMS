@@ -1,5 +1,6 @@
 ﻿using CLUNL.Data.Layer1;
 using CLUNL.DirectedIO;
+using LWMS.Core.Log;
 using LWMS.Management;
 using System;
 using System.Collections.Generic;
@@ -54,7 +55,9 @@ namespace LWMS.Core
             Trace.WriteLine("Received Command:" + args[0]);
             if (args[0].ToUpper() == "SHUTDOWN" || args[0].ToUpper() == "EXIT" || args[0].ToUpper() == "CLOSE")
             {
-                Trace.WriteLine("Goodbye.");
+                Output.WriteLine("Goodbye.");
+                if(LWMSTraceListener.WriteToFile)
+                LWMSTraceListener.FlushImmediately();
                 Environment.Exit(0);
             }
             else if (args[0].ToUpper() == "VER" || args[0].ToUpper() == "VERSION")

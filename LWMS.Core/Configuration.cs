@@ -118,8 +118,8 @@ namespace LWMS.Core
                 }
             }
             {
-                int l = MAX_LOG_SIZE;
-                l = LOG_WATCH_INTERVAL;
+                _ = MAX_LOG_SIZE;
+                int l = LOG_WATCH_INTERVAL;
                 if (l == 0)
                 {
 

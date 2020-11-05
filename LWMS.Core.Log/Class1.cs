@@ -111,6 +111,32 @@ namespace LWMS.Core.Log
             }
             UsingWR.Dispose();
         }
+        public static void FlushImmediately()
+        {
+            lock (ContentToLog)
+            {
+                lock (LogFile)
+                {
+                    while (ContentToLog.IsEmpty!=true)
+                    {
+                        string content;
+                        if (ContentToLog.TryDequeue(out content))
+                        {
+
+                            LogFile.Write(content);
+                            LogFile.Flush();
+
+                            RemainContents--;
+                            if (_MAX_LOG_SIZE != -1)
+                                if (LogFile.Length >= _MAX_LOG_SIZE)
+                                {
+                                    NewLogFile();
+                                }
+                        }
+                    }
+                }
+            }
+        }
         public static void WriteFile(string message)
         {
             StackTrace stackTrace = new StackTrace(4);
