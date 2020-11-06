@@ -26,7 +26,10 @@ namespace LWMS.Core
             ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString() + "-Preview";
         }
         bool WillStop = false;
-
+        /// <summary>
+        /// When isSuspend = true, listener will suspend waiting for new connection.
+        /// </summary>
+        public static bool isSuspend = false;
         List<IPipedProcessUnit> processUnits = new List<IPipedProcessUnit>();
         List<IPipedProcessUnit> CmdOutprocessUnits = new List<IPipedProcessUnit>();
         List<IPipedProcessUnit> WprocessUnits = new List<IPipedProcessUnit>();
@@ -150,13 +153,20 @@ namespace LWMS.Core
             {
                 while (WillStop == false)
                 {
-                    semaphore.WaitOne();
-                    var __ = await Listener.GetContextAsync();
-                    _ = Task.Run(() =>
-                      {
-                          ProcessContext(__);
-                          semaphore.Release(1);
-                      });
+                    if (isSuspend == false)
+                    {
+                        semaphore.WaitOne();
+                        var __ = await Listener.GetContextAsync();
+                        _ = Task.Run(() =>
+                          {
+                              ProcessContext(__);
+                              semaphore.Release(1);
+                          });
+                    }
+                    else
+                    {
+                        Thread.Sleep(1);
+                    }
                 }
             });
             //Load Manage Modules

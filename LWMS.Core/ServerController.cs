@@ -56,8 +56,8 @@ namespace LWMS.Core
             if (args[0].ToUpper() == "SHUTDOWN" || args[0].ToUpper() == "EXIT" || args[0].ToUpper() == "CLOSE")
             {
                 Output.WriteLine("Goodbye.");
-                if(LWMSTraceListener.WriteToFile)
-                LWMSTraceListener.FlushImmediately();
+                if (LWMSTraceListener.WriteToFile)
+                    LWMSTraceListener.FlushImmediately();
                 Environment.Exit(0);
             }
             else if (args[0].ToUpper() == "VER" || args[0].ToUpper() == "VERSION")
@@ -70,6 +70,14 @@ namespace LWMS.Core
             else if (args[0].ToUpper() == "CLS" || args[0].ToUpper() == "CLEAR")
             {
                 Console.Clear();
+            }
+            else if (args[0].ToUpper() == "SUSPEND")
+            {
+                LWMSCoreServer.isSuspend = true;
+            }
+            else if (args[0].ToUpper() == "RESUME")
+            {
+                LWMSCoreServer.isSuspend = false;
             }
             else
             {
