@@ -97,6 +97,18 @@ namespace LWMS.Management.Commands
                                 Output.WriteLine("Key \"EnableRange\" only accepts bool type(true and false)!");
                             }
                         }
+                        else if (setitem == "LogUA")
+                        {
+                            try
+                            {
+                                Configuration.LogUA = bool.Parse(args[2]);
+
+                            }
+                            catch (Exception)
+                            {
+                                Output.WriteLine("Key \"LogUA\" only accepts bool type(true and false)!");
+                            }
+                        }
                     }
                     else
                     {

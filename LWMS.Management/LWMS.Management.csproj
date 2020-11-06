@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LWMS.Core.Log\LWMS.Core.Log.csproj" />
+    <ProjectReference Include="..\LWMS.Core.Logger\LWMS.Core.Logger.csproj" />
     <ProjectReference Include="..\LWMS.Core.WR\LWMS.Core.WR.csproj" />
   </ItemGroup>
 </Project>
