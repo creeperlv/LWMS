@@ -1,11 +1,14 @@
-﻿using LWMS.Core.HttpRoutedLayer;
+﻿using CLUNL;
+using LWMS.Core.HttpRoutedLayer;
 using LWMS.Management;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -29,14 +32,7 @@ namespace LWMS.Core.Utilities
                     Trace.WriteLine("Access:" + f.FullName.Substring(Configuration.WebSiteContentRoot.Length));
                     var BUF_LENGTH = Configuration.BUF_LENGTH;
                     byte[] buf = new byte[BUF_LENGTH];
-                    if (f.Extension == ".html")
-                    {
-                        context.Response.ContentType = "text/html";
-                    }
-                    else
-                    {
-                        context.Response.ContentType = "application/octet-stream";
-                    }
+                    context.Response.ContentType = ObtainMimeType(f.Extension);
                     context.Response.ContentEncoding = Encoding.UTF8;
                     if (Configuration.EnableRange == true)
                         context.Response.AddHeader("Accept-Ranges", "bytes");
@@ -168,6 +164,37 @@ namespace LWMS.Core.Utilities
             context.Response.ContentEncoding = Encoding.UTF8;
             context.Response.OutputStream.Write(bytes);
             context.Response.OutputStream.Flush();
+        }
+        static Dictionary<string, string> types = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase) {
+            { ".css", "text/css" },
+            { ".c", "text/plain" },
+            { ".cxx", "text/plain" },
+            { ".cpp", "text/plain" },
+            { ".cs", "text/plain" },
+            { ".h", "text/plain" },
+            { ".html", "text/html" },
+            { ".rtf", "text/rtf" },
+            { ".xml", "text/xml" } ,
+            { ".htm", "text/html" },
+            { ".js", "application/javascript" },
+            { ".zip", "application/zip" },
+            { ".png", "image/png" },
+            { ".tiff","image/tiff"},
+            { ".heif","image/heic"},
+            { ".jpg","video/JPEG"},
+            { ".bmp","image/bmp"},
+            { ".ttf","font/ttf"},
+            { ".woff","font/woff"},
+            { ".woff2","font/woff2"},
+            { ".otf","font/otf"},
+        };
+        public static string ObtainMimeType(string FileExtension)
+        {
+            if (types.ContainsKey(FileExtension))
+            {
+                return types[FileExtension];
+            }
+            else return "application/binary";
         }
         public static List<Match> CommandParse(string cmd)
         {

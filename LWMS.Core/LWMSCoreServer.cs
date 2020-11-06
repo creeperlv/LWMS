@@ -157,6 +157,11 @@ namespace LWMS.Core
                     {
                         semaphore.WaitOne();
                         var __ = await Listener.GetContextAsync();
+                        if (isSuspend == true)
+                        {
+                            __.Response.Close();
+                            continue;
+                        }
                         _ = Task.Run(() =>
                           {
                               ProcessContext(__);
