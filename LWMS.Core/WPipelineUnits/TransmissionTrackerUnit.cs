@@ -9,7 +9,7 @@ using System.Text;
 namespace LWMS.Core.WPipelineUnits
 {
     /// <summary>
-    /// This unit can log almost all transmissions.
+    /// This unit can log almost all transmissions. This is needed to be added into W Pipeline.
     /// </summary>
     public class TransmissionTrackerUnit : IPipedProcessUnit
     {
@@ -38,6 +38,9 @@ namespace LWMS.Core.WPipelineUnits
             return Input;
         }
     }
+    /// <summary>
+    /// A side logger along with TWMSTraceListener.
+    /// </summary>
     public class SideLoger
     {
         public static SideLoger CurrentLoger = new SideLoger();

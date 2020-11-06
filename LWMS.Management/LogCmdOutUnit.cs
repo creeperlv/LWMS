@@ -7,6 +7,9 @@ using LWMS.Core.WR;
 
 namespace LWMS.Management
 {
+    /// <summary>
+    /// A default CmdOut Pipelien Unit that write messages to log.
+    /// </summary>
     public class LogCmdOutUnit : IPipedProcessUnit
     {
         public PipelineData Process(PipelineData Input)

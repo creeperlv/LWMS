@@ -23,7 +23,7 @@ namespace LWMS.Core.Utilities
         /// <param name="context"></param>
         /// <param name="f"></param>
         /// <param name="StatusCode"></param>
-        public static void SendFile(HttpListenerRoutedContext context, FileInfo f, int StatusCode = 200)
+        public static void SendFile(HttpListenerRoutedContext context, FileInfo f, HttpStatusCode StatusCode = HttpStatusCode.OK)
         {
             using (FileStream fs = f.OpenRead())
             {
@@ -69,7 +69,7 @@ namespace LWMS.Core.Utilities
                     if (ranges.Count == 0)
                     {
                         context.Response.ContentLength64 = f.Length;
-                        context.Response.StatusCode = StatusCode;
+                        context.Response.StatusCode = (int)StatusCode;
                         int L = 0;
                         while ((L = fs.Read(buf, 0, BUF_LENGTH)) != 0)
                         {
@@ -155,12 +155,12 @@ namespace LWMS.Core.Utilities
         /// <param name="context"></param>
         /// <param name="Message"></param>
         /// <param name="StatusCode"></param>
-        public static void SendMessage(HttpListenerRoutedContext context, string Message, int StatusCode = 200)
+        public static void SendMessage(HttpListenerRoutedContext context, string Message, HttpStatusCode StatusCode = HttpStatusCode.OK)
         {
             var bytes = Encoding.UTF8.GetBytes(Message);
             context.Response.ContentType = "text/html";
             context.Response.ContentLength64 = bytes.Length;
-            context.Response.StatusCode = StatusCode;
+            context.Response.StatusCode = (int)StatusCode;
             context.Response.ContentEncoding = Encoding.UTF8;
             context.Response.OutputStream.Write(bytes);
             context.Response.OutputStream.Flush();
@@ -188,6 +188,11 @@ namespace LWMS.Core.Utilities
             { ".woff2","font/woff2"},
             { ".otf","font/otf"},
         };
+        /// <summary>
+        /// Find a mime type by file extension name. (Including "." in the start of the string)
+        /// </summary>
+        /// <param name="FileExtension"></param>
+        /// <returns></returns>
         public static string ObtainMimeType(string FileExtension)
         {
             if (types.ContainsKey(FileExtension))
@@ -196,6 +201,11 @@ namespace LWMS.Core.Utilities
             }
             else return "application/binary";
         }
+        /// <summary>
+        /// Analyze a command line into a Match list.
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <returns></returns>
         public static List<Match> CommandParse(string cmd)
         {
             //https://regexlib.com/REDetails.aspx?regexp_id=13053
@@ -209,6 +219,11 @@ namespace LWMS.Core.Utilities
             }
             return cmdList;
         }
+        /// <summary>
+        /// Analyze a command line into a CommandPack list.
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <returns></returns>
         public static List<CommandPack> ResolveCommand(string cmd)
         {
             List<CommandPack> cmdps = new List<CommandPack>();

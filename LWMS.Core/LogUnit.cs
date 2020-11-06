@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace LWMS.Core
 {
+    /// <summary>
+    /// A pipeline unit will be automatically added into the first of the pipeline units definition to ensure picking up every request.
+    /// </summary>
     public class LogUnit : IPipedProcessUnit
     {
         public LogUnit()

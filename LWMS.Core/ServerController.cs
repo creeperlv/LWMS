@@ -49,7 +49,10 @@ namespace LWMS.Core
                 return false;
             }
         }
-
+        /// <summary>
+        /// Response to the command packs.
+        /// </summary>
+        /// <param name="args"></param>
         public static void Control(params CommandPack[] args)
         {
             Trace.WriteLine("Received Command:" + args[0]);

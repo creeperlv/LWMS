@@ -20,6 +20,9 @@ namespace LWMS.Management
         int Version { get; }
         void Invoke(params CommandPack[] args);
     }
+    /// <summary>
+    /// Performs like System.Console. Recommend ManageCommands to write messages to here.
+    /// </summary>
     public static class Output
     {
         public static PipedRoutedWR CoreStream;
@@ -27,10 +30,18 @@ namespace LWMS.Management
         {
             CoreStream = new PipedRoutedWR();
         }
+        /// <summary>
+        /// Write message to PipedRoutedWR with a new line.
+        /// </summary>
+        /// <param name="str"></param>
         public static void WriteLine(string str)
         {
             CoreStream.WriteLine(str);
         }
+        /// <summary>
+        /// Write message to PipedRoutedWR.
+        /// </summary>
+        /// <param name="str"></param>
         public static void Write(string str)
         {
             CoreStream.Write(str);

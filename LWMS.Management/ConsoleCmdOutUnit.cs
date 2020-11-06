@@ -6,6 +6,9 @@ using LWMS.Core.WR;
 
 namespace LWMS.Management
 {
+    /// <summary>
+    /// A default CmdOut Pipelien Unit that write messages to console.
+    /// </summary>
     public class ConsoleCmdOutUnit : IPipedProcessUnit
     {
         public PipelineData Process(PipelineData Input)
