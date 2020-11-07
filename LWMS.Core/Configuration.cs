@@ -119,11 +119,11 @@ namespace LWMS.Core
             }
             {
                 _ = MAX_LOG_SIZE;
-                int l = LOG_WATCH_INTERVAL;
-                if (l == 0)
-                {
+                _ = LOG_WATCH_INTERVAL;
+                //if (l == 0)
+                //{
 
-                }
+                //}
             }
         }
         public static void LoadConfiguation()

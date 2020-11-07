@@ -46,14 +46,36 @@ namespace LWMS.Core.WPipelineUnits
         public static SideLoger CurrentLoger = new SideLoger();
         string file;
         FileWR LogFileWR;
+        int id = 0;
         SideLoger()
         {
-            file=LWMSTraceListener.CurrentLogFile+".trace";
+            file = LWMSTraceListener.CurrentLogFile + "." + id + ".trace";
             LogFileWR = new FileWR(new System.IO.FileInfo(file));
         }
         public void Log(string str)
         {
             LogFileWR.WriteLine($"[{DateTime.Now}]{str}");
+            if (Configuration.MAX_LOG_SIZE != -1)
+                if (LogFileWR.Length >= Configuration.MAX_LOG_SIZE)
+                {
+                    NewLog();
+                }
+        }
+        void NewLog()
+        {
+            LogFileWR.Dispose();
+            var f = LWMSTraceListener.CurrentLogFile + "." + id + ".trace";
+            if (file == f)
+            {
+                id++;
+                file = LWMSTraceListener.CurrentLogFile + "." + id + ".trace";
+            }
+            else
+            {
+                id = 0;
+                file = LWMSTraceListener.CurrentLogFile + "." + id + ".trace";
+            }
+            LogFileWR = new FileWR(new System.IO.FileInfo(file));
         }
     }
 }
