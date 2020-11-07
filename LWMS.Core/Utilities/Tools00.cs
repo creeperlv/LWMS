@@ -23,7 +23,7 @@ namespace LWMS.Core.Utilities
         /// <param name="context"></param>
         /// <param name="f"></param>
         /// <param name="StatusCode"></param>
-        public static void SendFile(HttpListenerRoutedContext context, FileInfo f, HttpStatusCode StatusCode = HttpStatusCode.OK)
+        public static void SendFile(HttpListenerRoutedContext context, FileInfo f, HttpStatusCode StatusCode = HttpStatusCode.OK,string ContentType=null)
         {
             using (FileStream fs = f.OpenRead())
             {
@@ -32,7 +32,9 @@ namespace LWMS.Core.Utilities
                     Trace.WriteLine("Access:" + f.FullName.Substring(Configuration.WebSiteContentRoot.Length));
                     var BUF_LENGTH = Configuration.BUF_LENGTH;
                     byte[] buf = new byte[BUF_LENGTH];
-                    context.Response.ContentType = ObtainMimeType(f.Extension);
+                    if (ContentType == null)
+                        context.Response.ContentType = ObtainMimeType(f.Extension);
+                    else context.Response.ContentType = ContentType;
                     context.Response.ContentEncoding = Encoding.UTF8;
                     if (Configuration.EnableRange == true)
                         context.Response.AddHeader("Accept-Ranges", "bytes");
@@ -171,6 +173,10 @@ namespace LWMS.Core.Utilities
             { ".cxx", "text/plain" },
             { ".cpp", "text/plain" },
             { ".cs", "text/plain" },
+            { ".java", "text/plain" },
+            { ".bb", "text/plain" },
+            { ".sln", "text/plain" },
+            { ".csproj", "text/plain" },
             { ".h", "text/plain" },
             { ".html", "text/html" },
             { ".rtf", "text/rtf" },
@@ -178,6 +184,7 @@ namespace LWMS.Core.Utilities
             { ".htm", "text/html" },
             { ".js", "application/javascript" },
             { ".zip", "application/zip" },
+            { ".json", "application/json" },
             { ".png", "image/png" },
             { ".tiff","image/tiff"},
             { ".heif","image/heic"},
@@ -187,6 +194,9 @@ namespace LWMS.Core.Utilities
             { ".woff","font/woff"},
             { ".woff2","font/woff2"},
             { ".otf","font/otf"},
+            { ".3mf","model/3mf"},
+            { ".stl","model/stl"},
+            { ".obj","model/obj"},
         };
         /// <summary>
         /// Find a mime type by file extension name. (Including "." in the start of the string)
