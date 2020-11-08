@@ -8,7 +8,7 @@ namespace LWMS.Core.WR
     /// <summary>
     /// This WR do not support async supports due to pipeline do not support work in async mode.
     /// </summary>
-    public class PipedRoutedWR : IBaseWR
+    public class PipedRoutedConsoleLikeWR : IBaseWR
     {
         /// <summary>
         /// Should be initialized out side.
@@ -81,7 +81,24 @@ namespace LWMS.Core.WR
         {
             throw new NotSupportedException();
         }
+        public void SetForegroundColor(ConsoleColor consoleColor)
+        {
 
+            Processor.Process(new PipelineData(consoleColor, null,
+                  new PipedRoutedWROption(PipedRoutedWROperation.FGCOLOR, AutoFlush)));
+        }
+        public void SetBackgroundColor(ConsoleColor consoleColor)
+        {
+
+            Processor.Process(new PipelineData(consoleColor, null,
+                  new PipedRoutedWROption(PipedRoutedWROperation.BGCOLOR, AutoFlush)));
+        }
+        public void ResetColor()
+        {
+
+            Processor.Process(new PipelineData(null, null,
+                  new PipedRoutedWROption(PipedRoutedWROperation.RESETCOLOR, AutoFlush)));
+        }
         public void WriteBytes(byte[] b, int length, int offset)
         {
             Processor.Process(new PipelineData(b, new int[] { length, offset },
@@ -116,6 +133,6 @@ namespace LWMS.Core.WR
     }
     public enum PipedRoutedWROperation
     {
-        WRITE, WRITECHAR, WRITEBYTES, WRITELINE, READ, READBYTES, READLINE, FLUSH, DISPOSE
+        WRITE, WRITECHAR, WRITEBYTES, WRITELINE, READ, READBYTES, READLINE, FLUSH, DISPOSE,FGCOLOR,BGCOLOR,RESETCOLOR
     }
 }

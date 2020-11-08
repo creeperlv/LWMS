@@ -182,18 +182,30 @@ namespace LWMS.Core
         {
             try
             {
+                Output.SetForegroundColor(ConsoleColor.Red);
                 Output.WriteLine("Unhandled Exception in:");
+                Output.SetForegroundColor(ConsoleColor.Yellow);
                 Output.WriteLine(e.ExceptionObject.ToString());
                 if (e.IsTerminating)
+                {
+                    Output.SetForegroundColor(ConsoleColor.Red);
                     Output.WriteLine("LWMS will terminate.");
+                }
+                Output.ResetColor();
             }
             catch (Exception)
             {
                 Console.WriteLine("Unhandled Exception in:");
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("!Warning!Output pipeline is broken!");
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine(e.ExceptionObject.ToString());
                 if (e.IsTerminating)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("LWMS will terminate.");
+                }
+                Console.ResetColor();
             }
         }
 

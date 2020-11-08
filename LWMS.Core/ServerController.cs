@@ -122,7 +122,9 @@ namespace LWMS.Core
                             }
                             catch (Exception e)
                             {
-                                Trace.Write($"Error in {item.Value}: {e}");
+                                Output.SetForegroundColor(ConsoleColor.Red);
+                                Output.Write($"Error in {item.Value}: {e}");
+                                Output.ResetColor();
                             }
                         }
                         catch (Exception)
@@ -131,7 +133,7 @@ namespace LWMS.Core
                         return;
                     }
                 }
-                Trace.WriteLine("Command Not Found.");
+                Output.WriteLine("Command Not Found.");
             }
         }
     }

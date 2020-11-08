@@ -158,7 +158,7 @@ namespace LWMS.Core.Log
             StackTrace stackTrace = new StackTrace(4);
             StringBuilder stringBuilder = new StringBuilder();
             Type t = stackTrace.GetFrame(0).GetMethod().ReflectedType;
-            if (t == typeof(PipedRoutedWR))
+            if (t == typeof(PipedRoutedConsoleLikeWR))
             {
                 t = stackTrace.GetFrame(2).GetMethod().ReflectedType;
             }
@@ -185,7 +185,7 @@ namespace LWMS.Core.Log
             StackTrace stackTrace = new StackTrace(4);
             StringBuilder stringBuilder = new StringBuilder();
             Type t = stackTrace.GetFrame(0).GetMethod().ReflectedType;
-            if (t == typeof(PipedRoutedWR))
+            if (t == typeof(PipedRoutedConsoleLikeWR))
             {
                 t = stackTrace.GetFrame(2).GetMethod().ReflectedType;
             }

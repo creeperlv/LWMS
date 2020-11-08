@@ -66,10 +66,12 @@ namespace LWMS.Management.Commands
                         if (setitem == "BUF_LENGTH")
                         {
                             Configuration.BUF_LENGTH = int.Parse(args[2]);
-                        }else if (setitem == "LOG_WATCH_INTERVAL")
+                        }
+                        else if (setitem == "LOG_WATCH_INTERVAL")
                         {
                             Configuration.LOG_WATCH_INTERVAL = int.Parse(args[2]);
-                        }else if (setitem == "MAX_LOG_SIZE")
+                        }
+                        else if (setitem == "MAX_LOG_SIZE")
                         {
                             Configuration.MAX_LOG_SIZE = int.Parse(args[2]);
                         }
@@ -94,7 +96,9 @@ namespace LWMS.Management.Commands
                             }
                             catch (Exception)
                             {
+                                Output.SetForegroundColor(ConsoleColor.Red);
                                 Output.WriteLine("Key \"EnableRange\" only accepts bool type(true and false)!");
+                                Output.ResetColor();
                             }
                         }
                         else if (setitem == "LogUA")
@@ -106,13 +110,17 @@ namespace LWMS.Management.Commands
                             }
                             catch (Exception)
                             {
+                                Output.SetForegroundColor(ConsoleColor.Red);
                                 Output.WriteLine("Key \"LogUA\" only accepts bool type(true and false)!");
+                                Output.ResetColor();
                             }
                         }
                     }
                     else
                     {
-                        Output.WriteLine("arguments does not match: Config set <key> <value>");
+                        Output.SetForegroundColor(ConsoleColor.Red);
+                        Output.WriteLine("Arguments does not match: Config set <key> <value>");
+                        Output.ResetColor();
                     }
                 }
                 else if (args[0].ToUpper() == "ADD")

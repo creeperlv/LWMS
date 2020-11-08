@@ -23,6 +23,17 @@ namespace LWMS.Management
             }else if(option.PipedRoutedWROperation== PipedRoutedWROperation.FLUSH)
             {
                 Console.Out.Flush();
+            }else if(option.PipedRoutedWROperation== PipedRoutedWROperation.FGCOLOR)
+            {
+                Console.ForegroundColor = (ConsoleColor)Input.PrimaryData;
+            }
+            else if (option.PipedRoutedWROperation == PipedRoutedWROperation.BGCOLOR)
+            {
+                Console.BackgroundColor = (ConsoleColor)Input.PrimaryData;
+            }
+            else if (option.PipedRoutedWROperation == PipedRoutedWROperation.RESETCOLOR)
+            {
+                Console.ResetColor();
             }
             return Input;
         }

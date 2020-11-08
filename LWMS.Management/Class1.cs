@@ -25,10 +25,33 @@ namespace LWMS.Management
     /// </summary>
     public static class Output
     {
-        public static PipedRoutedWR CoreStream;
+        public static PipedRoutedConsoleLikeWR CoreStream;
         static Output()
         {
-            CoreStream = new PipedRoutedWR();
+            CoreStream = new PipedRoutedConsoleLikeWR();
+        }
+        /// <summary>
+        /// Ask all process units to set their foreground color.
+        /// </summary>
+        /// <param name="color"></param>
+        public static void SetForegroundColor(ConsoleColor color)
+        {
+            CoreStream.SetForegroundColor(color);
+        }
+        /// <summary>
+        /// Ask all process units to set their background color.
+        /// </summary>
+        /// <param name="color"></param>
+        public static void SetBackgroundColor(ConsoleColor color)
+        {
+            CoreStream.SetBackgroundColor(color);
+        }
+        /// <summary>
+        /// Send a signal 'RESETCOLOR' to all process unit.
+        /// </summary>
+        public static void ResetColor()
+        {
+            CoreStream.ResetColor();
         }
         /// <summary>
         /// Write message to PipedRoutedWR with a new line.
