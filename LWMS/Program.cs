@@ -66,25 +66,24 @@ namespace LWMS
         }
         static void CommandListener()
         {
-            PrintHint();
+            //PrintHint();
             while (true)
             {
                 var cmd = Console.ReadLine();
                 if (cmd == "") continue;//Skip blank line.
                 var cmdList = Tools00.ResolveCommand(cmd);
                 ServerController.Control(cmdList.ToArray());
-                PrintHint();
+                //PrintHint();
             }
         }
-        static void PrintHint()
-        {
-
-            Console.Write("[");
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("Local");
-            Console.ResetColor();
-            Console.Write("]>");
-        }
+        //static void PrintHint()
+        //{
+        //    Console.Write("[");
+        //    Console.ForegroundColor = ConsoleColor.Green;
+        //    Console.Write("Local");
+        //    Console.ResetColor();
+        //    Console.Write("]>");
+        //}
         static void Check00()
         {
             if (Configuration.ListenPrefixes.Count == 0)
