@@ -1,6 +1,7 @@
 ﻿using CLUNL.Data.Layer0.Buffers;
 using CLUNL.Pipeline;
 using LWMS.Core.HttpRoutedLayer;
+using LWMS.Localization;
 using LWMS.Management;
 using System;
 using System.Collections.Generic;
@@ -36,6 +37,7 @@ namespace LWMS.Core
         public void Start(int MaxThread)
         {
             semaphore = new Semaphore(MaxThread, MaxThread);
+            Language.Initialize(Configuration.Language);
             //Register Listener from beginning.
             RegisterProcessUnit(new LogUnit());
             //Add listening prefixes
@@ -69,7 +71,7 @@ namespace LWMS.Core
                         }
                         catch (Exception)
                         {
-                            Trace.WriteLine("Cannot pipeline units from:" + item.Value);
+                            Trace.WriteLine(Language.Query("LWMS.Pipeline.Error.Register.R", "Cannot load R pipeline units from: {0}", item.Value));
                         }
                     }
                 }
@@ -101,7 +103,7 @@ namespace LWMS.Core
                         }
                         catch (Exception)
                         {
-                            Trace.WriteLine("Cannot W pipeline units from:" + item.Value);
+                            Trace.WriteLine(Language.Query("LWMS.Pipeline.Error.Register.W", "Cannot load W pipeline units from: {0}", item.Value));
                         }
                     }
                 }
@@ -134,7 +136,7 @@ namespace LWMS.Core
                             }
                             catch (Exception)
                             {
-                                Trace.WriteLine("Cannot pipeline units from:" + item.Value);
+                                Trace.WriteLine(Language.Query("LWMS.Pipeline.Error.Register.CmdOut", "Cannot load CmdOut pipeline units from: {0}", item.Value));
                             }
                         }
                     }
@@ -222,7 +224,7 @@ namespace LWMS.Core
         public void RegisterProcessUnit(IPipedProcessUnit unit)
         {
             processUnits.Add(unit);
-            Trace.WriteLine("Registered:" + unit.GetType());
+            Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.R", "Registered R Unit: {0}", unit.GetType().ToString()));
         }
         public void UnregisterProcessUnit(IPipedProcessUnit unit)
         {
@@ -232,7 +234,7 @@ namespace LWMS.Core
         public void RegisterWProcessUnit(IPipedProcessUnit unit)
         {
             WprocessUnits.Add(unit);
-            Trace.WriteLine("Registered W Unit:" + unit.GetType());
+            Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.W", "Registered W Unit: {0}", unit.GetType().ToString()));
         }
         public void UnregisterWProcessUnit(IPipedProcessUnit unit)
         {
@@ -241,7 +243,7 @@ namespace LWMS.Core
         public void RegisterCmdOutProcessUnit(IPipedProcessUnit unit)
         {
             CmdOutprocessUnits.Add(unit);
-            Trace.WriteLine("Registered CmdOut Unit:" + unit.GetType());
+            Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.CmdOut", "Registered CmdOut Unit: {0}", unit.GetType().ToString()));
         }
         public void UnregisterCmdOutProcessUnit(IPipedProcessUnit unit)
         {

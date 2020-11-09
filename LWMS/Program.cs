@@ -4,7 +4,9 @@ using LWMS.Core.Utilities;
 using LWMS.Management;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Text;
 
 namespace LWMS
 {
@@ -34,6 +36,8 @@ namespace LWMS
                 else { }
 
             }
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.InputEncoding = Encoding.UTF8;
             LWMSTraceListener.BeautifyConsoleOutput = true;
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.White;

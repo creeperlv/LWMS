@@ -1,6 +1,7 @@
 ﻿using CLUNL.Data.Layer1;
 using CLUNL.DirectedIO;
 using LWMS.Core.Log;
+using LWMS.Localization;
 using LWMS.Management;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace LWMS.Core
                     if (typeof(IManageCommand).IsAssignableFrom(TP))
                     {
                         var MC = (IManageCommand)Activator.CreateInstance(TP);
-                        Trace.WriteLine("Found Manage Command:" + MC.CommandName + "," + TP);
+                        Trace.WriteLine(Language.Query("LWMS.Commands.Found", "Found Manage Command:{0},{1}", MC.CommandName, TP.ToString()));
                         ManageCommands.Add(MC.CommandName, MC);
                         var alias = MC.Alias;
                         foreach (var MCA in alias)
@@ -45,7 +46,7 @@ namespace LWMS.Core
             }
             catch (Exception)
             {
-                Trace.Write($"Cannot load management module:{item}");
+                Trace.Write(Language.Query("LWMS.Commands.Error.LoadModule", "Cannot load management module: {0}", item));
                 return false;
             }
         }
@@ -55,7 +56,7 @@ namespace LWMS.Core
         /// <param name="args"></param>
         public static void Control(params CommandPack[] args)
         {
-            Trace.WriteLine("Received Command:" + args[0]);
+            Trace.WriteLine(Language.Query("LWMS.Commands.ReceieveCommand", "Received Command:", args[0]));
             if (args[0].ToUpper() == "SHUTDOWN" || args[0].ToUpper() == "EXIT" || args[0].ToUpper() == "CLOSE")
             {
                 Output.WriteLine("Goodbye.");
@@ -66,8 +67,8 @@ namespace LWMS.Core
             else if (args[0].ToUpper() == "VER" || args[0].ToUpper() == "VERSION")
             {
                 Output.WriteLine("");
-                Output.WriteLine("Shell:" + Assembly.GetEntryAssembly());
-                Output.WriteLine("Core:" + Assembly.GetExecutingAssembly());
+                Output.WriteLine(Language.Query("LWMS.Commands.Ver.Shell","Shell:{0}" ,Assembly.GetEntryAssembly().ToString()));
+                Output.WriteLine(Language.Query("LWMS.Commands.Ver.Core","Core:{0}" ,Assembly.GetExecutingAssembly().ToString()));
                 Output.WriteLine("");
             }
             else if (args[0].ToUpper() == "CLS" || args[0].ToUpper() == "CLEAR")
@@ -133,7 +134,7 @@ namespace LWMS.Core
                         return;
                     }
                 }
-                Output.WriteLine("Command Not Found.");
+                Output.WriteLine(Language.Query("LWMS.Commands.Error.NotFound","Command Not Found."));
             }
         }
     }

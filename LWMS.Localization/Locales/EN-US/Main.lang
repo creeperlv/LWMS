@@ -1,0 +1,15 @@
+﻿#To look up for strings in here, please use "<Namespace>.<Alias>" as search ID.
+Namespace=LWMS
+Pipeline.Register.R=Registered R Unit: {0}
+Pipeline.Register.W=Registered W Unit: {0}
+Pipeline.Register.CmdOut=Registered CmdOut Unit: {0}
+Pipeline.Error.Register.R=Cannot load R pipeline units from: {0}
+Pipeline.Error.Register.W=Cannot load W pipeline units from: {0}
+Pipeline.Error.Register.CmdOut=Cannot load CmdOut pipeline units from: {0}
+Config.Error.Save=Cannot save configurations.
+Commands.Found=Found Manage Command:{0},{1}
+Commands.ReceieveCommand=Receieved Command: {0}
+Commands.Error.NotFound=Command Not Found.
+Commands.Error.LoadModule=Cannot load management module: {0}
+Commands.Ver.Shell=Shell: {0}
+Commands.Ver.Core=Core: {0}

@@ -7,6 +7,7 @@ using LWMS.Core.Log;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -148,6 +149,7 @@ namespace LWMS.Core
         public readonly static string BasePath;
         internal static string _WebSiteContentRoot = null;
         internal static string _DefultPage = null;
+        internal static string _Language = null;
         internal static string _Page404 = null;
         internal static bool? _EnableRange = true;
         internal static bool? _LogUA = null;
@@ -257,7 +259,7 @@ namespace LWMS.Core
                     }
                     catch (Exception)
                     {
-                        Trace.WriteLine("Cannot save configuration.");
+                        Trace.WriteLine(Localization.Language.Query("LWMS.Config.Error.Save","Cannot save configurations."));
 
                     }
 
@@ -301,7 +303,7 @@ namespace LWMS.Core
                     }
                     catch (Exception)
                     {
-                        Trace.WriteLine("Cannot save configuration.");
+                        Trace.WriteLine(Localization.Language.Query("LWMS.Config.Error.Save", "Cannot save configurations."));
 
                     }
 
@@ -347,7 +349,7 @@ namespace LWMS.Core
                     }
                     catch (Exception)
                     {
-                        Trace.WriteLine("Cannot save configuration.");
+                        Trace.WriteLine(Localization.Language.Query("LWMS.Config.Error.Save", "Cannot save configurations."));
 
                     }
 
@@ -381,7 +383,7 @@ namespace LWMS.Core
                     }
                     catch
                     {
-                        Trace.WriteLine("Cannot save configuration.");
+                        Trace.WriteLine(Localization.Language.Query("LWMS.Config.Error.Save", "Cannot save configurations."));
                     }
                     ConfigurationData.Flush();
                 }
@@ -396,6 +398,49 @@ namespace LWMS.Core
                     ConfigurationData.Flush();
             }
         }
+
+        public static string Language
+        {
+            get
+            {
+                if (_Language == null)
+                {
+                    try
+                    {
+                        _Language = ConfigurationData.FindValue("Language");
+                        if (_Language == null)
+                        {
+                            Trace.WriteLine("Generating default language setting.");
+                            try
+                            {
+
+                                _Language = CultureInfo.CurrentCulture.Name;
+                            }
+                            catch (Exception)
+                            {
+                                _Language = "en-US";
+                            }
+                            ConfigurationData.AddValue("Language", _Language, AutoSave: true);
+                        }
+                    }
+                    catch
+                    {
+                        Trace.WriteLine(Localization.Language.Query("LWMS.Config.Error.Save", "Cannot save configurations."));
+                    }
+                    ConfigurationData.Flush();
+                }
+                return _Language;
+            }
+            set
+            {
+                _Language = value;
+                if (ConfigurationData != null)
+                    ConfigurationData.AddValue("Language", _Language, AutoSave: true);
+                if (ConfigurationData != null)
+                    ConfigurationData.Flush();
+            }
+        }
+
         public static List<string> ListenPrefixes
         {
             get
@@ -452,7 +497,7 @@ namespace LWMS.Core
                     }
                     catch
                     {
-                        Trace.WriteLine("Cannot save configuration.");
+                        Trace.WriteLine(Localization.Language.Query("LWMS.Config.Error.Save", "Cannot save configurations."));
 
                     }
                     ConfigurationData.Flush();
@@ -485,7 +530,7 @@ namespace LWMS.Core
                     }
                     catch
                     {
-                        Trace.WriteLine("Cannot save configuration.");
+                        Trace.WriteLine(Localization.Language.Query("LWMS.Config.Error.Save", "Cannot save configurations."));
 
                     }
                     ConfigurationData.Flush();
