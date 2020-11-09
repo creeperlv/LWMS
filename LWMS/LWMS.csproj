@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>0.2.0.0</Version>
+    <Version>0.3.0.0</Version>
     <Authors>Creeper Lv</Authors>
     <Description>LightWeight Managed Server</Description>
     <PackageLicenseExpression>https://raw.githubusercontent.com/creeperlv/LWMS/Primary/LICENSE</PackageLicenseExpression>
