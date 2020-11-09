@@ -75,12 +75,14 @@ namespace LWMS.Localization
         {
             if (LanguageStrings.ContainsKey(ID))
             {
-                return string.Format(LanguageStrings[ID], Parameters).Replace("\\n", Environment.NewLine).Replace("\\t", "\t");
+                var value = LanguageStrings[ID].Replace("\\n", Environment.NewLine).Replace("\\t", "\t");
+                return string.Format(value, Parameters);
 
             }
             else
             {
-                return string.Format(Fallback, Parameters).Replace("\\n", Environment.NewLine).Replace("\\t", "\t");
+                var value = Fallback.Replace("\\n", Environment.NewLine).Replace("\\t", "\t");
+                return string.Format(value, Parameters);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using LWMS.Core;
+using LWMS.Localization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,12 +23,12 @@ namespace LWMS.Management.Commands
                 {
                     if (args.Length == 1)
                     {
-                        Output.WriteLine("You must specify module to register");
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Register.Error.0", "You must specify module to register."));
                     }
                     FileInfo target = new FileInfo(args[1].PackTotal);
                     if (target.Exists == false)
                     {
-                        Output.WriteLine("Target Module not found:" + target);
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Register.Error.1", "Target Module not found:{0}", target.FullName));
                     }
                     else
                     {
@@ -37,39 +38,42 @@ namespace LWMS.Management.Commands
                         }
                         else
                         {
-                            Output.WriteLine("Cannot register target module: Not a validate module.");
+                            Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Register.Error.2", "Cannot register target module: Not a validate module."));
                         }
                     }
                 }
-                else if(args[0].PackTotal.ToUpper() == "UNREGISTER" || args[0].PackTotal.ToUpper() == "UNREG")
+                else if (args[0].PackTotal.ToUpper() == "UNREGISTER" || args[0].PackTotal.ToUpper() == "UNREG")
                 {
 
                     if (args.Length == 1)
                     {
-                        Output.WriteLine("You must specify module to unregister");
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Unregister.Error.0", "You must specify module to unregister."));
                     }
 
                     for (int i = 0; i < Configuration.ManageCommandModules.Count; i++)
                     {
-                        if (Configuration.ManageCommandModules[i].EndsWith(args[1])){
+                        if (Configuration.ManageCommandModules[i].EndsWith(args[1]))
+                        {
                             Configuration.ManageCommandModules.RemoveAt(i);
                             break;
                         }
                     }
-                }else if (args[0].PackTotal.ToUpper() == "LS"|| args[0].PackTotal.ToUpper() == "LIST"){
+                }
+                else if (args[0].PackTotal.ToUpper() == "LS" || args[0].PackTotal.ToUpper() == "LIST")
+                {
                     foreach (var item in ServerController.ManageCommands)
                     {
-                        Output.WriteLine("Type:"+item.Value);
-                        Output.WriteLine($"\t\tCommand:{item.Key}");
-                        Output.WriteLine($"\t\tDLL:{item.Value.GetType().Assembly.Location}");
-                        Output.WriteLine($"\t\tVersion:{item.Value.Version}");
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Type", "Type: {0}", item.Value.ToString()));
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Command", "\t\tCommand: {0} ", item.Key));
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Dll", "\t\tDLL: {0} ", item.Value.GetType().Assembly.Location));
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Version", "\t\tVersion: {0} ", item.Value.Version.ToString()));
                         StringBuilder stringBuilder = new StringBuilder();
                         foreach (string alias in item.Value.Alias)
                         {
                             stringBuilder.Append(" ");
                             stringBuilder.Append(alias);
                         }
-                        Output.WriteLine($"\t\tAliases:{stringBuilder}");
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Aliases", "\t\tAliases: {0} ", stringBuilder.ToString()));
                     }
                 }
             }
@@ -80,10 +84,10 @@ namespace LWMS.Management.Commands
         }
         public void OutputHelp()
         {
-            Output.WriteLine("Usage:");
-            Output.WriteLine("ManageCommand <Operations> [Option1] [Option2] ...");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"));
+            Output.WriteLine(Language.Query("ManageCmd.Help.CmdMgr.Usage", "ManageCommand <Operations> [Option1] [Option2] ..."));
             Output.WriteLine("");
-            Output.WriteLine("Operations:");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"));
             Output.WriteLine("\tRegister <Path-to-DLL>");
             Output.WriteLine("\t\tRegister a dll to find all availiable commands.");
             Output.WriteLine("\tUnregister <Path-to-DLL>");

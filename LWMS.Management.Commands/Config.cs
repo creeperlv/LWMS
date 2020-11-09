@@ -26,15 +26,15 @@ namespace LWMS.Management.Commands
             Output.WriteLine("\tRelease");
             Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Release", "\t\tStop writing changes to settings file, and settings file will be released in the same tim. It means settings file will be editable from other application."));
             Output.WriteLine("\tResume");
-            Output.WriteLine("\t\tContinue writing changes to settings file, changes during the release will not be saved.");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Resume", "\t\tContinue writing changes to settings file, changes during the release will not be saved."));
             Output.WriteLine("\tReload");
-            Output.WriteLine("\t\tReload settings.");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Reload", "\t\tReload settings."));
             Output.WriteLine("\tSet");
-            Output.WriteLine("\t\tSet a value to target key.");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Set", "\t\tSet a value to target key."));
             Output.WriteLine("\tAdd");
-            Output.WriteLine("\t\tAdd a value to target collection whose name is given Key.");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Add", "\t\tAdd a value to target collection whose name is given Key."));
             Output.WriteLine("\tRemove,Rm");
-            Output.WriteLine("\t\tRemove a value to target collection whose name is given Key.");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Remove", "\t\tRemove a value to target collection whose name is given Key."));
         }
 
         public void Invoke(params CommandPack[] args)
@@ -178,7 +178,7 @@ namespace LWMS.Management.Commands
                     }
                     else
                     {
-                        Output.WriteLine("Arguments does not match: Config add <key> <value>");
+                        Output.WriteLine(Language.Query("ManageCmd.Config.Remove.ParameterMismatch", "Arguments does not match: Config remove <key>"));
                     }
                 }else if(operation.ToUpper() == "H"|| operation.ToUpper() == "-H"|| operation.ToUpper() == "--H"|| operation.ToUpper() == "HELP"|| operation.ToUpper() == "?"|| operation.ToUpper() == "-?"|| operation.ToUpper() == "--?")
                 {
@@ -187,7 +187,9 @@ namespace LWMS.Management.Commands
             }
             else
             {
-                Output.WriteLine("Please specify an operation.");
+                Output.SetForegroundColor(ConsoleColor.Yellow);
+                Output.WriteLine(Language.Query("ManageCmd.Help.Config.Error.NoOperation","Please specify an operation."));
+                Output.ResetColor();
                 OutputHelp();
             }
         }
