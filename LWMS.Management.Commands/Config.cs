@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using LWMS.Core;
 using System.Diagnostics;
+using LWMS.Localization;
 
 namespace LWMS.Management.Commands
 {
@@ -16,14 +17,14 @@ namespace LWMS.Management.Commands
 
         public static void OutputHelp()
         {
-            Output.WriteLine("Usage:");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"));
             Output.WriteLine("");
-            Output.WriteLine("\tConfig <Operation> [<Key> <Value>]");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Usage", "\tConfig <Operation> [<Key> <Value>]"));
             Output.WriteLine("");
-            Output.WriteLine("Operations:");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"));
             Output.WriteLine("");
-            Output.WriteLine("\tRlease");
-            Output.WriteLine("\t\tStop writing changes to settings file, and settings file will be released in the same tim. It means settings file will be editable from other application.");
+            Output.WriteLine("\tRelease");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Release", "\t\tStop writing changes to settings file, and settings file will be released in the same tim. It means settings file will be editable from other application."));
             Output.WriteLine("\tResume");
             Output.WriteLine("\t\tContinue writing changes to settings file, changes during the release will not be saved.");
             Output.WriteLine("\tReload");
@@ -40,25 +41,37 @@ namespace LWMS.Management.Commands
         {
             if (args.Length > 0)
             {
-                if (args[0].ToUpper() == "RELEASE")
+                string operation = args[0];
+                if (operation.ToUpper() == "RELEASE")
                 {
-                    Configuration.ConfigurationData.Dispose();
-                    Configuration.ConfigurationData = null;
-                    Output.WriteLine("Configuration file is released and changes will not be saved.");
+                    if (Configuration.ConfigurationData != null)
+                    {
+
+                        Configuration.ConfigurationData.Dispose();
+                        Configuration.ConfigurationData = null;
+                        Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip0", "Configuration file is released and changes will not be saved."));
+
+                    }
+                    else
+                    {
+                        Output.SetForegroundColor(ConsoleColor.Yellow);
+                        Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip1", "Configuration file is already released."));
+                        Output.ResetColor();
+                    }
                 }
-                else if (args[0].ToUpper() == "RESUME")
+                else if (operation.ToUpper() == "RESUME")
                 {
                     Configuration.LoadConfiguation();
                     Configuration.ClearLoadedSettings();
-                    Output.WriteLine("Resume");
-                    Output.WriteLine("Configuration changes will be automatically saved now.");
+                    Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip0", "Resumed."));
+                    Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip1", "Configuration changes will be automatically saved now."));
                 }
-                else if (args[0].ToUpper() == "RELOAD")
+                else if (operation.ToUpper() == "RELOAD")
                 {
                     Configuration.LoadConfiguation();
                     Configuration.ClearLoadedSettings();
                 }
-                else if (args[0].ToUpper() == "SET")
+                else if (operation.ToUpper() == "SET")
                 {
                     if (args.Length >= 3)
                     {
@@ -119,11 +132,11 @@ namespace LWMS.Management.Commands
                     else
                     {
                         Output.SetForegroundColor(ConsoleColor.Red);
-                        Output.WriteLine("Arguments does not match: Config set <key> <value>");
+                        Output.WriteLine(Language.Query("ManageCmd.Config.Set.ParameterMismatch", "Arguments does not match: Config set <key> <value>"));
                         Output.ResetColor();
                     }
                 }
-                else if (args[0].ToUpper() == "ADD")
+                else if (operation.ToUpper() == "ADD")
                 {
                     if (args.Length >= 3)
                     {
@@ -137,10 +150,12 @@ namespace LWMS.Management.Commands
                     }
                     else
                     {
-                        Output.WriteLine("arguments does not match: Config add <key> <value>");
+                        Output.SetForegroundColor(ConsoleColor.Red);
+                        Output.WriteLine(Language.Query("ManageCmd.Config.Add.ParameterMismatch", "Arguments does not match: Config add <key> <value>"));
+                        Output.ResetColor();
                     }
                 }
-                else if (args[0].ToUpper() == "RM" || args[0].ToUpper() == "REMOVE")
+                else if (operation.ToUpper() == "RM" || operation.ToUpper() == "REMOVE")
                 {
 
                     if (args.Length >= 3)
@@ -165,11 +180,15 @@ namespace LWMS.Management.Commands
                     {
                         Output.WriteLine("Arguments does not match: Config add <key> <value>");
                     }
+                }else if(operation.ToUpper() == "H"|| operation.ToUpper() == "-H"|| operation.ToUpper() == "--H"|| operation.ToUpper() == "HELP"|| operation.ToUpper() == "?"|| operation.ToUpper() == "-?"|| operation.ToUpper() == "--?")
+                {
+                    OutputHelp();
                 }
             }
             else
             {
                 Output.WriteLine("Please specify an operation.");
+                OutputHelp();
             }
         }
     }

@@ -1,0 +1,11 @@
+﻿Namespace=ManageCmd
+Config.Resume.Tip0=Resumed.
+Config.Resume.Tip1=Configuration changes will be automatically saved now.
+Config.Release.Tip0=Configuration file is released and changes will not be saved.
+Config.Release.Tip1=Configuration file is already released.
+Config.Set.ParameterMismatch=Arguments does not match: Config set <key> <value>
+Config.Add.ParameterMismatch=Arguments does not match: Config add <key> <value>
+Help.Universal.Usage=Usage:
+Help.Universal.Operations=Operations:
+Help.Config.Usage=\tConfig <Operation> [<Key> <Value>]
+Help.Config.Operations.Release=\t\tStop writing changes to settings file, and settings file will be released in the same time. It means settings file will be editable for other application.
