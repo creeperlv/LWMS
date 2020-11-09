@@ -114,7 +114,7 @@ namespace LWMS.Management.Commands
                                 Output.ResetColor();
                             }
                         }
-                        else if (setitem == "LogUA")
+                        else if (setitem == "LOGUA")
                         {
                             try
                             {
