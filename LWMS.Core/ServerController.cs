@@ -78,13 +78,33 @@ namespace LWMS.Core
             else if (args[0].ToUpper() == "SUSPEND")
             {
                 //LWMSCoreServer.Listener.Stop();
-                LWMSCoreServer.isSuspend = true;
+                if (LWMSCoreServer.Listener != null)
+                {
+
+                    LWMSCoreServer.Listener.Abort();
+                    LWMSCoreServer.Listener.Close();
+                    LWMSCoreServer.Listener = null;
+                    LWMSCoreServer.isSuspend = true;
+                    Output.WriteLine(Language.Query("Server.Suspended", "Listener is now suspended."));
+                }
             }
             else if (args[0].ToUpper() == "RESUME")
             {
                 //LWMSCoreServer.Listener.Start();
                 //                I do not know why HttpListener.Start() will not resume.
-                LWMSCoreServer.isSuspend = false;
+                if (LWMSCoreServer.Listener == null)
+                {
+                    LWMSCoreServer.Listener = new System.Net.HttpListener();
+
+                    foreach (var item in Configuration.ListenPrefixes)
+                    {
+
+                        LWMSCoreServer.Listener.Prefixes.Add(item);
+                    }
+                    LWMSCoreServer.Listener.Start();
+                    LWMSCoreServer.isSuspend = false;
+                    Output.WriteLine(Language.Query("Server.Resumed", "Listener is now resumed."));
+                }
             }
             else
             {

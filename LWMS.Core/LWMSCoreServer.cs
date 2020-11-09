@@ -151,24 +151,45 @@ namespace LWMS.Core
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             }
             Listener.Start();
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 while (WillStop == false)
                 {
                     if (isSuspend == false)
                     {
                         semaphore.WaitOne();
-                        var __ = await Listener.GetContextAsync();
-                        if (isSuspend == true)
+                        //var __ = await Listener.GetContextAsync();
+                        if (Listener != null)
                         {
-                            __.Response.Close();
-                            continue;
+                            if (Listener.IsListening)
+                                try
+                                {
+                                    var a = Listener.BeginGetContext(new AsyncCallback((IAsyncResult r) =>
+                                      {
+                                          try
+                                          {
+                                              var __ = ((HttpListener)r.AsyncState).EndGetContext(r);
+                                              ProcessContext(__);
+                                              semaphore.Release(1);
+                                          }
+                                          catch (Exception)
+                                          {
+                                          }
+                                      }), Listener);
+                                    a.AsyncWaitHandle.WaitOne();
+                                }
+                                catch (Exception)
+                                {
+                                }
                         }
-                        _ = Task.Run(() =>
-                          {
-                              ProcessContext(__);
-                              semaphore.Release(1);
-                          });
+                        //if (isSuspend == true)
+                        //{
+                        //    __.Response.Close();
+                        //    continue;
+                        //}
+                        //_ = Task.Run(() =>
+                        //  {
+                        //  });
                     }
                     else
                     {
