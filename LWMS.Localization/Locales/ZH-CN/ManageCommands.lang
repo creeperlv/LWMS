@@ -1,0 +1,55 @@
+﻿Namespace=ManageCmd
+Config.Resume.Tip0=已恢复。
+Config.Resume.Tip1=对配置的更改现在会自动保存。
+Config.Release.Tip0=配置文件已释放并且现在更改不会保存。
+Config.Release.Tip1=配置文件已经释放过了。
+Config.Set.ParameterMismatch=参数不满足：Config set <键> <值>
+Config.Add.ParameterMismatch=参数不满足：Config add <键> <值>
+
+Help.Universal.Usage=用法：
+Help.Universal.Operations=操作：
+Help.Universal.Example=示例：
+
+Help.Config.Usage=\tConfig <操作> [<键> <V值>]
+Help.Config.Operations.Release=\t\t停止向设置文件写入更改，同时设置文件会被释放。这意味着设置文件可以被其他应用所编辑。
+Help.Config.Operations.Resume=\t\t恢复向设置文件写入更改，但在被释放期间所做的更改不会被保存。
+Help.Config.Operations.Reload=\t\t重载设置。
+Help.Config.Operations.Set=\t\t向目标键设置一个值.
+Help.Config.Operations.Add=\t\t向给定键的目标集合添加一个值。
+Help.Config.Operations.Remove=\t\t从给定键的目标集合移除一个值。
+Help.Config.Error.NoOperation=请指明操作。
+
+CmdMgr.Register.Error.0=你必须指定一个模块来注册。
+CmdMgr.Register.Error.1=没找到目标模块：{0}。
+CmdMgr.Register.Error.2=无法注册目标模块：不是一个有效的模块。
+CmdMgr.Unregister.Error.0=你必须指定一个模块来注销。
+CmdMgr.List.Type=类型：{0}
+CmdMgr.List.Command=\t\t命令：{0}
+CmdMgr.List.Dll=\t\t动态连接库: {0}
+CmdMgr.List.Version=\t\t版本: {0}
+CmdMgr.List.Aliases=\t\t别称: {0}
+
+Help.CmdMgr.Usage=ManageCommand <操作> [选项一] [选项二] ...
+Help.CmdMgr.Register=\t\t注册一个动态链接库(DLL)来寻找所有可用命令。
+Help.CmdMgr.Unregister=\t\t注销一个动态链接库，需要重启来生效。
+Help.CmdMgr.List=\t\t列出所有命令以及它们的程序集文件和别名。
+
+Help.Pipeline.Usage=ManagePipeline <操作> <管线类型> [<动态链接库文件> <入口点>]
+Help.Pipeline.Aliases=别名：Pipeline,ppl
+Help.Pipeline.Register=\t\t注册一个管线单元。
+Help.Pipeline.Unregister=\t\t注销一个管线单元。
+Help.Pipeline.Remove=\t\t移除一个已注册的动态链接库。
+Help.Pipeline.PipelineTypes=管线类型：
+Help.Pipeline.PipelineTypes.R=\tR,/R,Request     请求处理管线
+Help.Pipeline.PipelineTypes.W=\tW,/W,Write       写入处理管线
+Help.Pipeline.PipelineTypes.CmdOut=\tC,/C,CmdOut      命令输出管线
+
+Pipeline.Error.0=无法注册管线单元：{0}={1}
+Pipeline.Error.1=Unknown operation: {0}
+Pipeline.Removed=已移除：{0}
+Pipeline.Unregistered=已注销：{0} 在：{1} 管线。
+Pipeline.Types.R=请求
+Pipeline.Types.W=写入
+Pipeline.Types.C=命令输出
+
+Universal.UnknownOperation=未知的操作：{0}
