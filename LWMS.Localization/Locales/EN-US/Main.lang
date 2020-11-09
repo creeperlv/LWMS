@@ -17,3 +17,5 @@ Commands.Ver.Core=Core: {0}
 Utilities.Tools00.SendFile.Access=Access: {0}
 Utilities.Tools00.SendFile.Failed=Cannot send file: {0}.
 ErrorResponseUnit.UnhandledRequest=Unhandled Http Pipeline. Request: {0}
+Server.Suspended=Listener is now suspended.
+Server.Resumed=Listener is now resumed.

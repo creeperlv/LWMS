@@ -19,7 +19,7 @@ namespace LWMS.Core
     {
         public static string ServerVersion = "Undefined";
         Semaphore semaphore;
-        HttpListener Listener;
+        internal static HttpListener Listener;
         HttpPipelineProcessor HttpPipelineProcessor = new HttpPipelineProcessor();
         public LWMSCoreServer()
         {

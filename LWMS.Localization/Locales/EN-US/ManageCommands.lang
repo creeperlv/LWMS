@@ -54,3 +54,5 @@ Pipeline.Types.W=Write
 Pipeline.Types.C=Command Output
 
 Universal.UnknownOperation=Unknown Operation:{0}
+
+RuntimeConfig.SetValue={0} is temporarily set to {1} without saving to configuration file.
