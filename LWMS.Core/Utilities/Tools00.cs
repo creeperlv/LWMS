@@ -1,5 +1,6 @@
 ﻿using CLUNL;
 using LWMS.Core.HttpRoutedLayer;
+using LWMS.Localization;
 using LWMS.Management;
 using System;
 using System.Collections.Concurrent;
@@ -23,13 +24,13 @@ namespace LWMS.Core.Utilities
         /// <param name="context"></param>
         /// <param name="f"></param>
         /// <param name="StatusCode"></param>
-        public static void SendFile(HttpListenerRoutedContext context, FileInfo f, HttpStatusCode StatusCode = HttpStatusCode.OK,string ContentType=null)
+        public static void SendFile(HttpListenerRoutedContext context, FileInfo f, HttpStatusCode StatusCode = HttpStatusCode.OK, string ContentType = null)
         {
             using (FileStream fs = f.OpenRead())
             {
                 try
                 {
-                    Trace.WriteLine("Access:" + f.FullName.Substring(Configuration.WebSiteContentRoot.Length));
+                    Trace.WriteLine(Language.Query("LWMS.Utilities.Tools00.SendFile.Access", "Access:{0}", f.FullName.Substring(Configuration.WebSiteContentRoot.Length)));
                     var BUF_LENGTH = Configuration.BUF_LENGTH;
                     byte[] buf = new byte[BUF_LENGTH];
                     if (ContentType == null)
@@ -113,9 +114,6 @@ namespace LWMS.Core.Utilities
                                 }
                             }
                             fs.Seek(L, SeekOrigin.Begin);
-                            //var b = Encoding.ASCII.GetBytes(header);
-                            //context.Response.OutputStream.Write(b, 0, b.Length);
-                            //context.Response.OutputStream.Flush();
                             int _Length;
                             while (L < length)
                             {
@@ -130,24 +128,14 @@ namespace LWMS.Core.Utilities
                                 context.Response.OutputStream.Write(buf, 0, _Length);
                                 context.Response.OutputStream.Flush();
                             }
-                            //{
-                            //    var v = Encoding.UTF8.GetBytes("\r\n");
-                            //    context.Response.OutputStream.Write(v, 0, v.Length);
-
-                            //}
                             break;
-                        }
-                        {
-                            //var v = Encoding.UTF8.GetBytes("\r\n");
-                            //context.Response.OutputStream.Write(v, 0, v.Length);
-
                         }
                         context.Response.OutputStream.Flush();
                     }
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine("Cannot send file:" + e.HResult);
+                    Trace.WriteLine(Language.Query("LWMS.Utilities.Tools00.SendFile.Failed", "Cannot send file:{0}." , e.HResult.ToString()));
                 }
             }
         }

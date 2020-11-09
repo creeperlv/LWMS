@@ -1,6 +1,7 @@
 ﻿using CLUNL.Pipeline;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Core.Utilities;
+using LWMS.Localization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,7 +20,7 @@ namespace LWMS.Core
         {
             //if (((HttpPipelineArguments)Input.SecondaryData).isHandled == true) return Input;
             HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
-            Trace.WriteLine("Unhandled Http Pipeline. R:"+(context).Request.RawUrl);
+            Trace.WriteLine(Language.Query("LWMS.ErrorResponseUnit.UnhandledRequest","Unhandled Http Pipeline. Request: {0}" ,(context).Request.RawUrl));
             if (File.Exists(Configuration.Page404))
             {
                 Tools00.SendFile(context, new FileInfo(Configuration.Page404),HttpStatusCode.NotFound);
