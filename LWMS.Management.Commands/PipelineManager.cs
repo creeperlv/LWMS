@@ -1,6 +1,7 @@
 ﻿using CLUNL.Data.Layer0;
 using CLUNL.Utilities;
 using LWMS.Core;
+using LWMS.Localization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,42 +23,70 @@ namespace LWMS.Management.Commands
 
         public int Version => 2;
 
-        static string HelpString = @"Usage:
-ManagePipeline <Operation> <PipelineType> [<DllFile> <EnrtyPoint>]
+//        static string HelpString = @"Usage:
+//ManagePipeline <Operation> <PipelineType> [<DllFile> <EnrtyPoint>]
 
-Aliases:Pipeline,ppl
+//Aliases:Pipeline,ppl
 
-Operations:
+//Operations:
 
-    REG|REGISTER
-        Register a pipeline unit.
+//    REG|REGISTER
+//        Register a pipeline unit.
 
-    UNREG|UNREGISTER
-        Unregister a pipeline unit.
+//    UNREG|UNREGISTER
+//        Unregister a pipeline unit.
 
-    RM|REMOVE
-        Remove a registered dll file.
+//    RM|REMOVE
+//        Remove a registered dll file.
 
-Pipeline Types:
-    R,/R,Request    Request process pipeline
-    W,/W,Write      Write Routed Stream Pipeline.
-    C,/C,CmdOut     Command Output Pipeline.
+//Pipeline Types:
+//    R,/R,Request    Request process pipeline
+//    W,/W,Write      Write Routed Stream Pipeline.
+//    C,/C,CmdOut     Command Output Pipeline.
 
-Example:
+//Example:
 
-    ppl reg r LWMS.RPipelineUnits.dll LWMS.RPipelineUnits.ProcessedStaticPages
-    ppl rm r LWMS.RPipelineUnits.dll
-";
+//    ppl reg r LWMS.RPipelineUnits.dll LWMS.RPipelineUnits.ProcessedStaticPages
+//    ppl rm r LWMS.RPipelineUnits.dll
+//";
 
         public static void PrintHelp()
         {
-            Output.WriteLine(HelpString);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"));
+            Output.WriteLine("");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Usage", "ManagePipeline <Operation> <PipelineType> [<DllFile> <EnrtyPoint>]"));
+            Output.WriteLine("");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Aliases", "Aliasese:Pipeline,ppl"));
+            Output.WriteLine("");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"));
+            Output.WriteLine("");
+            Output.WriteLine("\tREG|REGISTER");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Register", "\t\tRegister a pipeline unit."));
+            Output.WriteLine("");
+            Output.WriteLine("\tUNREG|UNREGISTER");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Register", "\t\tUnregister a pipeline unit."));
+            Output.WriteLine("");
+            Output.WriteLine("\tRM|REMOVE");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Remove", "\t\tRemove a registered dll file."));
+            Output.WriteLine("");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.PipelineTypes", "Pipeline Types:"));
+            Output.WriteLine("");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.PipelineTypes.R",      "\tR,/R,Request     Request process pipeline"));
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.PipelineTypes.W",      "\tW,/W,Write       Write process pipeline"));
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.PipelineTypes.CmdOut", "\tC,/C,CmdOut      Command Out pipeline"));
+            Output.WriteLine("");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Example", "Example:"));
+            Output.WriteLine("");
+            Output.WriteLine("\tppl reg r LWMS.RPipelineUnits.dll LWMS.RPipelineUnits.ProcessedStaticPages");
+            Output.WriteLine("\tppl rm r LWMS.RPipelineUnits.dll");
         }
         public void Invoke(params CommandPack[] args)
         {
             if (args.Length == 0)
             {
-                Output.WriteLine("Please specify an operation.");
+                Output.SetForegroundColor(ConsoleColor.Yellow);
+                Output.WriteLine(Language.Query("ManageCmd.Help.Config.Error.NoOperation", "Please specify an operation."));
+                Output.ResetColor();
                 PrintHelp();
             }
             for (int i = 0; i < args.Length; i++)
@@ -187,6 +216,7 @@ Example:
                     bool B = false;
                     if (TYPE == "R" || TYPE == "/R" || TYPE == "REQUEST")
                     {
+                        TYPE = Language.Query("ManageCmd.Pipeline.Types.R","Request");
                         foreach (var item in Configuration.RProcessUnits.RootNode.Children)
                         {
                             for (int a = 0; a < item.Children.Count; a++)
@@ -207,6 +237,7 @@ Example:
                     }
                     else if (TYPE == "W" || TYPE == "/W" || TYPE == "WRITE")
                     {
+                        TYPE = Language.Query("ManageCmd.Pipeline.Types.W","Write");
                         foreach (var item in Configuration.WProcessUnits.RootNode.Children)
                         {
                             for (int a = 0; a < item.Children.Count; a++)
@@ -227,6 +258,7 @@ Example:
                     }
                     else if (TYPE == "C" || TYPE == "/C" || TYPE == "CMDOUT")
                     {
+                        TYPE = Language.Query("ManageCmd.Pipeline.Types.C","Command Output");
                         foreach (var item in Configuration.CMDOUTProcessUnits.RootNode.Children)
                         {
                             for (int a = 0; a < item.Children.Count; a++)
@@ -246,6 +278,7 @@ Example:
                         Configuration.CMDOUTProcessUnits.Serialize();
                     }
                     Output.WriteLine($"Unregistered:{TARGETENTRY} At:{TYPE} pipeline");
+                    Output.WriteLine(Language.Query("ManageCmd.Pipeline.Unregistered","Unregistered:{0} At:{1} pipeline",TARGETENTRY,TYPE));
                 }
                 else if (args[i].ToUpper() == "REMOVE" || args[i].ToUpper() == "RM")
                 {
@@ -290,7 +323,7 @@ Example:
                         }
                     }
                     Configuration.RProcessUnits.Serialize();
-                    Output.WriteLine($"Removed:{TARGETDLL}");
+                    Output.WriteLine(Language.Query("ManageCmd.Pipeline.Removed","Removed:{0}", TARGETDLL));
                 }
                 else if (args[i].ToUpper() == "H" || args[i].ToUpper() == "HELP" || args[i].ToUpper() == "--H" || args[i].ToUpper() == "-H" || args[i].ToUpper() == "?" || args[i].ToUpper() == "-?" || args[i].ToUpper() == "--?")
                 {
@@ -298,7 +331,9 @@ Example:
                 }
                 else
                 {
-                    Output.WriteLine("Unknown operation:" + args[i]);
+                    Output.SetForegroundColor(ConsoleColor.Yellow);
+                    Output.WriteLine(Language.Query("ManageCmd.Universal.UnknownOperation","Unknown operation:{0}" , args[i]));
+                    Output.ResetColor();
                     PrintHelp();
                 }
             }

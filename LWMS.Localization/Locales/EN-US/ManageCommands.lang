@@ -6,8 +6,11 @@ Config.Release.Tip1=Configuration file is already released.
 Config.Set.ParameterMismatch=Arguments does not match: Config set <key> <value>.
 Config.Add.ParameterMismatch=Arguments does not match: Config add <key> <value>.
 Config.Remove.ParameterMismatch=Arguments does not match: Config remove <key>.
+
 Help.Universal.Usage=Usage:
 Help.Universal.Operations=Operations:
+Help.Universal.Example=Example:
+
 Help.Config.Usage=\tConfig <Operation> [<Key> <Value>]
 Help.Config.Operations.Release=\t\tStop writing changes to settings file, and settings file will be released in the same time. It means settings file will be editable for other application.
 Help.Config.Operations.Resume=\t\tContinue writing changes to settings file, changes during the release will not be saved.
@@ -16,6 +19,7 @@ Help.Config.Operations.Set=\t\tSet a value to target key.
 Help.Config.Operations.Add=\t\tAdd a value to target collection whose name is given Key.
 Help.Config.Operations.Remove=\t\tRemove a value to target collection whose name is given Key.
 Help.Config.Error.NoOperation=Please specify an operation.
+
 CmdMgr.Register.Error.0=You must specify module to register.
 CmdMgr.Register.Error.1=Target Module not found: {0}
 CmdMgr.Register.Error.2=Cannot register target module: Not a validate module.
@@ -25,4 +29,28 @@ CmdMgr.List.Command=\t\tCommand: {0}
 CmdMgr.List.Dll=\t\tDLL: {0}
 CmdMgr.List.Version=\t\tVersion: {0}
 CmdMgr.List.Aliases=\t\tAliases: {0}
+
 Help.CmdMgr.Usage=ManageCommand <Operation> [Option1] [Option2] ...
+Help.CmdMgr.Register=\t\tRegister a dll to find all availiable commands.
+Help.CmdMgr.Unregister=\t\tUnregister a dll, need restart to effect.
+Help.CmdMgr.List=\t\tList all commands, their assembly files and aliases.
+
+Help.Pipeline.Usage=ManagePipeline <Operation> <PipelineType> [<DllFile> <EnrtyPoint>]
+Help.Pipeline.Aliases=Aliases:Pipeline,ppl
+Help.Pipeline.Register=\t\tRegister a pipeline unit.
+Help.Pipeline.Unregister=\t\tUnregister a pipeline unit.
+Help.Pipeline.Remove=\t\tRemove a registered dll file.
+Help.Pipeline.PipelineTypes=Pipeline Types:
+Help.Pipeline.PipelineTypes.R=\tR,/R,Request     Request process pipeline
+Help.Pipeline.PipelineTypes.W=\tW,/W,Write       Write process pipeline
+Help.Pipeline.PipelineTypes.CmdOut=\tC,/C,CmdOut      Command Output pipeline
+
+Pipeline.Error.0=Cannot register pipeline unit:{0}={1}
+Pipeline.Error.1=Unknown operation: {0}
+Pipeline.Removed=Removed: {0}
+Pipeline.Unregistered=Unregistered:{0} At:{1} pipeline.
+Pipeline.Types.R=Request
+Pipeline.Types.W=Write
+Pipeline.Types.C=Command Output
+
+Universal.UnknownOperation=Unknown Operation:{0}

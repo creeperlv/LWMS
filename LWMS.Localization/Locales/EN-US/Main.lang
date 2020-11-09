@@ -1,4 +1,5 @@
 ﻿#To look up for strings in here, please use "<Namespace>.<Alias>" as search ID.
+#For example, you want Pipeline.Register.R, you should use LWMS.Pipeline.Register.R as its full name.
 Namespace=LWMS
 Pipeline.Register.R=Registered R Unit: {0}
 Pipeline.Register.W=Registered W Unit: {0}

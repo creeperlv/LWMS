@@ -89,11 +89,13 @@ namespace LWMS.Management.Commands
             Output.WriteLine("");
             Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"));
             Output.WriteLine("\tRegister <Path-to-DLL>");
-            Output.WriteLine("\t\tRegister a dll to find all availiable commands.");
+            Output.WriteLine(Language.Query("ManageCmd.Help.CmdMgr.Register", "\t\tRegister a dll to find all availiable commands."));
+            Output.WriteLine("");
             Output.WriteLine("\tUnregister <Path-to-DLL>");
-            Output.WriteLine("\t\tUnregister a dll, need restart to effect.");
+            Output.WriteLine(Language.Query("ManageCmd.Help.CmdMgr.Unregister", "\t\tUnregister a dll, need restart to effect."));
+            Output.WriteLine("");
             Output.WriteLine("\tLs/List");
-            Output.WriteLine("\t\tList all commands, their assembly files and aliases.");
+            Output.WriteLine(Language.Query("ManageCmd.Help.CmdMgr.List", "\t\tList all commands, their assembly files and aliases."));
         }
     }
 }
