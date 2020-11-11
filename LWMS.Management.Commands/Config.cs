@@ -100,7 +100,14 @@ namespace LWMS.Management.Commands
                         {
                             Configuration.Page404 = args[2];
                         }
-                        else if (setitem == "EnableRange")
+                        else if (setitem == "LANGUAGE")
+                        {
+                            Configuration.Language = args[2];
+                            Output.SetForegroundColor(ConsoleColor.Yellow);
+                            Output.WriteLine("You need to restart LWMS to apply language.");
+                            Output.ResetColor();
+                        }
+                        else if (setitem == "ENABLERANGE")
                         {
                             try
                             {
