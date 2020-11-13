@@ -181,7 +181,7 @@ namespace LWMS.Core
                     if (value == null)
                     {
                         _LogUA = false;
-                        ConfigurationData.AddValue("LogUA", _LogUA + "", true, true);
+                        ConfigurationData.AddValue("LogUA", _LogUA + "", false, true);
                     }
                     else
                     {
@@ -195,7 +195,7 @@ namespace LWMS.Core
             {
                 _LogUA = value;
                 if (ConfigurationData != null)
-                    ConfigurationData.AddValue("LogUA", _LogUA + "", true, true);
+                    ConfigurationData.AddValue("LogUA", _LogUA + "", false, true);
 
             }
         }
@@ -209,7 +209,7 @@ namespace LWMS.Core
                     if (value == null)
                     {
                         _EnableRange = true;
-                        ConfigurationData.AddValue("EnableRange", _EnableRange + "", true, true);
+                        ConfigurationData.AddValue("EnableRange", _EnableRange + "", false, true);
                     }
                     else
                     {
@@ -223,7 +223,7 @@ namespace LWMS.Core
             {
                 _EnableRange = value;
                 if (ConfigurationData != null)
-                    ConfigurationData.AddValue("EnableRange", _EnableRange + "", true, true);
+                    ConfigurationData.AddValue("EnableRange", _EnableRange + "", false, true);
 
             }
         }

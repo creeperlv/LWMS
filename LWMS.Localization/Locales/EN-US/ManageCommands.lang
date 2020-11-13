@@ -6,6 +6,7 @@ Config.Release.Tip1=Configuration file is already released.
 Config.Set.ParameterMismatch=Arguments does not match: Config set <key> <value>.
 Config.Add.ParameterMismatch=Arguments does not match: Config add <key> <value>.
 Config.Remove.ParameterMismatch=Arguments does not match: Config remove <key>.
+Config.UnidentifiedKey=Unidentified Key: {0}
 
 Help.Universal.Usage=Usage:
 Help.Universal.Operations=Operations:

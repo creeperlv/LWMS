@@ -102,7 +102,12 @@ namespace LWMS.Management.Commands
                         }
                         else if (setitem == "LANGUAGE")
                         {
+                            var a=args[2].ToString().Replace("\"",null);
+                            a=args[2].ToString().Replace("\'",null);
                             Configuration.Language = args[2];
+                            Output.SetForegroundColor(ConsoleColor.Yellow);
+                            Output.WriteLine("Language is set to:"+Configuration.Language);
+                            Output.ResetColor();
                             Language.Initialize(args[2]);
                         }
                         else if (setitem == "ENABLERANGE")
@@ -132,6 +137,10 @@ namespace LWMS.Management.Commands
                                 Output.WriteLine("Key \"LogUA\" only accepts bool type(true and false)!");
                                 Output.ResetColor();
                             }
+                        }
+                        else
+                        {
+                            Output.WriteLine(Language.Query("ManageCmd.Config.UnidentifiedKey", "Unidentified Key: {0}" ,setitem));
                         }
                     }
                     else

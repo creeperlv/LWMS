@@ -5,6 +5,7 @@ Config.Release.Tip0=配置文件已释放并且现在更改不会保存。
 Config.Release.Tip1=配置文件已经释放过了。
 Config.Set.ParameterMismatch=参数不满足：Config set <键> <值>
 Config.Add.ParameterMismatch=参数不满足：Config add <键> <值>
+Config.UnidentifiedKey=未识别的键：{0}
 
 Help.Universal.Usage=用法：
 Help.Universal.Operations=操作：
