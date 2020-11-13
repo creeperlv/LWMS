@@ -2,12 +2,9 @@
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Core.Utilities;
 using LWMS.Localization;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Text;
 
 namespace LWMS.Core
 {
@@ -20,15 +17,15 @@ namespace LWMS.Core
         {
             //if (((HttpPipelineArguments)Input.SecondaryData).isHandled == true) return Input;
             HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
-            Trace.WriteLine(Language.Query("LWMS.ErrorResponseUnit.UnhandledRequest","Unhandled Http Pipeline. Request: {0}" ,(context).Request.RawUrl));
+            Trace.WriteLine(Language.Query("LWMS.ErrorResponseUnit.UnhandledRequest", "Unhandled Http Pipeline. Request: {0}", (context).Request.RawUrl));
             if (File.Exists(Configuration.Page404))
             {
-                Tools00.SendFile(context, new FileInfo(Configuration.Page404),HttpStatusCode.NotFound);
+                Tools00.SendFile(context, new FileInfo(Configuration.Page404), HttpStatusCode.NotFound);
             }
             else
             {
                 Tools00.SendMessage(context, "<html><body><h1>404 File Not Found</h1><hr/><p>Hosted with LWMS.</p></body></html>", HttpStatusCode.NotFound);
-                
+
             }
             (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
             return Input;

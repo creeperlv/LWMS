@@ -1,5 +1,4 @@
-﻿using CLUNL.Data.Layer0.Buffers;
-using CLUNL.Pipeline;
+﻿using CLUNL.Pipeline;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Localization;
 using LWMS.Management;
@@ -9,7 +8,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -289,16 +287,6 @@ namespace LWMS.Core
             var a = new HttpListenerRoutedContext(context);
             var output = HttpPipelineProcessor.Process(new PipelineData(a, new HttpPipelineArguments(), null, context.GetHashCode()));
             (output.PrimaryData as HttpListenerRoutedContext).Response.OutputStream.Close();
-            //context.Response.OutputStream.Flush();
-            //context.Response.OutputStream.Close();
-            //var Response = context.Response;
-            //Response.ContentType = "text/html";
-            //var __ = Encoding.UTF8.GetBytes("<html><body><p>The server is row running.</p></body></html>");
-            //Response.ContentLength64 = __.Length;
-            //Response.StatusCode = 200;
-            //Response.ContentEncoding = Encoding.UTF8;
-            //Response.OutputStream.Write(__, 0, __.Length);
-            //Response.OutputStream.Flush();
         }
         public void Bind(string URL)
         {

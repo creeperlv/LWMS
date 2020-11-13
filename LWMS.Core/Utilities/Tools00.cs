@@ -1,15 +1,12 @@
-﻿using CLUNL;
-using LWMS.Core.HttpRoutedLayer;
+﻿using LWMS.Core.HttpRoutedLayer;
 using LWMS.Localization;
 using LWMS.Management;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -135,7 +132,7 @@ namespace LWMS.Core.Utilities
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine(Language.Query("LWMS.Utilities.Tools00.SendFile.Failed", "Cannot send file:{0}." , e.HResult.ToString()));
+                    Trace.WriteLine(Language.Query("LWMS.Utilities.Tools00.SendFile.Failed", "Cannot send file:{0}.", e.HResult.ToString()));
                 }
             }
         }

@@ -2,7 +2,6 @@
 using CLUNL.Data.Layer0;
 using CLUNL.Data.Layer1;
 using CLUNL.Data.Layer2;
-using CLUNL.DirectedIO;
 using LWMS.Core.Log;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Text;
 
 namespace LWMS.Core
 {
@@ -259,7 +257,7 @@ namespace LWMS.Core
                     }
                     catch (Exception)
                     {
-                        Trace.WriteLine(Localization.Language.Query("LWMS.Config.Error.Save","Cannot save configurations."));
+                        Trace.WriteLine(Localization.Language.Query("LWMS.Config.Error.Save", "Cannot save configurations."));
 
                     }
 

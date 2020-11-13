@@ -103,9 +103,7 @@ namespace LWMS.Management.Commands
                         else if (setitem == "LANGUAGE")
                         {
                             Configuration.Language = args[2];
-                            Output.SetForegroundColor(ConsoleColor.Yellow);
-                            Output.WriteLine("You need to restart LWMS to apply language.");
-                            Output.ResetColor();
+                            Language.Initialize(args[2]);
                         }
                         else if (setitem == "ENABLERANGE")
                         {
