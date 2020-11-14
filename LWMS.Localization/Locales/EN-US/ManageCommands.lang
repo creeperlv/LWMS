@@ -55,5 +55,14 @@ Pipeline.Types.W=Write
 Pipeline.Types.C=Command Output
 
 Universal.UnknownOperation=Unknown Operation:{0}
+Universal.Experimental=*This operation is experimental.
 
 RuntimeConfig.SetValue={0} is temporarily set to {1} without saving to configuration file.
+
+Log.Delete=Log>>Delete: {0}
+Log.Name=Log Manage Unit
+
+Help.Log.List=\t\tList all log files.
+Help.Log.Clear=\t\tDelete all old logs.(Except current using log file)
+Help.Log.New=\t\tCreate a new log file and log contents to the new log file.
+Help.Log.Stopwatch=\t\tStop watching log cache, new logs will now be writtern to file.

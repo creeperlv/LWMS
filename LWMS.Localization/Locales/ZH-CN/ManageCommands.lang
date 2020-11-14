@@ -54,3 +54,12 @@ Pipeline.Types.W=写入
 Pipeline.Types.C=命令输出
 
 Universal.UnknownOperation=未知的操作：{0}
+Universal.Experimental=\t\t*该操作是实验性的。
+
+Log.Delete=日志>>删除：{0}
+Log.Name=日志管理单元
+
+Help.Log.List=\t\t列出所有日志文件。
+Help.Log.Clear=\t\t删除所有旧日志。（正在使用的日志文件除外）
+Help.Log.New=\t\t创建一个新的日志文件并且将内容记录到新的日志文件。
+Help.Log.Stopwatch=\t\t停止监听日志缓存，新日志将不会被写入至文件。
