@@ -19,6 +19,8 @@ namespace LWMS.Management
         {
             CommandPack cp = new CommandPack();
             cp.PackTotal = m.Value.Trim();
+            
+            cp.PackTotal = cp.PackTotal.Trim('\"');
             string _ = null;
             for (int i = 1; i < m.Groups.Count; i++)
             {
