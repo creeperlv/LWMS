@@ -19,7 +19,21 @@ namespace LWMS.Core.FileSystem
         }
         internal string realPath;
         public string ItemPath { get => realPath; }
-        public StorageItem Parent;
+        internal StorageFolder parent;
+        public StorageFolder Parent
+        {
+            get { return parent; }
+            set
+            {
+                if (this != ApplicationStorage.SystemRoot) { 
+                    parent = value; 
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                } 
+            }
+        }
         public StorageItemType StorageItemType;
         public virtual void Delete()
         {
