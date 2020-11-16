@@ -1,4 +1,5 @@
 ﻿using LWMS.Core;
+using LWMS.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,13 +42,13 @@ namespace LWMS.Management.Commands
             {
                 if (item.PackTotal.ToUpper() == "WEBROOT")
                 {
-                    DirectoryInfo directoryInfo = new DirectoryInfo(Configuration.WebSiteContentRoot);
+                    DirectoryInfo directoryInfo = new DirectoryInfo(GlobalConfiguration.WebSiteContentRoot);
                     Output.WriteLine(directoryInfo.FullName);
                 }
                 else
                 if (item.PackTotal.ToUpper() == "WEBROOTDIR")
                 {
-                    DirectoryInfo directoryInfo = new DirectoryInfo(Configuration.WebSiteContentRoot);
+                    DirectoryInfo directoryInfo = new DirectoryInfo(GlobalConfiguration.WebSiteContentRoot);
                     foreach (var dir in directoryInfo.EnumerateDirectories())
                     {
                         Output.WriteLine("D:"+dir.FullName);

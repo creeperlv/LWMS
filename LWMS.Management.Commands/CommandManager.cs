@@ -1,4 +1,5 @@
 ﻿using LWMS.Core;
+using LWMS.Core.Configuration;
 using LWMS.Localization;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace LWMS.Management.Commands
                     {
                         if (ServerController.Register(target.FullName) == true)
                         {
-                            Configuration.ManageCommandModules.Add(target.FullName);
+                            GlobalConfiguration.ManageCommandModules.Add(target.FullName);
                         }
                         else
                         {
@@ -50,11 +51,11 @@ namespace LWMS.Management.Commands
                         Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Unregister.Error.0", "You must specify module to unregister."));
                     }
 
-                    for (int i = 0; i < Configuration.ManageCommandModules.Count; i++)
+                    for (int i = 0; i < GlobalConfiguration.ManageCommandModules.Count; i++)
                     {
-                        if (Configuration.ManageCommandModules[i].EndsWith(args[1]))
+                        if (GlobalConfiguration.ManageCommandModules[i].EndsWith(args[1]))
                         {
-                            Configuration.ManageCommandModules.RemoveAt(i);
+                            GlobalConfiguration.ManageCommandModules.RemoveAt(i);
                             break;
                         }
                     }

@@ -4,6 +4,7 @@ using System.Text;
 using LWMS.Core;
 using System.Diagnostics;
 using LWMS.Localization;
+using LWMS.Core.Configuration;
 
 namespace LWMS.Management.Commands
 {
@@ -44,32 +45,32 @@ namespace LWMS.Management.Commands
                 string operation = args[0];
                 if (operation.ToUpper() == "RELEASE")
                 {
-                    if (Configuration.ConfigurationData != null)
+                    if (GlobalConfiguration.ConfigurationData != null)
                     {
 
-                        Configuration.ConfigurationData.Dispose();
-                        Configuration.ConfigurationData = null;
-                        Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip0", "Configuration file is released and changes will not be saved."));
+                        GlobalConfiguration.ConfigurationData.Dispose();
+                        GlobalConfiguration.ConfigurationData = null;
+                        Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip0", "GlobalConfiguration file is released and changes will not be saved."));
 
                     }
                     else
                     {
                         Output.SetForegroundColor(ConsoleColor.Yellow);
-                        Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip1", "Configuration file is already released."));
+                        Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip1", "GlobalConfiguration file is already released."));
                         Output.ResetColor();
                     }
                 }
                 else if (operation.ToUpper() == "RESUME")
                 {
-                    Configuration.LoadConfiguation();
-                    Configuration.ClearLoadedSettings();
+                    GlobalConfiguration.LoadConfiguation();
+                    GlobalConfiguration.ClearLoadedSettings();
                     Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip0", "Resumed."));
-                    Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip1", "Configuration changes will be automatically saved now."));
+                    Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip1", "GlobalConfiguration changes will be automatically saved now."));
                 }
                 else if (operation.ToUpper() == "RELOAD")
                 {
-                    Configuration.LoadConfiguation();
-                    Configuration.ClearLoadedSettings();
+                    GlobalConfiguration.LoadConfiguation();
+                    GlobalConfiguration.ClearLoadedSettings();
                 }
                 else if (operation.ToUpper() == "SET")
                 {
@@ -78,35 +79,35 @@ namespace LWMS.Management.Commands
                         string setitem = args[1].ToUpper();
                         if (setitem == "BUF_LENGTH")
                         {
-                            Configuration.BUF_LENGTH = int.Parse(args[2]);
+                            GlobalConfiguration.BUF_LENGTH = int.Parse(args[2]);
                         }
                         else if (setitem == "LOG_WATCH_INTERVAL")
                         {
-                            Configuration.LOG_WATCH_INTERVAL = int.Parse(args[2]);
+                            GlobalConfiguration.LOG_WATCH_INTERVAL = int.Parse(args[2]);
                         }
                         else if (setitem == "MAX_LOG_SIZE")
                         {
-                            Configuration.MAX_LOG_SIZE = int.Parse(args[2]);
+                            GlobalConfiguration.MAX_LOG_SIZE = int.Parse(args[2]);
                         }
                         else if (setitem == "WEBROOT" || setitem == "WEBSITEROOT" || setitem == "WEBSITECONTENTROOT" || setitem == "WEBCONTENTROOT" || setitem == "CONTENTROOT")
                         {
-                            Configuration.WebSiteContentRoot = args[2];
+                            GlobalConfiguration.WebSiteContentRoot = args[2];
                         }
                         else if (setitem == "DEFAULTPAGE")
                         {
-                            Configuration.DefaultPage = args[2];
+                            GlobalConfiguration.DefaultPage = args[2];
                         }
                         else if (setitem == "404PAGE")
                         {
-                            Configuration.Page404 = args[2];
+                            GlobalConfiguration.Page404 = args[2];
                         }
                         else if (setitem == "LANGUAGE")
                         {
                             var a=args[2].ToString().Replace("\"",null);
                             a=args[2].ToString().Replace("\'",null);
-                            Configuration.Language = args[2];
+                            GlobalConfiguration.Language = args[2];
                             Output.SetForegroundColor(ConsoleColor.Yellow);
-                            Output.WriteLine("Language is set to:"+Configuration.Language);
+                            Output.WriteLine("Language is set to:"+GlobalConfiguration.Language);
                             Output.ResetColor();
                             Language.Initialize(args[2]);
                         }
@@ -114,7 +115,7 @@ namespace LWMS.Management.Commands
                         {
                             try
                             {
-                                Configuration.EnableRange = bool.Parse(args[2]);
+                                GlobalConfiguration.EnableRange = bool.Parse(args[2]);
 
                             }
                             catch (Exception)
@@ -128,7 +129,7 @@ namespace LWMS.Management.Commands
                         {
                             try
                             {
-                                Configuration.LogUA = bool.Parse(args[2]);
+                                GlobalConfiguration.LogUA = bool.Parse(args[2]);
 
                             }
                             catch (Exception)
@@ -157,9 +158,9 @@ namespace LWMS.Management.Commands
                         string setitem = args[1].ToUpper();
                         if (setitem == "LISTENPREFIX" || setitem == "LISTEN")
                         {
-                            var prefixes = Configuration.ListenPrefixes;
+                            var prefixes = GlobalConfiguration.ListenPrefixes;
                             prefixes.Add(args[2]);
-                            Configuration.ListenPrefixes = prefixes;
+                            GlobalConfiguration.ListenPrefixes = prefixes;
                         }
                     }
                     else
@@ -180,9 +181,9 @@ namespace LWMS.Management.Commands
                             try
                             {
 
-                                var prefixes = Configuration.ListenPrefixes;
+                                var prefixes = GlobalConfiguration.ListenPrefixes;
                                 prefixes.Remove(args[2]);
-                                Configuration.ListenPrefixes = prefixes;
+                                GlobalConfiguration.ListenPrefixes = prefixes;
 
                             }
                             catch (Exception)

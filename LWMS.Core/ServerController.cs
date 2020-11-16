@@ -1,4 +1,5 @@
-﻿using LWMS.Core.Log;
+﻿using LWMS.Core.Configuration;
+using LWMS.Core.Log;
 using LWMS.Localization;
 using LWMS.Management;
 using System;
@@ -91,7 +92,7 @@ namespace LWMS.Core
                 {
                     LWMSCoreServer.Listener = new System.Net.HttpListener();
 
-                    foreach (var item in Configuration.ListenPrefixes)
+                    foreach (var item in GlobalConfiguration.ListenPrefixes)
                     {
 
                         LWMSCoreServer.Listener.Prefixes.Add(item);

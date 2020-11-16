@@ -1,4 +1,5 @@
 ﻿using CLUNL.Pipeline;
+using LWMS.Core.Configuration;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Core.Log;
 using System.Diagnostics;
@@ -13,7 +14,7 @@ namespace LWMS.Core
     {
         public LogUnit()
         {
-            Trace.Listeners.Add(new LWMSTraceListener(Configuration.BasePath));
+            Trace.Listeners.Add(new LWMSTraceListener(GlobalConfiguration.BasePath));
         }
         public PipelineData Process(PipelineData Input)
         {
@@ -21,7 +22,7 @@ namespace LWMS.Core
             var c = Input.PrimaryData as HttpListenerRoutedContext;
             b.Append(c.Request.RemoteEndPoint);
             b.Append(">>");
-            if (Configuration.LogUA)
+            if (GlobalConfiguration.LogUA)
             {
                 b.Append(c.Request.UserAgent);
                 b.Append(">>");

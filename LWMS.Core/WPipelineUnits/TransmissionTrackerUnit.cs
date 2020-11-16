@@ -1,5 +1,6 @@
 ﻿using CLUNL.DirectedIO;
 using CLUNL.Pipeline;
+using LWMS.Core.Configuration;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Core.Log;
 using System;
@@ -53,8 +54,8 @@ namespace LWMS.Core.WPipelineUnits
         public void Log(string str)
         {
             LogFileWR.WriteLine($"[{DateTime.Now}]{str}");
-            if (Configuration.MAX_LOG_SIZE != -1)
-                if (LogFileWR.Length >= Configuration.MAX_LOG_SIZE)
+            if (GlobalConfiguration.MAX_LOG_SIZE != -1)
+                if (LogFileWR.Length >= GlobalConfiguration.MAX_LOG_SIZE)
                 {
                     NewLog();
                 }

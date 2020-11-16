@@ -1,4 +1,5 @@
 ﻿using LWMS.Core;
+using LWMS.Core.Configuration;
 using LWMS.Core.Log;
 using LWMS.Core.Utilities;
 using LWMS.Management;
@@ -50,7 +51,7 @@ namespace LWMS
             Check00();
             LWMSCoreServer coreServer = new LWMSCoreServer();
             //coreServer.Bind("http://+:8080/");
-            string p = Configuration.BasePath;
+            //string p = Configuration.BasePath;
             coreServer.Start(100);
             Console.WriteLine("The server is now running good.");
             if (args.Length > 0)
@@ -86,7 +87,7 @@ namespace LWMS
         //}
         static void Check00()
         {
-            if (Configuration.ListenPrefixes.Count == 0)
+            if (GlobalConfiguration.ListenPrefixes.Count == 0)
             {
                 Console.WriteLine("Listening Url Not Found!");
                 Console.WriteLine("Enter your own url prefixes: (End with \"END\")");
@@ -97,7 +98,7 @@ namespace LWMS
                     if (URL.ToUpper() == "UNDO") RecordedUrls.RemoveAt(RecordedUrls.Count - 1);
                     RecordedUrls.Add(URL);
                 }
-                Configuration.ListenPrefixes = RecordedUrls;
+                GlobalConfiguration.ListenPrefixes = RecordedUrls;
                 Console.WriteLine("Done!");
             }
         }

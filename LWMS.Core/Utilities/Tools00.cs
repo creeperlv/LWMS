@@ -1,4 +1,5 @@
-﻿using LWMS.Core.HttpRoutedLayer;
+﻿using LWMS.Core.Configuration;
+using LWMS.Core.HttpRoutedLayer;
 using LWMS.Localization;
 using LWMS.Management;
 using System;
@@ -27,14 +28,14 @@ namespace LWMS.Core.Utilities
             {
                 try
                 {
-                    Trace.WriteLine(Language.Query("LWMS.Utilities.Tools00.SendFile.Access", "Access:{0}", f.FullName.Substring(Configuration.WebSiteContentRoot.Length)));
-                    var BUF_LENGTH = Configuration.BUF_LENGTH;
+                    Trace.WriteLine(Language.Query("LWMS.Utilities.Tools00.SendFile.Access", "Access:{0}", f.FullName.Substring(GlobalConfiguration.WebSiteContentRoot.Length)));
+                    var BUF_LENGTH = GlobalConfiguration.BUF_LENGTH;
                     byte[] buf = new byte[BUF_LENGTH];
                     if (ContentType == null)
                         context.Response.ContentType = ObtainMimeType(f.Extension);
                     else context.Response.ContentType = ContentType;
                     context.Response.ContentEncoding = Encoding.UTF8;
-                    if (Configuration.EnableRange == true)
+                    if (GlobalConfiguration.EnableRange == true)
                         context.Response.AddHeader("Accept-Ranges", "bytes");
                     else
                         context.Response.AddHeader("Accept-Ranges", "none");
@@ -47,7 +48,7 @@ namespace LWMS.Core.Utilities
                         context.Response.OutputStream.Flush();
                         return;
                     }
-                    if (Configuration.EnableRange == true)
+                    if (GlobalConfiguration.EnableRange == true)
                         try
                         {
                             range = context.Request.Headers["Range"];

@@ -26,7 +26,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Core.Logger", "LWMS.Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Core.WR", "LWMS.Core.WR\LWMS.Core.WR.csproj", "{3649AE37-5928-43AD-A0BC-8700ABBF3619}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWMS.Localization", "LWMS.Localization\LWMS.Localization.csproj", "{A57895FD-828E-44A9-B877-43AB34135DE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Localization", "LWMS.Localization\LWMS.Localization.csproj", "{A57895FD-828E-44A9-B877-43AB34135DE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWMS.Core.Configuration", "LWMS.Core.Configuration\LWMS.Core.Configuration.csproj", "{D861615D-915D-4BD8-9EC9-81F31881323B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +68,10 @@ Global
 		{A57895FD-828E-44A9-B877-43AB34135DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A57895FD-828E-44A9-B877-43AB34135DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A57895FD-828E-44A9-B877-43AB34135DE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D861615D-915D-4BD8-9EC9-81F31881323B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D861615D-915D-4BD8-9EC9-81F31881323B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D861615D-915D-4BD8-9EC9-81F31881323B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D861615D-915D-4BD8-9EC9-81F31881323B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,15 +10,15 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 
-namespace LWMS.Core
+namespace LWMS.Core.Configuration
 {
-    public static class Configuration
+    public class GlobalConfiguration
     {
         static string ConfigurationPath = null;
-        static Configuration()
+        static GlobalConfiguration()
         {
             LibraryInfo.SetFlag(FeatureFlags.Pipeline_AutoID_Random, 1);
-            BasePath = new FileInfo(Assembly.GetAssembly(typeof(LWMSCoreServer)).Location).DirectoryName;
+            BasePath = new FileInfo(Assembly.GetAssembly(typeof(GlobalConfiguration)).Location).DirectoryName;
             ConfigurationPath = Path.Combine(BasePath, "Server.ini");
             var PluginConfigPath = Path.Combine(BasePath, "RPipelineUnit.tsd");
             var WPipelineUnitsPath = Path.Combine(BasePath, "WPipelineUnit.tsd");

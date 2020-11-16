@@ -1,6 +1,7 @@
 ﻿using CLUNL.Data.Layer0;
 using CLUNL.Utilities;
 using LWMS.Core;
+using LWMS.Core.Configuration;
 using LWMS.Localization;
 using System;
 using System.Collections.Generic;
@@ -104,7 +105,7 @@ namespace LWMS.Management.Commands
                         if (TYPE == "W" || TYPE == "/W" || TYPE == "WRITE")
                         {
 
-                            Configuration.WProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
+                            GlobalConfiguration.WProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
                             {
                                 if (item.Value == DLL)
                                 {
@@ -128,15 +129,15 @@ namespace LWMS.Management.Commands
                                         unit.Value = ENTRY;
                                         treeNode.AddChildren(unit);
                                     }
-                                    Configuration.WProcessUnits.RootNode.AddChildren(treeNode);
+                                    GlobalConfiguration.WProcessUnits.RootNode.AddChildren(treeNode);
                                 }
                             }
-                            Configuration.WProcessUnits.Serialize();
+                            GlobalConfiguration.WProcessUnits.Serialize();
                         }
                         else if (TYPE == "R" || TYPE == "/R" || TYPE == "REQUEST")
                         {
 
-                            Configuration.RProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
+                            GlobalConfiguration.RProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
                             {
                                 if (item.Value == DLL)
                                 {
@@ -160,15 +161,15 @@ namespace LWMS.Management.Commands
                                         unit.Value = ENTRY;
                                         treeNode.AddChildren(unit);
                                     }
-                                    Configuration.RProcessUnits.RootNode.AddChildren(treeNode);
+                                    GlobalConfiguration.RProcessUnits.RootNode.AddChildren(treeNode);
                                 }
                             }
-                            Configuration.RProcessUnits.Serialize();
+                            GlobalConfiguration.RProcessUnits.Serialize();
                         }
                         else if (TYPE == "C" || TYPE == "/C" || TYPE == "CMDOUT")
                         {
 
-                            Configuration.CMDOUTProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
+                            GlobalConfiguration.CMDOUTProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
                             {
                                 if (item.Value == DLL)
                                 {
@@ -192,10 +193,10 @@ namespace LWMS.Management.Commands
                                         unit.Value = ENTRY;
                                         treeNode.AddChildren(unit);
                                     }
-                                    Configuration.CMDOUTProcessUnits.RootNode.AddChildren(treeNode);
+                                    GlobalConfiguration.CMDOUTProcessUnits.RootNode.AddChildren(treeNode);
                                 }
                             }
-                            Configuration.CMDOUTProcessUnits.Serialize();
+                            GlobalConfiguration.CMDOUTProcessUnits.Serialize();
                         }
                         else
                         {
@@ -217,7 +218,7 @@ namespace LWMS.Management.Commands
                     if (TYPE == "R" || TYPE == "/R" || TYPE == "REQUEST")
                     {
                         TYPE = Language.Query("ManageCmd.Pipeline.Types.R","Request");
-                        foreach (var item in Configuration.RProcessUnits.RootNode.Children)
+                        foreach (var item in GlobalConfiguration.RProcessUnits.RootNode.Children)
                         {
                             for (int a = 0; a < item.Children.Count; a++)
                             {
@@ -233,12 +234,12 @@ namespace LWMS.Management.Commands
                                 break;
                             }
                         }
-                        Configuration.RProcessUnits.Serialize();
+                        GlobalConfiguration.RProcessUnits.Serialize();
                     }
                     else if (TYPE == "W" || TYPE == "/W" || TYPE == "WRITE")
                     {
                         TYPE = Language.Query("ManageCmd.Pipeline.Types.W","Write");
-                        foreach (var item in Configuration.WProcessUnits.RootNode.Children)
+                        foreach (var item in GlobalConfiguration.WProcessUnits.RootNode.Children)
                         {
                             for (int a = 0; a < item.Children.Count; a++)
                             {
@@ -254,12 +255,12 @@ namespace LWMS.Management.Commands
                                 break;
                             }
                         }
-                        Configuration.WProcessUnits.Serialize();
+                        GlobalConfiguration.WProcessUnits.Serialize();
                     }
                     else if (TYPE == "C" || TYPE == "/C" || TYPE == "CMDOUT")
                     {
                         TYPE = Language.Query("ManageCmd.Pipeline.Types.C","Command Output");
-                        foreach (var item in Configuration.CMDOUTProcessUnits.RootNode.Children)
+                        foreach (var item in GlobalConfiguration.CMDOUTProcessUnits.RootNode.Children)
                         {
                             for (int a = 0; a < item.Children.Count; a++)
                             {
@@ -275,7 +276,7 @@ namespace LWMS.Management.Commands
                                 break;
                             }
                         }
-                        Configuration.CMDOUTProcessUnits.Serialize();
+                        GlobalConfiguration.CMDOUTProcessUnits.Serialize();
                     }
                     Output.WriteLine($"Unregistered:{TARGETENTRY} At:{TYPE} pipeline");
                     Output.WriteLine(Language.Query("ManageCmd.Pipeline.Unregistered","Unregistered:{0} At:{1} pipeline",TARGETENTRY,TYPE));
@@ -289,11 +290,11 @@ namespace LWMS.Management.Commands
                     if (TYPE == "R" || TYPE == "/R" || TYPE == "REQUEST")
                     {
 
-                        for (int a = 0; a < Configuration.RProcessUnits.RootNode.Children.Count; a++)
+                        for (int a = 0; a < GlobalConfiguration.RProcessUnits.RootNode.Children.Count; a++)
                         {
-                            if (Configuration.RProcessUnits.RootNode.Children[a].Value == TARGETDLL)
+                            if (GlobalConfiguration.RProcessUnits.RootNode.Children[a].Value == TARGETDLL)
                             {
-                                Configuration.RProcessUnits.RootNode.Children.RemoveAt(a);
+                                GlobalConfiguration.RProcessUnits.RootNode.Children.RemoveAt(a);
                                 break;
                             }
                         }
@@ -301,11 +302,11 @@ namespace LWMS.Management.Commands
                     else
                     if (TYPE == "C" || TYPE == "/C" || TYPE == "CMDOUT")
                     {
-                        for (int a = 0; a < Configuration.CMDOUTProcessUnits.RootNode.Children.Count; a++)
+                        for (int a = 0; a < GlobalConfiguration.CMDOUTProcessUnits.RootNode.Children.Count; a++)
                         {
-                            if (Configuration.CMDOUTProcessUnits.RootNode.Children[a].Value == TARGETDLL)
+                            if (GlobalConfiguration.CMDOUTProcessUnits.RootNode.Children[a].Value == TARGETDLL)
                             {
-                                Configuration.CMDOUTProcessUnits.RootNode.Children.RemoveAt(a);
+                                GlobalConfiguration.CMDOUTProcessUnits.RootNode.Children.RemoveAt(a);
                                 break;
                             }
                         }
@@ -313,16 +314,16 @@ namespace LWMS.Management.Commands
                     else
                     if (TYPE == "W" || TYPE == "/W" || TYPE == "WRITE")
                     {
-                        for (int a = 0; a < Configuration.WProcessUnits.RootNode.Children.Count; a++)
+                        for (int a = 0; a < GlobalConfiguration.WProcessUnits.RootNode.Children.Count; a++)
                         {
-                            if (Configuration.WProcessUnits.RootNode.Children[a].Value == TARGETDLL)
+                            if (GlobalConfiguration.WProcessUnits.RootNode.Children[a].Value == TARGETDLL)
                             {
-                                Configuration.WProcessUnits.RootNode.Children.RemoveAt(a);
+                                GlobalConfiguration.WProcessUnits.RootNode.Children.RemoveAt(a);
                                 break;
                             }
                         }
                     }
-                    Configuration.RProcessUnits.Serialize();
+                    GlobalConfiguration.RProcessUnits.Serialize();
                     Output.WriteLine(Language.Query("ManageCmd.Pipeline.Removed","Removed:{0}", TARGETDLL));
                 }
                 else if (args[i].ToUpper() == "H" || args[i].ToUpper() == "HELP" || args[i].ToUpper() == "--H" || args[i].ToUpper() == "-H" || args[i].ToUpper() == "?" || args[i].ToUpper() == "-?" || args[i].ToUpper() == "--?")

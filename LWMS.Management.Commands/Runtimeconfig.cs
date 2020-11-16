@@ -1,4 +1,5 @@
 ﻿using LWMS.Core;
+using LWMS.Core.Configuration;
 using LWMS.Core.Log;
 using LWMS.Localization;
 using System;
@@ -50,15 +51,15 @@ namespace LWMS.Management.Commands
                                     {
                                         int B;
                                         int.TryParse(args[i].PackParted[1], out B);
-                                        Configuration.Set_BUF_LENGTH_RT(B);
-                                        Console.WriteLine(Language.Query("ManageCmd.RuntimeConfig.SetValue", "{0} is temporarily set to {1} without saving to configuration file.","BUT_LENGTH",B.ToString()));
+                                        GlobalConfiguration.Set_BUF_LENGTH_RT(B);
+                                        Console.WriteLine(Language.Query("ManageCmd.RuntimeConfig.SetValue", "{0} is temporarily set to {1} without saving to GlobalConfiguration file.","BUT_LENGTH",B.ToString()));
                                     }
                                     break;
                                 case "WEBROOT":
                                     {
                                         string path = args[i].PackParted[1];
-                                        Configuration.Set_WebRoot_RT(path);
-                                        Console.WriteLine(Language.Query("ManageCmd.RuntimeConfig.SetValue", "{0} is temporarily set to {1} without saving to configuration file.","WebRoot",path));
+                                        GlobalConfiguration.Set_WebRoot_RT(path);
+                                        Console.WriteLine(Language.Query("ManageCmd.RuntimeConfig.SetValue", "{0} is temporarily set to {1} without saving to GlobalConfiguration file.","WebRoot",path));
                                     }
                                     break;
                                 default:

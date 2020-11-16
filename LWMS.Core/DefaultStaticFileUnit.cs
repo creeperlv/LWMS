@@ -1,4 +1,5 @@
 ﻿using CLUNL.Pipeline;
+using LWMS.Core.Configuration;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Core.Utilities;
 using System.IO;
@@ -17,10 +18,10 @@ namespace LWMS.Core
         {
             HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
             var path0 = context.Request.Url.LocalPath.Substring(1);
-            var path1 = Path.Combine(Configuration.WebSiteContentRoot, path0);
+            var path1 = Path.Combine(GlobalConfiguration.WebSiteContentRoot, path0);
             if (Directory.Exists(path1))
             {
-                var DefaultPage = Path.Combine(path1, Configuration.DefaultPage);
+                var DefaultPage = Path.Combine(path1, GlobalConfiguration.DefaultPage);
                 if (File.Exists(DefaultPage))
                 {
                     Tools00.SendFile(context, new FileInfo(DefaultPage));

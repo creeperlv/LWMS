@@ -1,4 +1,5 @@
 ﻿using CLUNL.Pipeline;
+using LWMS.Core.Configuration;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Localization;
 using LWMS.Management;
@@ -35,17 +36,17 @@ namespace LWMS.Core
         public void Start(int MaxThread)
         {
             semaphore = new Semaphore(MaxThread, MaxThread);
-            Language.Initialize(Configuration.Language);
+            Language.Initialize(GlobalConfiguration.Language);
             //Register Listener from beginning.
             RegisterProcessUnit(new LogUnit());
             //Add listening prefixes
-            foreach (var item in Configuration.ListenPrefixes)
+            foreach (var item in GlobalConfiguration.ListenPrefixes)
             {
                 Listener.Prefixes.Add(item);
             }
             //Load process units.
             {
-                foreach (var item in Configuration.RProcessUnits.RootNode.Children)
+                foreach (var item in GlobalConfiguration.RProcessUnits.RootNode.Children)
                 {
                     if (item.Value == "LWMS.Core.dll")
                     {
@@ -77,7 +78,7 @@ namespace LWMS.Core
             RegisterProcessUnit(new ErrorResponseUnit());
             //Load W process units.
             {
-                foreach (var item in Configuration.WProcessUnits.RootNode.Children)
+                foreach (var item in GlobalConfiguration.WProcessUnits.RootNode.Children)
                 {
                     if (item.Value == "LWMS.Core.dll")
                     {
@@ -108,7 +109,7 @@ namespace LWMS.Core
             }
             {
                 {
-                    foreach (var item in Configuration.CMDOUTProcessUnits.RootNode.Children)
+                    foreach (var item in GlobalConfiguration.CMDOUTProcessUnits.RootNode.Children)
                     {
                         if (item.Value == "LWMS.Management.dll")
                         {
@@ -234,7 +235,7 @@ namespace LWMS.Core
         {
             ServerController.ManageCommands.Clear();
             ServerController.ManageCommandAliases.Clear();
-            foreach (string item in Configuration.ManageCommandModules)
+            foreach (string item in GlobalConfiguration.ManageCommandModules)
             {
                 ServerController.Register(item);
             }
