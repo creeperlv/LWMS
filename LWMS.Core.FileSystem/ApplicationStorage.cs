@@ -10,13 +10,13 @@ namespace LWMS.Core.FileSystem
     public static class ApplicationStorage
     {
         static INILikeData RouteLocationMap;
-        static Dictionary<string, string> Map=new Dictionary<string, string>();
+        static Dictionary<string, string> Map = new Dictionary<string, string>();
         static ApplicationStorage()
         {
-            RouteLocationMap = INILikeData.LoadFromWR(new FileWR(new FileInfo(Path.Combine(GlobalConfiguration.BasePath,"RoutedLocations.ini"))));
+            RouteLocationMap = INILikeData.LoadFromWR(new FileWR(new FileInfo(Path.Combine(GlobalConfiguration.BasePath, "RoutedLocations.ini"))));
             foreach (var item in RouteLocationMap)
             {
-                Map.Add(item.Key, item.Value);
+                Map.Add(item.Key.Replace('\\', '/'), item.Value);
             }
             {
                 Webroot = new StorageFolder();
@@ -29,16 +29,44 @@ namespace LWMS.Core.FileSystem
                 SystemRoot.realPath = "{Root}";
             }
         }
-        public static StorageItem ObtainItemFromRelativeURL(string URL)
+        /// <summary>
+        /// Obtain an item from a relative url.
+        /// </summary>
+        /// <param name="URL"></param>
+        /// <param name="CaseSensitivity"></param>
+        /// <returns></returns>
+        public static StorageItem ObtainItemFromRelativeURL(string URL,bool CaseSensitivity=false)
         {
             StorageItem storageItem = new StorageItem();
             string[] paths;
+            URL = URL.Replace('\\', '/');
+            StorageFolder Root = Webroot;
+            foreach (var item in Map)
+            {
+                if (URL.StartsWith(item.Key))
+                {
+                    Root = new StorageFolder();
+                    Root.parent = SystemRoot;
+                    Root.realPath = item.Value;
+                    URL = URL.Substring(item.Key.Length);
+                    break;
+                }
+            }
+
             if (URL.IndexOf('/') > 0)
                 paths = URL.Split('/');
             else paths = URL.Split('\\');
             for (int i = 0; i < paths.Length; i++)
             {
-
+                if (i + 1 == paths.Length)
+                {
+                    //Get Final Item.
+                    return Root.GetContainedItem(paths[i], CaseSensitivity);
+                }
+                else
+                {
+                    Root = Root.GetContainedFolder(paths[i], CaseSensitivity);
+                }
             }
             return null;
         }
