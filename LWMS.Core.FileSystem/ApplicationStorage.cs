@@ -47,7 +47,7 @@ namespace LWMS.Core.FileSystem
                 {
                     Root = new StorageFolder();
                     Root.parent = SystemRoot;
-                    Root.realPath = item.Value;
+                    storageItem.SetPath(item.Value);
                     URL = URL.Substring(item.Key.Length);
                     break;
                 }

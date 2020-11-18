@@ -18,17 +18,24 @@ namespace LWMS.Core.FileSystem
 
         }
         internal string realPath;
+        internal DirectoryInfo RealDirectory;
+        internal FileInfo RealFile;
         internal void SetPath(string path)
         {
             realPath = path;
             if (Directory.Exists(path))
             {
                 StorageItemType = StorageItemType.Folder;
+                RealDirectory = new DirectoryInfo(realPath);
+                name = RealDirectory.Name;
             }
             if (File.Exists(path))
             {
                 StorageItemType = StorageItemType.File;
+                RealFile = new FileInfo(realPath);
+                name = RealFile.Name;
             }
+
         }
         public string ItemPath { get => realPath; }
         internal StorageFolder parent;
@@ -41,27 +48,35 @@ namespace LWMS.Core.FileSystem
                 switch (StorageItemType)
                 {
                     case StorageItemType.File:
-                        File.Move(realPath, Path.Combine(parent.realPath, value));
-                        name = value;
+                        {
+                            File.Move(realPath, Path.Combine(parent.realPath, value));
+                            name = value;
+                        }
                         break;
                     case StorageItemType.Folder:
+                        {
+                            Directory.Move(realPath, Path.Combine(parent.realPath, value));
+                            name = value;
+                        }
                         break;
                     default:
                         break;
                 }
-            } }
+            }
+        }
         public StorageFolder Parent
         {
             get { return parent; }
             set
             {
-                if (this != ApplicationStorage.SystemRoot) { 
-                    parent = value; 
+                if (this != ApplicationStorage.SystemRoot)
+                {
+                    parent = value;
                 }
                 else
                 {
                     throw new NotSupportedException();
-                } 
+                }
             }
         }
         public StorageItemType StorageItemType;
