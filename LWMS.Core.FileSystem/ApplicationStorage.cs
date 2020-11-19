@@ -29,6 +29,21 @@ namespace LWMS.Core.FileSystem
                 SystemRoot.realPath = "{Root}";
             }
         }
+        public static void RemoveRoute(string Key)
+        {
+            Map.Remove(Key);
+            RouteLocationMap.DeleteKey(Key, true);
+        }
+        /// <summary>
+        /// Add a route definition
+        /// </summary>
+        /// <param name="Key"></param>
+        /// <param name="Value"></param>
+        public static void AddRoute(string Key,string Value)
+        {
+            Map.Add(Key, Value);
+            RouteLocationMap.AddValue(Key, Value, false, true);
+        }
         /// <summary>
         /// Obtain an item from a relative url.
         /// </summary>

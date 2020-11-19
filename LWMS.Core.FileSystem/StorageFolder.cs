@@ -11,6 +11,16 @@ namespace LWMS.Core.FileSystem
             StorageItemType = StorageItemType.Folder;
         }
         /// <summary>
+        /// Determines whether current folder is root folder.
+        /// </summary>
+        public bool isRoot
+        {
+            get
+            {
+                return realPath == "{Root}";
+            }
+        }
+        /// <summary>
         /// Get a contained folder. Throw an StorageItemNotExistException when cannot find it.
         /// </summary>
         /// <param name="Name"></param>
@@ -92,7 +102,7 @@ namespace LWMS.Core.FileSystem
             List<StorageFile> storageFiles = new List<StorageFile>(FileNames.Length);
             foreach (var item in FileNames)
             {
-                storageFiles.Add(GetContainedFile(item,true));
+                storageFiles.Add(GetContainedFile(item, true));
             }
             return storageFiles;
         }
@@ -163,5 +173,17 @@ namespace LWMS.Core.FileSystem
             }
             throw new StorageItemNotExistException(Path.Combine(realPath, Name));
         }
+    }
+    public static class PredefinedRootFolders
+    {
+        public static readonly string WebRoot = "/Webroot";
+        public static readonly string Configuration = "/Config";
+        public static readonly string Languages = "/Languages";
+        public static readonly string Logs = "/Logs";
+    }
+    [System.Serializable]
+    public class FindFileInRootFolderException : System.Exception
+    {
+        public FindFileInRootFolderException() { }
     }
 }
