@@ -16,8 +16,12 @@ namespace LWMS.Core.FileSystem
         {
             try
             {
-
-                RouteLocationMap = INILikeData.LoadFromWR(new FileWR(new FileInfo(Path.Combine(GlobalConfiguration.BasePath, "RoutedLocations.ini"))));
+                if (!File.Exists(Path.Combine(GlobalConfiguration.BasePath, "RoutedLocations.ini")))
+                {
+                    RouteLocationMap = INILikeData.CreateToFile(new FileInfo(Path.Combine(GlobalConfiguration.BasePath, "RoutedLocations.ini")));
+                }
+                else
+                    RouteLocationMap = INILikeData.LoadFromWR(new FileWR(new FileInfo(Path.Combine(GlobalConfiguration.BasePath, "RoutedLocations.ini"))));
                 foreach (var item in RouteLocationMap)
                 {
                     Map.Add(item.Key.Replace('\\', '/'), item.Value);
