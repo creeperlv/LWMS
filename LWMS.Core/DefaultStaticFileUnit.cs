@@ -1,7 +1,10 @@
 ﻿using CLUNL.Pipeline;
 using LWMS.Core.Configuration;
+using LWMS.Core.FileSystem;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Core.Utilities;
+using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace LWMS.Core
@@ -18,24 +21,25 @@ namespace LWMS.Core
         {
             HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
             var path0 = context.Request.Url.LocalPath.Substring(1);
-            var path1 = Path.Combine(GlobalConfiguration.WebSiteContentRoot, path0);
-            if (Directory.Exists(path1))
+            StorageItem Result;
+            if(ApplicationStorage.ObtainItemFromRelativeURL(path0, out Result, false))
             {
-                var DefaultPage = Path.Combine(path1, GlobalConfiguration.DefaultPage);
-                if (File.Exists(DefaultPage))
+                if(Result.StorageItemType== StorageItemType.Folder)
                 {
-                    Tools00.SendFile(context, new FileInfo(DefaultPage));
-                    (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
+                    StorageFile DefaultPage;
+                    if (((StorageFolder)Result).GetContainedFile(GlobalConfiguration.DefaultPage,out DefaultPage,false))
+                    {
+
+                        Tools00.SendFile(context, DefaultPage);
+                        (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
+                        return Input;
+                    }
                 }
-
-            }
-            else
-            {
-
-                if (File.Exists(path1))
+                else
                 {
-                    Tools00.SendFile(context, new FileInfo(path1));
+                    Tools00.SendFile(context, Result.ToStorageFile());
                     (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
+                    return Input;
                 }
             }
             return Input;

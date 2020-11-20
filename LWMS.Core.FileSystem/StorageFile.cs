@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Xml.XPath;
 
 namespace LWMS.Core.FileSystem
 {
@@ -17,6 +16,14 @@ namespace LWMS.Core.FileSystem
         {
             return File.Open(realPath, FileMode.Open, FileAccess.ReadWrite);
         }
+        /// <summary>
+        /// Write a content to target file.
+        /// </summary>
+        /// <param name="content"></param>
+        public void WriteAllText(string content)
+        {
+            File.WriteAllText(realPath, content);
+        }
         public static implicit operator FileInfo(StorageFile file)
         {
             FileInfo fileInfo = new FileInfo(file.realPath);
@@ -28,7 +35,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Destination"></param>
         public override void CopyTo(StorageItem Destination)
         {
-            if(Destination.StorageItemType== StorageItemType.Folder)
+            if (Destination.StorageItemType == StorageItemType.Folder)
             {
                 FileInfo fileInfo = new FileInfo(realPath);
 

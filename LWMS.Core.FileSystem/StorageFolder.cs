@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -11,13 +12,24 @@ namespace LWMS.Core.FileSystem
             StorageItemType = StorageItemType.Folder;
         }
         /// <summary>
-        /// Determines whether current folder is root folder.
+        /// Determines whether current folder is system root folder.
+        /// </summary>
+        public bool isSystemRoot
+        {
+            get
+            {
+                return (realPath == "{Root}" && parent == null);
+            }
+        }
+        internal bool isroot = false;
+        /// <summary>
+        /// Determine whether current folder is a root folder.
         /// </summary>
         public bool isRoot
         {
             get
             {
-                return realPath == "{Root}";
+                return isroot;
             }
         }
         /// <summary>
@@ -31,14 +43,16 @@ namespace LWMS.Core.FileSystem
 
             StorageFile storageItem = new StorageFile();
             var entries = Directory.EnumerateFiles(realPath);
+            string Target = Path.Combine(realPath, Name);
+            string TARGET = Target.ToUpper();
             foreach (var item in entries)
             {
                 if (CaseSensitivity == false)
                 {
 
-                    if (item.ToUpper() == Name.ToUpper())
+                    if (item.ToUpper() == TARGET)
                     {
-                        storageItem.SetPath(Path.Combine(realPath, item));
+                        storageItem.SetPath(Target);
                         storageItem.Parent = this;
                         return storageItem;
                     }
@@ -46,15 +60,57 @@ namespace LWMS.Core.FileSystem
                 else
                 {
 
-                    if (item == Name)
+                    if (item == Target)
                     {
-                        storageItem.SetPath(Path.Combine(realPath, item));
+                        storageItem.SetPath(Target);
                         storageItem.Parent = this;
                         return storageItem;
                     }
                 }
             }
             throw new StorageItemNotExistException(Path.Combine(realPath, Name));
+        }
+        /// <summary>
+        /// Get a contained file. Return false when cannot find it.
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="OutItem"></param>
+        /// <param name="CaseSensitivity"></param>
+        /// <returns></returns>
+        public bool GetContainedFile(string Name, out StorageFile OutItem, bool CaseSensitivity = false)
+        {
+
+            StorageFile storageItem = new StorageFile();
+            var entries = Directory.EnumerateFiles(realPath);
+            string Target = Path.Combine(realPath, Name);
+            string TARGET = Target.ToUpper();
+            foreach (var item in entries)
+            {
+                if (CaseSensitivity == false)
+                {
+
+                    if (item.ToUpper() == TARGET)
+                    {
+                        storageItem.SetPath(Target);
+                        storageItem.Parent = this;
+                        OutItem = storageItem;
+                        return true;
+                    }
+                }
+                else
+                {
+
+                    if (item == Target)
+                    {
+                        storageItem.SetPath(Target);
+                        storageItem.Parent = this;
+                        OutItem = storageItem;
+                        return true;
+                    }
+                }
+            }
+            OutItem = null;
+            return false;
         }
         /// <summary>
         /// Get a contained folder. Throw an StorageItemNotExistException when cannot find it.
@@ -67,14 +123,16 @@ namespace LWMS.Core.FileSystem
 
             StorageFolder storageItem = new StorageFolder();
             var entries = Directory.EnumerateDirectories(realPath);
+            string Target = Path.Combine(realPath, Name);
+            string TARGET = Target.ToUpper();
             foreach (var item in entries)
             {
                 if (CaseSensitivity == false)
                 {
 
-                    if (item.ToUpper() == Name.ToUpper())
+                    if (item.ToUpper() == TARGET)
                     {
-                        storageItem.SetPath(Path.Combine(realPath, item));
+                        storageItem.SetPath(Target);
                         storageItem.Parent = this;
                         return storageItem;
                     }
@@ -82,15 +140,57 @@ namespace LWMS.Core.FileSystem
                 else
                 {
 
-                    if (item == Name)
+                    if (item == Target)
                     {
-                        storageItem.SetPath(Path.Combine(realPath, item));
+                        storageItem.SetPath(Target);
                         storageItem.Parent = this;
                         return storageItem;
                     }
                 }
             }
             throw new StorageItemNotExistException(Path.Combine(realPath, Name));
+        }
+        /// <summary>
+        /// Get a contained folder. Return false when cannot find it.
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="CaseSensitivity"></param>
+        /// <param name="OutFolder"></param>
+        /// <returns></returns>
+        public bool GetContainedFolder(string Name, out StorageFolder OutFolder, bool CaseSensitivity = false)
+        {
+
+            StorageFolder storageItem = new StorageFolder();
+            var entries = Directory.EnumerateDirectories(realPath);
+            string Target = Path.Combine(realPath, Name);
+            string TARGET = Target.ToUpper();
+            foreach (var item in entries)
+            {
+                if (CaseSensitivity == false)
+                {
+
+                    if (item.ToUpper() == TARGET)
+                    {
+                        storageItem.SetPath(Target);
+                        storageItem.Parent = this;
+                        OutFolder = storageItem;
+                        return true;
+                    }
+                }
+                else
+                {
+
+                    if (item == Target)
+                    {
+                        storageItem.SetPath(Target);
+                        storageItem.Parent = this;
+                        OutFolder = storageItem;
+                        return true;
+                    }
+                }
+            }
+            OutFolder = null;
+            return false;
         }
         /// <summary>
         /// Get all contained files in current folder.
@@ -144,14 +244,16 @@ namespace LWMS.Core.FileSystem
         {
             StorageItem storageItem = new StorageItem();
             var entries = Directory.EnumerateFileSystemEntries(realPath);
+            string Target = Path.Combine(realPath, Name);
+            string TARGET = Target.ToUpper();
             foreach (var item in entries)
             {
                 if (CaseSensitivity == false)
                 {
 
-                    if (item.ToUpper() == Name.ToUpper())
+                    if (item.ToUpper() == TARGET)
                     {
-                        storageItem.SetPath(Path.Combine(realPath, item));
+                        storageItem.SetPath(Target);
                         if (Directory.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.Folder;
                         if (File.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.File;
                         storageItem.Parent = this;
@@ -161,9 +263,9 @@ namespace LWMS.Core.FileSystem
                 else
                 {
 
-                    if (item == Name)
+                    if (item == Target)
                     {
-                        storageItem.SetPath(Path.Combine(realPath, item));
+                        storageItem.SetPath(Target);
                         if (Directory.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.Folder;
                         if (File.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.File;
                         storageItem.Parent = this;
@@ -173,6 +275,52 @@ namespace LWMS.Core.FileSystem
             }
             throw new StorageItemNotExistException(Path.Combine(realPath, Name));
         }
+        /// <summary>
+        /// Get a contained item. Return false when cannot find it.
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="OutItem"></param>
+        /// <param name="CaseSensitivity"></param>
+        /// <returns></returns>
+        public bool GetContainedItem(string Name, out StorageItem OutItem, bool CaseSensitivity = false)
+        {
+            StorageItem storageItem = new StorageItem();
+
+            var entries = Directory.EnumerateFileSystemEntries(realPath);
+            string Target = Path.Combine(realPath, Name);
+            string TARGET = Target.ToUpper();
+            foreach (var item in entries)
+            {
+                if (CaseSensitivity == false)
+                {
+
+                    if (item.ToUpper() == TARGET)
+                    {
+                        storageItem.SetPath(Target);
+                        if (Directory.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.Folder;
+                        if (File.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.File;
+                        storageItem.Parent = this;
+                        OutItem = storageItem;
+                        return true;
+                    }
+                }
+                else
+                {
+
+                    if (item == Target)
+                    {
+                        storageItem.SetPath(Target);
+                        if (Directory.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.Folder;
+                        if (File.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.File;
+                        storageItem.Parent = this;
+                        OutItem = storageItem;
+                        return true;
+                    }
+                }
+            }
+            OutItem = null;
+            return false;
+        }
     }
     public static class PredefinedRootFolders
     {
@@ -181,8 +329,8 @@ namespace LWMS.Core.FileSystem
         public static readonly string Languages = "/Languages";
         public static readonly string Logs = "/Logs";
     }
-    [System.Serializable]
-    public class FindFileInRootFolderException : System.Exception
+    [Serializable]
+    public class FindFileInRootFolderException : Exception
     {
         public FindFileInRootFolderException() { }
     }

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace LWMS.Core.FileSystem
 {
@@ -87,6 +85,18 @@ namespace LWMS.Core.FileSystem
         {
             if (File.Exists(realPath)) { File.Delete(realPath); return; }
             if (Directory.Exists(realPath)) Directory.Delete(realPath, true);
+        }
+        public StorageFile ToStorageFile()
+        {
+            if (StorageItemType == StorageItemType.File)
+            {
+
+                StorageFile storageFile = new StorageFile();
+                storageFile.Parent = Parent;
+                storageFile.SetPath(realPath);
+                return storageFile;
+            }
+            else throw new NotSupportedException();
         }
         public virtual void CopyTo(StorageItem Destination)
         {
