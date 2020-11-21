@@ -6,6 +6,7 @@ using LWMS.Localization;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Web;
 
 namespace LWMS.Core
 {
@@ -18,7 +19,7 @@ namespace LWMS.Core
         {
             //if (((HttpPipelineArguments)Input.SecondaryData).isHandled == true) return Input;
             HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
-            Trace.WriteLine(Language.Query("LWMS.ErrorResponseUnit.UnhandledRequest", "Unhandled Http Pipeline. Request: {0}", (context).Request.RawUrl));
+            Trace.WriteLine(Language.Query("LWMS.ErrorResponseUnit.UnhandledRequest", "Unhandled Http Pipeline. Request: {0}", HttpUtility.UrlDecode( (context).Request.RawUrl)));
             if (File.Exists(GlobalConfiguration.Page404))
             {
                 Tools00.SendFile(context, new FileInfo(GlobalConfiguration.Page404), HttpStatusCode.NotFound);

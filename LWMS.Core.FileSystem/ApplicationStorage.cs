@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Web;
 
 namespace LWMS.Core.FileSystem
 {
@@ -107,6 +108,7 @@ namespace LWMS.Core.FileSystem
         public static bool ObtainItemFromRelativeURL(string URL, out StorageItem OutItem, bool CaseSensitivity = false)
         {
             StorageItem storageItem = new StorageItem();
+            URL=HttpUtility.UrlDecode(URL);
             string[] paths;
             URL = URL.Replace('\\', '/');
             StorageFolder Root = Webroot;
