@@ -121,7 +121,7 @@ namespace LWMS.Core.FileSystem
         {
 
             StorageFolder storageItem = new StorageFolder();
-            var F=GetContainedFolder(Name, out storageItem, CaseSensitivity);
+            var F = GetContainedFolder(Name, out storageItem, CaseSensitivity);
             if (F == false)
             {
                 throw new StorageItemNotExistException(Path.Combine(realPath, Name));
@@ -314,6 +314,60 @@ namespace LWMS.Core.FileSystem
             }
             OutItem = null;
             return false;
+        }
+        /// <summary>
+        /// Gets an item.
+        /// </summary>
+        /// <param name="L"></param>
+        /// <param name="R"></param>
+        /// <returns></returns>
+        public static StorageItem operator /(StorageFolder L, string R)
+        {
+            return L.GetContainedItem(R);
+        }
+        /// <summary>
+        /// Deletes an item.
+        /// </summary>
+        /// <param name="L"></param>
+        /// <param name="R"></param>
+        /// <returns></returns>
+        public static bool operator -(StorageFolder L, string R)
+        {
+            var a = L / R;
+            try
+            {
+                a.Delete();
+                return true;
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// Creates a file.
+        /// </summary>
+        /// <param name="L"></param>
+        /// <param name="R"></param>
+        /// <returns></returns>
+        public static StorageFile operator +(StorageFolder L, string R)
+        {
+            StorageFile sf;
+            _ = L.CreateFile(R, out sf);
+            return sf;
+        }
+        /// <summary>
+        /// Creates a folder.
+        /// </summary>
+        /// <param name="L"></param>
+        /// <param name="R"></param>
+        /// <returns></returns>
+        public static StorageFolder operator *(StorageFolder L, string R)
+        {
+            StorageFolder sf;
+            _ = L.CreateFolder(R, out sf);
+            return sf;
         }
     }
     public static class PredefinedRootFolders
