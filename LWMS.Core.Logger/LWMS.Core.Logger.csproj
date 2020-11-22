@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LWMS.Core.FileSystem\LWMS.Core.FileSystem.csproj" />
     <ProjectReference Include="..\LWMS.Core.WR\LWMS.Core.WR.csproj" />
   </ItemGroup>
 </Project>

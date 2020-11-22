@@ -1,9 +1,9 @@
 ﻿using CLUNL.DirectedIO;
 using LWMS.Core.WR;
+using LWMS.Core.FileSystem;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,18 +36,13 @@ namespace LWMS.Core.Log
         }
         public LWMSTraceListener(string BasePath)
         {
-
-            var LogBasePath = Path.Combine(BasePath, "Logs");
-            LogDir = LogBasePath;
-            if (!Directory.Exists(LogBasePath))
-            {
-                Directory.CreateDirectory(LogBasePath);
-            }
+            
+            LogDir = ApplicationStorage.Logs.ItemPath;
             var Now = DateTime.Now;
-            CurrentLogFile = Path.Combine(LogBasePath, $"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log");
-            File.Create(CurrentLogFile).Close();
-            File.WriteAllText(CurrentLogFile, "");
-            LogFile = new FileWR(new FileInfo(CurrentLogFile));
+            StorageFile storageFile;
+            ApplicationStorage.Logs.CreateFile($"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log", out storageFile);
+            CurrentLogFile = storageFile.ItemPath;
+            LogFile = new FileWR(storageFile);
             Random random = new Random();
             OperatingID = random.Next();
             thread = new Thread(new ThreadStart(delegate () { LogWatcher(); }));
@@ -61,18 +56,14 @@ namespace LWMS.Core.Log
         /// </summary>
         public static void NewLogFile()
         {
-            if (!Directory.Exists(LogDir))
-            {
-                Directory.CreateDirectory(LogDir);
-            }
             Random random = new Random();
             OperatingID = random.Next();//ID Varied, task should exit immediately.
             //if (LogTask != null) thread.;
             var Now = DateTime.Now;
-            CurrentLogFile = Path.Combine(LogDir, $"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log");
-            File.Create(CurrentLogFile).Close();
-            File.WriteAllText(CurrentLogFile, "");
-            LogFile = new FileWR(new FileInfo(CurrentLogFile));
+            StorageFile storageFile;
+            ApplicationStorage.Logs.CreateFile($"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log", out storageFile);
+            CurrentLogFile = storageFile.ItemPath;
+            LogFile = new FileWR(storageFile);
             thread = new Thread(new ThreadStart(delegate () { LogWatcher(); }));
             thread.Priority = ThreadPriority.Lowest;
             thread.Start();
