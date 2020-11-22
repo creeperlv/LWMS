@@ -36,6 +36,7 @@ namespace LWMS.Core.Log
         }
         public LWMSTraceListener(string BasePath)
         {
+
             var LogBasePath = Path.Combine(BasePath, "Logs");
             LogDir = LogBasePath;
             if (!Directory.Exists(LogBasePath))

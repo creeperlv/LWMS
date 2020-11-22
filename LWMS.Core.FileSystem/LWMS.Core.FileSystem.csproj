@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LWMS.Core.Configuration\LWMS.Core.Configuration.csproj" />
+    <PackageReference Include="CLUNL" Version="0.0.2.3" />
   </ItemGroup>
-
 </Project>

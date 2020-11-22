@@ -2,6 +2,7 @@
 using CLUNL.Data.Layer0;
 using CLUNL.Data.Layer1;
 using CLUNL.Data.Layer2;
+using LWMS.Core.FileSystem;
 using LWMS.Core.Log;
 using System;
 using System.Collections.Generic;
@@ -14,36 +15,29 @@ namespace LWMS.Core.Configuration
 {
     public class GlobalConfiguration
     {
-        static string ConfigurationPath = null;
         static GlobalConfiguration()
         {
             LibraryInfo.SetFlag(FeatureFlags.Pipeline_AutoID_Random, 1);
             BasePath = new FileInfo(Assembly.GetAssembly(typeof(GlobalConfiguration)).Location).DirectoryName;
-            ConfigurationPath = Path.Combine(BasePath, "Server.ini");
-            var PluginConfigPath = Path.Combine(BasePath, "RPipelineUnit.tsd");
-            var WPipelineUnitsPath = Path.Combine(BasePath, "WPipelineUnit.tsd");
-            var CMDOUTPipelineUnitsPath = Path.Combine(BasePath, "CMDOUTPipelineUnit.tsd");
-            var ManageModulePath = Path.Combine(BasePath, "ManageModules.ini");
             LoadConfiguation();
-            if (File.Exists(ManageModulePath))
             {
-                ManageCommandModules = ListData<string>.LoadFromStream(File.Open(ManageModulePath, FileMode.Open, FileAccess.ReadWrite));
-            }
-            else
-            {
-                ManageCommandModules = ListData<string>.CreateToFile(new FileInfo(ManageModulePath));
-                ManageCommandModules.Add(Path.Combine(BasePath, "LWMS.Management.Commands.dll"));
-                ManageCommandModules.Save();
-            }
-            {
-                //Load Request Pipeline Units.
-                if (File.Exists(PluginConfigPath))
+                StorageFile ManageModuleFile;
+                if (ApplicationStorage.Configuration.CreateFile("ManageModules.ini", out ManageModuleFile))
                 {
-                    RProcessUnits = TreeStructureData.LoadFromFile(new FileInfo(PluginConfigPath));
+                    ManageCommandModules = ListData<string>.LoadFromStream(ManageModuleFile.OpenFile());
+                    ManageCommandModules.Add(Path.Combine(BasePath, "LWMS.Management.Commands.dll"));
+                    ManageCommandModules.Save();
                 }
                 else
                 {
-                    RProcessUnits = TreeStructureData.CreateToFile(new FileInfo(PluginConfigPath));
+                    ManageCommandModules = ListData<string>.LoadFromStream(ManageModuleFile.OpenFile());
+                }
+            }
+            {
+                StorageFile RPipelineUnitDefinitionFile;
+                if (ApplicationStorage.Configuration.CreateFile("RPipelineUnit.tsd", out RPipelineUnitDefinitionFile))
+                {
+                    RProcessUnits = TreeStructureData.CreateToFile(RPipelineUnitDefinitionFile);
                     {
                         //LWMS.Core.dll
                         TreeNode treeNode = new TreeNode();
@@ -59,16 +53,16 @@ namespace LWMS.Core.Configuration
                     }
                     RProcessUnits.Serialize();
                 }
-            }
-            {
-                //Load W Pipelne units.
-                if (File.Exists(WPipelineUnitsPath))
-                {
-                    WProcessUnits = TreeStructureData.LoadFromFile(new FileInfo(WPipelineUnitsPath));
-                }
                 else
                 {
-                    WProcessUnits = TreeStructureData.CreateToFile(new FileInfo(WPipelineUnitsPath));
+                    RProcessUnits = TreeStructureData.LoadFromStream(RPipelineUnitDefinitionFile.OpenFile());
+                }
+            }
+            {
+                StorageFile WPipelineUnitDefinitionFile;
+                if (ApplicationStorage.Configuration.CreateFile("WPipelineUnit.tsd", out WPipelineUnitDefinitionFile))
+                {
+                    WProcessUnits = TreeStructureData.LoadFromStream(WPipelineUnitDefinitionFile.OpenFile());
                     {
                         //LWMS.Core.dll
                         TreeNode treeNode = new TreeNode();
@@ -84,16 +78,17 @@ namespace LWMS.Core.Configuration
                     }
                     WProcessUnits.Serialize();
                 }
+                else
+                {
+                    WProcessUnits = TreeStructureData.LoadFromStream(WPipelineUnitDefinitionFile.OpenFile());
+                }
             }
             {
                 //Load CMDOUT Pipelne units.
-                if (File.Exists(CMDOUTPipelineUnitsPath))
+                StorageFile CMDOUTPipelineUnitsFile;
+                if (ApplicationStorage.Configuration.CreateFile("CMDOUTPipelineUnit.tsd", out CMDOUTPipelineUnitsFile))
                 {
-                    CMDOUTProcessUnits = TreeStructureData.LoadFromFile(new FileInfo(CMDOUTPipelineUnitsPath));
-                }
-                else
-                {
-                    CMDOUTProcessUnits = TreeStructureData.CreateToFile(new FileInfo(CMDOUTPipelineUnitsPath));
+                    CMDOUTProcessUnits = TreeStructureData.LoadFromStream(CMDOUTPipelineUnitsFile.OpenFile());
                     {
                         //LWMS.Core.dll
                         TreeNode treeNode = new TreeNode();
@@ -115,10 +110,16 @@ namespace LWMS.Core.Configuration
                     }
                     CMDOUTProcessUnits.Serialize();
                 }
+                else
+                {
+                    CMDOUTProcessUnits = TreeStructureData.LoadFromStream(CMDOUTPipelineUnitsFile.OpenFile());
+                }
             }
             {
+                //Init these fields.
                 _ = MAX_LOG_SIZE;
                 _ = LOG_WATCH_INTERVAL;
+                _ = WebSiteContentRoot;
                 //if (l == 0)
                 //{
 
@@ -127,15 +128,9 @@ namespace LWMS.Core.Configuration
         }
         public static void LoadConfiguation()
         {
-            if (File.Exists(ConfigurationPath))
-            {
-                ConfigurationData = INILikeData.LoadFromStream((new FileInfo(ConfigurationPath)).Open(FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite));
-            }
-            else
-            {
-                ConfigurationData = INILikeData.CreateToFile(new FileInfo(ConfigurationPath));
-            }
-
+            StorageFile storageFile;
+            _ = ApplicationStorage.Configuration.CreateFile("Server.ini", out storageFile);
+            ConfigurationData = INILikeData.LoadFromStream(storageFile.OpenFile());
         }
 
         public static TreeStructureData RProcessUnits;
@@ -491,6 +486,7 @@ namespace LWMS.Core.Configuration
                         {
                             _WebSiteContentRoot = Path.Combine(BasePath, "webroot");
                             ConfigurationData.AddValue("WebContentRoot", _WebSiteContentRoot, AutoSave: true);
+                            ApplicationStorage.SetRealWebRoot(_WebSiteContentRoot);
                         }
                     }
                     catch
@@ -506,6 +502,7 @@ namespace LWMS.Core.Configuration
             set
             {
                 _WebSiteContentRoot = value;
+                ApplicationStorage.SetRealWebRoot(_WebSiteContentRoot);
                 if (ConfigurationData != null)
                     ConfigurationData.AddValue("WebContentRoot", _WebSiteContentRoot, AutoSave: true);
                 if (ConfigurationData != null)

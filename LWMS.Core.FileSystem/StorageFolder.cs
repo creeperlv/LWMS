@@ -21,7 +21,6 @@ namespace LWMS.Core.FileSystem
                 return (realPath == "{Root}" && parent == null);
             }
         }
-        internal bool isroot = false;
         /// <summary>
         /// Determine whether current folder is a root folder.
         /// </summary>
@@ -122,33 +121,12 @@ namespace LWMS.Core.FileSystem
         {
 
             StorageFolder storageItem = new StorageFolder();
-            var entries = Directory.EnumerateDirectories(realPath);
-            string Target = Path.Combine(realPath, Name);
-            string TARGET = Target.ToUpper();
-            foreach (var item in entries)
+            var F=GetContainedFolder(Name, out storageItem, CaseSensitivity);
+            if (F == false)
             {
-                if (CaseSensitivity == false)
-                {
-
-                    if (item.ToUpper() == TARGET)
-                    {
-                        storageItem.SetPath(Target);
-                        storageItem.Parent = this;
-                        return storageItem;
-                    }
-                }
-                else
-                {
-
-                    if (item == Target)
-                    {
-                        storageItem.SetPath(Target);
-                        storageItem.Parent = this;
-                        return storageItem;
-                    }
-                }
+                throw new StorageItemNotExistException(Path.Combine(realPath, Name));
             }
-            throw new StorageItemNotExistException(Path.Combine(realPath, Name));
+            return storageItem;
         }
         /// <summary>
         /// Get a contained folder. Return false when cannot find it.
@@ -159,7 +137,23 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public bool GetContainedFolder(string Name, out StorageFolder OutFolder, bool CaseSensitivity = false)
         {
-
+            if (isSystemRoot)
+            {
+                switch (Name)
+                {
+                    case PredefinedRootFolders.WebRoot:
+                        OutFolder = ApplicationStorage.Webroot;
+                        return true;
+                    case PredefinedRootFolders.Configuration:
+                        OutFolder = ApplicationStorage.Configuration;
+                        return true;
+                    case PredefinedRootFolders.Logs:
+                        OutFolder = ApplicationStorage.Logs;
+                        return true;
+                    default:
+                        break;
+                }
+            }
             StorageFolder storageItem = new StorageFolder();
             var entries = Directory.EnumerateDirectories(realPath);
             string Target = Path.Combine(realPath, Name);
@@ -324,10 +318,9 @@ namespace LWMS.Core.FileSystem
     }
     public static class PredefinedRootFolders
     {
-        public static readonly string WebRoot = "/Webroot";
-        public static readonly string Configuration = "/Config";
-        public static readonly string Languages = "/Languages";
-        public static readonly string Logs = "/Logs";
+        public const string WebRoot = "/Webroot";
+        public const string Configuration = "/Config";
+        public const string Logs = "/Logs";
     }
     [Serializable]
     public class FindFileInRootFolderException : Exception

@@ -5,10 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CLUNL" Version="0.0.2.2" />
+    <PackageReference Include="CLUNL" Version="0.0.2.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LWMS.Core.FileSystem\LWMS.Core.FileSystem.csproj" />
     <ProjectReference Include="..\LWMS.Core.Logger\LWMS.Core.Logger.csproj" />
     <ProjectReference Include="..\LWMS.Localization\LWMS.Localization.csproj" />
   </ItemGroup>

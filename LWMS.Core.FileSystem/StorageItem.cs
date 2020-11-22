@@ -18,6 +18,7 @@ namespace LWMS.Core.FileSystem
         internal string realPath;
         internal DirectoryInfo RealDirectory;
         internal FileInfo RealFile;
+        internal bool isroot;
         internal void SetPath(string path)
         {
             realPath = path;
@@ -43,6 +44,7 @@ namespace LWMS.Core.FileSystem
             get { return name; }
             set
             {
+                if (isroot) throw new NotSupportedException();
                 switch (StorageItemType)
                 {
                     case StorageItemType.File:
@@ -77,7 +79,7 @@ namespace LWMS.Core.FileSystem
                 }
             }
         }
-        public StorageItemType StorageItemType;
+        public StorageItemType StorageItemType { get; internal set; }
         /// <summary>
         /// Delete a file.
         /// </summary>

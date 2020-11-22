@@ -43,8 +43,7 @@ namespace LWMS.Core.FileSystem
             }
             else
             {
-                FileInfo fileInfo = new FileInfo(path);
-                fileInfo.Create().Close();
+                File.Create(path).Close();
                 result = true;
             }
             StorageFile storageFile = new StorageFile();

@@ -14,7 +14,7 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public FileStream OpenFile()
         {
-            return File.Open(realPath, FileMode.Open, FileAccess.ReadWrite);
+            return RealFile.Open(FileMode.Open, FileAccess.ReadWrite);
         }
         /// <summary>
         /// Write a content to target file.
@@ -26,8 +26,7 @@ namespace LWMS.Core.FileSystem
         }
         public static implicit operator FileInfo(StorageFile file)
         {
-            FileInfo fileInfo = new FileInfo(file.realPath);
-            return fileInfo;
+            return file.RealFile;
         }
         /// <summary>
         /// If destination is a file, will overwrite it.
