@@ -14,7 +14,7 @@ namespace LWMS.Core.FileSystem
     {
         static INILikeData RouteLocationMap;
         static Dictionary<string, string> Map = new Dictionary<string, string>();
-        static string BasePath;
+        public readonly static string BasePath;
         static ApplicationStorage()
         {
                 BasePath = new FileInfo(Assembly.GetAssembly(typeof(ApplicationStorage)).Location).DirectoryName;

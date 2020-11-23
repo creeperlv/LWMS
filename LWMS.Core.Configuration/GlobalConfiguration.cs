@@ -18,14 +18,14 @@ namespace LWMS.Core.Configuration
         static GlobalConfiguration()
         {
             LibraryInfo.SetFlag(FeatureFlags.Pipeline_AutoID_Random, 1);
-            BasePath = new FileInfo(Assembly.GetAssembly(typeof(GlobalConfiguration)).Location).DirectoryName;
+            LibraryInfo.SetFlag(FeatureFlags.FileWR_AutoCreateFile, 1);
             LoadConfiguation();
             {
                 StorageFile ManageModuleFile;
                 if (ApplicationStorage.Configuration.CreateFile("ManageModules.ini", out ManageModuleFile))
                 {
                     ManageCommandModules = ListData<string>.LoadFromStream(ManageModuleFile.OpenFile());
-                    ManageCommandModules.Add(Path.Combine(BasePath, "LWMS.Management.Commands.dll"));
+                    ManageCommandModules.Add(Path.Combine(ApplicationStorage.BasePath, "LWMS.Management.Commands.dll"));
                     ManageCommandModules.Save();
                 }
                 else
@@ -139,7 +139,6 @@ namespace LWMS.Core.Configuration
         public static INILikeData ConfigurationData;
         public static ListData<string> ManageCommandModules;
 
-        public readonly static string BasePath;
         internal static string _WebSiteContentRoot = null;
         internal static string _DefultPage = null;
         internal static string _Language = null;
@@ -484,7 +483,7 @@ namespace LWMS.Core.Configuration
                         _WebSiteContentRoot = ConfigurationData.FindValue("WebContentRoot");
                         if (_WebSiteContentRoot == null)
                         {
-                            _WebSiteContentRoot = Path.Combine(BasePath, "webroot");
+                            _WebSiteContentRoot = Path.Combine(ApplicationStorage.BasePath, "webroot");
                             ConfigurationData.AddValue("WebContentRoot", _WebSiteContentRoot, AutoSave: true);
                             ApplicationStorage.SetRealWebRoot(_WebSiteContentRoot);
                         }

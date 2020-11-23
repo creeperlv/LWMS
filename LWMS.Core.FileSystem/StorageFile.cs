@@ -1,13 +1,29 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace LWMS.Core.FileSystem
 {
+    /// <summary>
+    /// Represent a file.
+    /// </summary>
     public class StorageFile : StorageItem
     {
         internal StorageFile()
         {
             StorageItemType = StorageItemType.File;
         }
+        /// <summary>
+        /// Gets the type(file name extension) of the file.
+        /// </summary>
+        public string FileType { get => RealFile.Extension; }
+        /// <summary>
+        /// Gets the length of the file.
+        /// </summary>
+        public long Length { get => RealFile.Length; }
+        /// <summary>
+        /// Gets the date and time when the current file was created.
+        /// </summary>
+        public DateTime DateCreated { get => RealFile.CreationTime; }
         /// <summary>
         /// Open the file.
         /// </summary>

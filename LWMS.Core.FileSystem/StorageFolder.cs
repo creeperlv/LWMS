@@ -286,7 +286,9 @@ namespace LWMS.Core.FileSystem
             StorageItem storageItem = new StorageItem();
             if (isSystemRoot)
             {
-                return GetFolder(Name, out OutItem, CaseSensitivity);
+                var b = GetFolder(Name, out StorageFolder item, CaseSensitivity);
+                OutItem = item;
+                return b;
             }
             var entries = Directory.EnumerateFileSystemEntries(realPath);
             string Target = Path.Combine(realPath, Name);
