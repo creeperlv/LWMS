@@ -114,11 +114,11 @@ namespace LWMS.Core.FileSystem
                 if (i + 1 == paths.Length)
                 {
                     //Get Final Item.
-                    return Root.GetContainedItem(paths[i], CaseSensitivity);
+                    return Root.GetItem(paths[i], CaseSensitivity);
                 }
                 else
                 {
-                    Root = Root.GetContainedFolder(paths[i], CaseSensitivity);
+                    Root = Root.GetFolder(paths[i], CaseSensitivity);
                 }
             }
             return null;
@@ -162,11 +162,11 @@ namespace LWMS.Core.FileSystem
                 if (i + 1 == paths.Length)
                 {
                     //Get Final Item.
-                    return Root.GetContainedItem(paths[i], out OutItem, CaseSensitivity);
+                    return Root.GetItem(paths[i], out OutItem, CaseSensitivity);
                 }
                 else
                 {
-                    if (Root.GetContainedFolder(paths[i], out Root, CaseSensitivity) == false)
+                    if (Root.GetFolder(paths[i], out Root, CaseSensitivity) == false)
                     {
                         OutItem = null;
                         return false;

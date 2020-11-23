@@ -37,7 +37,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <param name="CaseSensitivity">Whether case sensitive</param>
         /// <returns></returns>
-        public StorageFile GetContainedFile(string Name, bool CaseSensitivity = false)
+        public StorageFile GetFile(string Name, bool CaseSensitivity = false)
         {
 
             StorageFile storageItem = new StorageFile();
@@ -76,7 +76,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="OutItem"></param>
         /// <param name="CaseSensitivity"></param>
         /// <returns></returns>
-        public bool GetContainedFile(string Name, out StorageFile OutItem, bool CaseSensitivity = false)
+        public bool GetFile(string Name, out StorageFile OutItem, bool CaseSensitivity = false)
         {
 
             StorageFile storageItem = new StorageFile();
@@ -117,11 +117,11 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <param name="CaseSensitivity">Whether case sensitive</param>
         /// <returns></returns>
-        public StorageFolder GetContainedFolder(string Name, bool CaseSensitivity = false)
+        public StorageFolder GetFolder(string Name, bool CaseSensitivity = false)
         {
 
             StorageFolder storageItem = new StorageFolder();
-            var F = GetContainedFolder(Name, out storageItem, CaseSensitivity);
+            var F = GetFolder(Name, out storageItem, CaseSensitivity);
             if (F == false)
             {
                 throw new StorageItemNotExistException(Path.Combine(realPath, Name));
@@ -135,7 +135,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="CaseSensitivity"></param>
         /// <param name="OutFolder"></param>
         /// <returns></returns>
-        public bool GetContainedFolder(string Name, out StorageFolder OutFolder, bool CaseSensitivity = false)
+        public bool GetFolder(string Name, out StorageFolder OutFolder, bool CaseSensitivity = false)
         {
             if (isSystemRoot)
             {
@@ -151,7 +151,8 @@ namespace LWMS.Core.FileSystem
                         OutFolder = ApplicationStorage.Logs;
                         return true;
                     default:
-                        break;
+                        OutFolder = null;
+                        return false;
                 }
             }
             StorageFolder storageItem = new StorageFolder();
@@ -196,7 +197,7 @@ namespace LWMS.Core.FileSystem
             List<StorageFile> storageFiles = new List<StorageFile>(FileNames.Length);
             foreach (var item in FileNames)
             {
-                storageFiles.Add(GetContainedFile(item, true));
+                storageFiles.Add(GetFile(item, true));
             }
             return storageFiles;
         }
@@ -210,7 +211,7 @@ namespace LWMS.Core.FileSystem
             List<StorageFolder> storageFolders = new List<StorageFolder>(FileNames.Length);
             foreach (var item in FileNames)
             {
-                storageFolders.Add(GetContainedFolder(item, true));
+                storageFolders.Add(GetFolder(item, true));
             }
             return storageFolders;
         }
@@ -224,7 +225,7 @@ namespace LWMS.Core.FileSystem
             List<StorageItem> storageItems = new List<StorageItem>(ItemNames.Length);
             foreach (var item in ItemNames)
             {
-                storageItems.Add(GetContainedItem(item, true));
+                storageItems.Add(GetItem(item, true));
             }
             return storageItems;
         }
@@ -234,9 +235,13 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <param name="CaseSensitivity">Whether case sensitive</param>
         /// <returns></returns>
-        public StorageItem GetContainedItem(string Name, bool CaseSensitivity = false)
+        public StorageItem GetItem(string Name, bool CaseSensitivity = false)
         {
             StorageItem storageItem = new StorageItem();
+            if (isSystemRoot)
+            {
+                return GetFolder(Name, CaseSensitivity);
+            }
             var entries = Directory.EnumerateFileSystemEntries(realPath);
             string Target = Path.Combine(realPath, Name);
             string TARGET = Target.ToUpper();
@@ -276,10 +281,13 @@ namespace LWMS.Core.FileSystem
         /// <param name="OutItem"></param>
         /// <param name="CaseSensitivity"></param>
         /// <returns></returns>
-        public bool GetContainedItem(string Name, out StorageItem OutItem, bool CaseSensitivity = false)
+        public bool GetItem(string Name, out StorageItem OutItem, bool CaseSensitivity = false)
         {
             StorageItem storageItem = new StorageItem();
-
+            if (isSystemRoot)
+            {
+                return GetFolder(Name, out OutItem, CaseSensitivity);
+            }
             var entries = Directory.EnumerateFileSystemEntries(realPath);
             string Target = Path.Combine(realPath, Name);
             string TARGET = Target.ToUpper();
@@ -323,7 +331,7 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public static StorageItem operator /(StorageFolder L, string R)
         {
-            return L.GetContainedItem(R);
+            return L.GetItem(R);
         }
         /// <summary>
         /// Deletes an item.
