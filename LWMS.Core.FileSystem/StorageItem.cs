@@ -9,6 +9,9 @@ namespace LWMS.Core.FileSystem
     {
         public StorageItemNotExistException(string path) : base(path) { }
     }
+    /// <summary>
+    /// Represnt an item in file system it can be file or a folder.
+    /// </summary>
     public class StorageItem
     {
         internal StorageItem()
@@ -36,9 +39,17 @@ namespace LWMS.Core.FileSystem
             }
 
         }
+        /// <summary>
+        /// Gets the real path of the item.
+        /// </summary>
         public string ItemPath { get => realPath; }
         internal StorageFolder parent;
         internal string name;
+        internal bool isvirtual=false;
+        /// <summary>
+        /// Gets whether the item is virtual item.
+        /// </summary>
+        public bool isVirtual { get => isvirtual; }
         public string Name
         {
             get { return name; }

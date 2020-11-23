@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace LWMS.Core.FileSystem
 {
+    /// <summary>
+    /// Represents a folder.
+    /// </summary>
     public partial class StorageFolder : StorageItem
     {
         internal StorageFolder()
