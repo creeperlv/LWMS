@@ -13,6 +13,35 @@ namespace LWMS.Core.FileSystem
             StorageItemType = StorageItemType.File;
         }
         /// <summary>
+        /// Whether equals to given object. If given object is a StorageFile, will judge according to realPath.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (obj is StorageFile)
+            {
+                return (obj as StorageFile).realPath == realPath;
+            }
+            else return base.Equals(obj);
+        }
+        /// <summary>
+        /// Same as Object.GetHashCode()
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+        /// <summary>
+        /// Returns the full name of the file. (Same as FileInfo.FullName)
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return RealFile.FullName;
+        }
+        /// <summary>
         /// Gets the type(file name extension) of the file.
         /// </summary>
         public string FileType { get => RealFile.Extension; }
@@ -52,9 +81,7 @@ namespace LWMS.Core.FileSystem
         {
             if (Destination.StorageItemType == StorageItemType.Folder)
             {
-                FileInfo fileInfo = new FileInfo(realPath);
-
-                File.Copy(realPath, Path.Combine(Destination.realPath, fileInfo.Name));
+                File.Copy(realPath, Path.Combine(Destination.realPath, RealFile.Name));
             }
             else
             {
