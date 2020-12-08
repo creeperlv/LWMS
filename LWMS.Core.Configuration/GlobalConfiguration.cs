@@ -485,7 +485,6 @@ namespace LWMS.Core.Configuration
                         {
                             _WebSiteContentRoot = Path.Combine(ApplicationStorage.BasePath, "webroot");
                             ConfigurationData.AddValue("WebContentRoot", _WebSiteContentRoot, AutoSave: true);
-                            ApplicationStorage.SetRealWebRoot(_WebSiteContentRoot);
                         }
                     }
                     catch
@@ -494,6 +493,7 @@ namespace LWMS.Core.Configuration
 
                     }
                     ConfigurationData.Flush();
+                    ApplicationStorage.SetRealWebRoot(_WebSiteContentRoot);
 
                 }
                 return _WebSiteContentRoot;
