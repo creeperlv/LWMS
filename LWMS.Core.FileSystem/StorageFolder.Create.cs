@@ -15,6 +15,10 @@ namespace LWMS.Core.FileSystem
         /// <exception cref="ItemAlreadyExistException"></exception>
         public StorageFile CreateFile(string Name)
         {
+            if (isReadOnly)
+            {
+                throw new ItemReadOnlyException();
+            }
             StorageFile storageFile;
             if(CreateFile(name,out storageFile)==false)
             {
@@ -30,6 +34,11 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public bool CreateFile(string Name, out StorageFile OutItem)
         {
+            if (isReadOnly)
+            {
+                OutItem = null;
+                return false;
+            }
             var path = Path.Combine(realPath, Name);
             bool result;
             if (File.Exists(path))
@@ -49,13 +58,18 @@ namespace LWMS.Core.FileSystem
             return result;
         }
         /// <summary>
-        /// Create a file in current folder, when the file is already exists, returns false.
+        /// Create a file in current folder, when the file is already exists or current folder is read-only, returns false.
         /// </summary>
         /// <param name="Name"></param>
         /// <param name="OutItem"></param>
         /// <returns></returns>
         public bool CreateFolder(string Name, out StorageFolder OutItem)
         {
+            if (isReadOnly)
+            {
+                OutItem = null;
+                return false;
+            }
             var path = Path.Combine(realPath, Name);
             bool result;
             if (Directory.Exists(path))
@@ -82,6 +96,11 @@ namespace LWMS.Core.FileSystem
         /// <exception cref="ItemAlreadyExistException"></exception>
         public StorageFolder CreateFolder(string Name)
         {
+
+            if (isReadOnly)
+            {
+                throw new ItemReadOnlyException();
+            }
             StorageFolder storageFolder;
             if(CreateFolder(Name, out storageFolder) == false)
             {
@@ -91,6 +110,11 @@ namespace LWMS.Core.FileSystem
         }
     }
 
+    [Serializable]
+    public class ItemReadOnlyException : Exception
+    {
+        public ItemReadOnlyException():base("Target item is read-only!") { }
+    }
     [Serializable]
     public class ItemAlreadyExistException : Exception
     {

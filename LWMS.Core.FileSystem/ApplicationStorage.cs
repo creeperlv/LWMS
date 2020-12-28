@@ -22,6 +22,7 @@ namespace LWMS.Core.FileSystem
                 SystemRoot = new StorageFolder();
                 SystemRoot.parent = null;
                 SystemRoot.isvirtual = true;
+                SystemRoot.isreadonly = true;
                 SystemRoot.realPath = "{Root}";
             }
             {

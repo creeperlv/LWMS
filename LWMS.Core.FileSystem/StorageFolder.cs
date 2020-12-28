@@ -259,6 +259,11 @@ namespace LWMS.Core.FileSystem
                         if (Directory.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.Folder;
                         if (File.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.File;
                         storageItem.Parent = this;
+                        if (isreadonlyR)
+                        {
+                            storageItem.isreadonly = true;
+                            storageItem.isreadonlyR = true;
+                        }
                         return storageItem;
                     }
                 }
@@ -271,6 +276,11 @@ namespace LWMS.Core.FileSystem
                         if (Directory.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.Folder;
                         if (File.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.File;
                         storageItem.Parent = this;
+                        if (isreadonlyR)
+                        {
+                            storageItem.isreadonly = true;
+                            storageItem.isreadonlyR = true;
+                        }
                         return storageItem;
                     }
                 }
@@ -307,6 +317,11 @@ namespace LWMS.Core.FileSystem
                         if (Directory.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.Folder;
                         if (File.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.File;
                         storageItem.Parent = this;
+                        if (isreadonlyR)
+                        {
+                            storageItem.isreadonly = true;
+                            storageItem.isreadonlyR = true;
+                        }
                         OutItem = storageItem;
                         return true;
                     }
@@ -320,6 +335,11 @@ namespace LWMS.Core.FileSystem
                         if (Directory.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.Folder;
                         if (File.Exists(storageItem.realPath)) storageItem.StorageItemType = StorageItemType.File;
                         storageItem.Parent = this;
+                        if (isreadonlyR)
+                        {
+                            storageItem.isreadonly = true;
+                            storageItem.isreadonlyR = true;
+                        }
                         OutItem = storageItem;
                         return true;
                     }

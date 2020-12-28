@@ -22,6 +22,14 @@ namespace LWMS.Core.FileSystem
         internal DirectoryInfo RealDirectory;
         internal FileInfo RealFile;
         internal bool isroot;
+        internal bool isreadonly;
+        /// <summary>
+        /// Recursive Read-Only property.
+        /// </summary>
+        internal bool isreadonlyR;
+        public bool isReadOnly { get => isreadonly || isreadonlyR;
+            init { isreadonly = false;
+                isreadonlyR = false; } }
         internal void SetPath(string path)
         {
             realPath = path;
@@ -45,7 +53,7 @@ namespace LWMS.Core.FileSystem
         public string ItemPath { get => realPath; }
         internal StorageFolder parent;
         internal string name;
-        internal bool isvirtual=false;
+        internal bool isvirtual = false;
         /// <summary>
         /// Gets whether the item is virtual item.
         /// </summary>
