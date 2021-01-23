@@ -408,6 +408,8 @@ namespace LWMS.Core.FileSystem
         public const string WebRoot = "/Webroot";
         public const string Configuration = "/Config";
         public const string Logs = "/Logs";
+        public const string Miscellaneous = "/Miscellaneous";
+        public const string ModuleStorage = "/ModuleStorage";
     }
     [Serializable]
     public class FindFileInRootFolderException : Exception

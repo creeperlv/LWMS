@@ -6,6 +6,7 @@ using LWMS.Core.Utilities;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 
 namespace LWMS.Core
 {
@@ -22,26 +23,27 @@ namespace LWMS.Core
             HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
             var path0 = context.Request.Url.LocalPath.Substring(1);
             StorageItem Result;
-            if(ApplicationStorage.ObtainItemFromRelativeURL(path0, out Result, false))
-            {
-                if(Result.StorageItemType== StorageItemType.Folder)
+            if (context.Request.HttpMethod == HttpMethod.Get.Method)
+                if (ApplicationStorage.ObtainItemFromRelativeURL(path0, out Result, false))
                 {
-                    StorageFile DefaultPage;
-                    if (((StorageFolder)Result).GetFile(GlobalConfiguration.DefaultPage,out DefaultPage,false))
+                    if (Result.StorageItemType == StorageItemType.Folder)
                     {
+                        StorageFile DefaultPage;
+                        if (((StorageFolder)Result).GetFile(GlobalConfiguration.DefaultPage, out DefaultPage, false))
+                        {
 
-                        Tools00.SendFile(context, DefaultPage);
+                            Tools00.SendFile(context, DefaultPage);
+                            (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
+                            return Input;
+                        }
+                    }
+                    else
+                    {
+                        Tools00.SendFile(context, Result.ToStorageFile());
                         (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
                         return Input;
                     }
                 }
-                else
-                {
-                    Tools00.SendFile(context, Result.ToStorageFile());
-                    (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
-                    return Input;
-                }
-            }
             return Input;
         }
 
