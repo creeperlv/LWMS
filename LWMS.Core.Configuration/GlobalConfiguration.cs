@@ -120,6 +120,7 @@ namespace LWMS.Core.Configuration
                 _ = MAX_LOG_SIZE;
                 _ = LOG_WATCH_INTERVAL;
                 _ = WebSiteContentRoot;
+                _ = WebSiteModuleStorageRoot;
                 //if (l == 0)
                 //{
 
@@ -139,6 +140,7 @@ namespace LWMS.Core.Configuration
         public static INILikeData ConfigurationData;
         public static ListData<string> ManageCommandModules;
 
+        internal static string _WebModuleStorage = null;
         internal static string _WebSiteContentRoot = null;
         internal static string _DefultPage = null;
         internal static string _Language = null;
@@ -159,6 +161,7 @@ namespace LWMS.Core.Configuration
         internal static List<string> _ListenPrefixes = new List<string>();
         public static void ClearLoadedSettings()
         {
+            _WebModuleStorage = null;
             _WebSiteContentRoot = null;
             _DefultPage = null;
             _Page404 = null;
@@ -504,6 +507,42 @@ namespace LWMS.Core.Configuration
                 ApplicationStorage.SetRealWebRoot(_WebSiteContentRoot);
                 if (ConfigurationData != null)
                     ConfigurationData.AddValue("WebContentRoot", _WebSiteContentRoot, AutoSave: true);
+                if (ConfigurationData != null)
+                    ConfigurationData.Flush();
+            }
+        }
+        public static string WebSiteModuleStorageRoot
+        {
+            get
+            {
+                if (_WebModuleStorage == null)
+                {
+                    try
+                    {
+                        _WebModuleStorage = ConfigurationData.FindValue("ModuleStorageRoot");
+                        if (_WebModuleStorage == null)
+                        {
+                            _WebModuleStorage = Path.Combine(ApplicationStorage.BasePath, "webmodule");
+                            ConfigurationData.AddValue("ModuleStorageRoot", _WebModuleStorage, AutoSave: true);
+                        }
+                    }
+                    catch
+                    {
+                        Trace.WriteLine(Localization.Language.Query("LWMS.Config.Error.Save", "Cannot save configurations."));
+
+                    }
+                    ConfigurationData.Flush();
+                    ApplicationStorage.SetRealModuleRoot(_WebModuleStorage);
+
+                }
+                return _WebModuleStorage;
+            }
+            set
+            {
+                _WebModuleStorage = value;
+                ApplicationStorage.SetRealModuleRoot(_WebModuleStorage);
+                if (ConfigurationData != null)
+                    ConfigurationData.AddValue("ModuleStorageRoot", _WebModuleStorage, AutoSave: true);
                 if (ConfigurationData != null)
                     ConfigurationData.Flush();
             }

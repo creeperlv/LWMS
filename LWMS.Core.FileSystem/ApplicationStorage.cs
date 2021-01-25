@@ -22,7 +22,7 @@ namespace LWMS.Core.FileSystem
                 StackTrace st = new StackTrace(1);
                 var item = st.GetFrame(0);
                 var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
-                return null;
+                return _ModuleRoot.CreateFolder(ModuleName,true);
             }
         }
         static ApplicationStorage()
@@ -39,6 +39,11 @@ namespace LWMS.Core.FileSystem
                 _Webroot = new StorageFolder();
                 _Webroot.Parent = SystemRoot;
                 _Webroot.isroot = true;
+            }
+            {
+                _ModuleRoot = new StorageFolder();
+                _ModuleRoot.Parent = SystemRoot;
+                _ModuleRoot.isroot = true;
             }
             {
                 Configuration = new StorageFolder();
@@ -193,9 +198,28 @@ namespace LWMS.Core.FileSystem
         /// </summary>
         public static StorageFolder SystemRoot { get; internal set; }
         static StorageFolder _Webroot;
+        static StorageFolder _ModuleRoot;
         public static void SetRealWebRoot(string WebRootPath)
         {
+            StackTrace st = new StackTrace(1);
+            var item = st.GetFrame(0);
+            var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
+            if (ModuleName != "LWMS.Core" && ModuleName != "LWMS.Core.Configuration")
+            {
+                throw new Exception("Illegal access from:" + ModuleName);
+            }
             _Webroot.SetPath(WebRootPath);
+        }
+        public static void SetRealModuleRoot(string ModuleRootPath)
+        {
+            StackTrace st = new StackTrace(1);
+            var item = st.GetFrame(0);
+            var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
+            if (ModuleName != "LWMS.Core" && ModuleName != "LWMS.Core.Configuration")
+            {
+                throw new Exception("Illegal access from:" + ModuleName);
+            }
+            _ModuleRoot.SetPath(ModuleRootPath);
         }
         /// <summary>
         /// Webroot, same folder as GlobalConfiguration.WebSiteContentRoot.
@@ -207,6 +231,14 @@ namespace LWMS.Core.FileSystem
                 return _Webroot;
             }
             internal set { _Webroot = value; }
+        }
+        public static StorageFolder Moduleroot
+        {
+            get
+            {
+                return _ModuleRoot;
+            }
+            internal set { _ModuleRoot = value; }
         }
         public static StorageFolder Configuration { get; internal set; }
         public static StorageFolder Logs { get; internal set; }

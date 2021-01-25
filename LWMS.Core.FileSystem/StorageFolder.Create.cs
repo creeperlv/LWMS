@@ -20,7 +20,7 @@ namespace LWMS.Core.FileSystem
                 throw new ItemReadOnlyException();
             }
             StorageFile storageFile;
-            if(CreateFile(name,out storageFile)==false)
+            if (CreateFile(name, out storageFile) == false)
             {
                 throw new ItemAlreadyExistException();
             }
@@ -102,9 +102,33 @@ namespace LWMS.Core.FileSystem
                 throw new ItemReadOnlyException();
             }
             StorageFolder storageFolder;
-            if(CreateFolder(Name, out storageFolder) == false)
+            if (CreateFolder(Name, out storageFolder) == false)
             {
                 throw new ItemAlreadyExistException();
+            }
+            return storageFolder;
+        }
+        /// <summary>
+        /// Create a folder in current folder.
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="isIgnoreExistence"></param>
+        /// <returns></returns>
+        /// <exception cref="ItemAlreadyExistException"></exception>
+        public StorageFolder CreateFolder(string Name, bool isIgnoreExistence)
+        {
+
+            if (isReadOnly)
+            {
+                throw new ItemReadOnlyException();
+            }
+            StorageFolder storageFolder;
+            if (CreateFolder(Name, out storageFolder) == false)
+            {
+                if (isIgnoreExistence == true)
+                    storageFolder = GetFolder(Name);
+                else
+                    throw new ItemAlreadyExistException();
             }
             return storageFolder;
         }
@@ -113,7 +137,7 @@ namespace LWMS.Core.FileSystem
     [Serializable]
     public class ItemReadOnlyException : Exception
     {
-        public ItemReadOnlyException():base("Target item is read-only!") { }
+        public ItemReadOnlyException() : base("Target item is read-only!") { }
     }
     [Serializable]
     public class ItemAlreadyExistException : Exception
