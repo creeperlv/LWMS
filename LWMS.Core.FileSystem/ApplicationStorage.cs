@@ -15,9 +15,19 @@ namespace LWMS.Core.FileSystem
         static INILikeData RouteLocationMap;
         static Dictionary<string, string> Map = new Dictionary<string, string>();
         public readonly static string BasePath;
+        public static StorageFolder CurrentModule
+        {
+            get
+            {
+                StackTrace st = new StackTrace(1);
+                var item = st.GetFrame(0);
+                var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
+                return null;
+            }
+        }
         static ApplicationStorage()
         {
-                BasePath = new FileInfo(Assembly.GetAssembly(typeof(ApplicationStorage)).Location).DirectoryName;
+            BasePath = new FileInfo(Assembly.GetAssembly(typeof(ApplicationStorage)).Location).DirectoryName;
             {
                 SystemRoot = new StorageFolder();
                 SystemRoot.parent = null;
@@ -53,7 +63,7 @@ namespace LWMS.Core.FileSystem
             try
             {
                 StorageFile Routes;
-                _=Configuration.CreateFile("RoutedLocations.ini", out Routes);
+                _ = Configuration.CreateFile("RoutedLocations.ini", out Routes);
                 RouteLocationMap = INILikeData.LoadFromWR(new FileWR(Routes));
                 foreach (var item in RouteLocationMap)
                 {

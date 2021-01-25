@@ -61,10 +61,10 @@ namespace LWMS.Core
                         try
                         {
                             FileInfo AssemblyFile = new FileInfo(item.Value);
-                            Assembly.LoadFrom(AssemblyFile.FullName);
+                            var asm=Assembly.LoadFrom(AssemblyFile.FullName);
                             foreach (var UnitTypeName in item.Children)
                             {
-                                var t = Type.GetType(UnitTypeName.Value);
+                                var t = asm.GetType(UnitTypeName.Value);
                                 RegisterProcessUnit(Activator.CreateInstance(t) as IPipedProcessUnit);
                             }
                         }
@@ -93,10 +93,10 @@ namespace LWMS.Core
                         try
                         {
                             FileInfo AssemblyFile = new FileInfo(item.Value);
-                            Assembly.LoadFrom(AssemblyFile.FullName);
+                            var asm = Assembly.LoadFrom(AssemblyFile.FullName);
                             foreach (var UnitTypeName in item.Children)
                             {
-                                var t = Type.GetType(UnitTypeName.Value);
+                                var t = asm.GetType(UnitTypeName.Value);
                                 RegisterWProcessUnit(Activator.CreateInstance(t) as IPipedProcessUnit);
                             }
                         }
@@ -126,10 +126,10 @@ namespace LWMS.Core
                             try
                             {
                                 FileInfo AssemblyFile = new FileInfo(item.Value);
-                                Assembly.LoadFrom(AssemblyFile.FullName);
+                                var asm = Assembly.LoadFrom(AssemblyFile.FullName);
                                 foreach (var UnitTypeName in item.Children)
                                 {
-                                    var t = Type.GetType(UnitTypeName.Value);
+                                    var t = asm.GetType(UnitTypeName.Value);
                                     RegisterCmdOutProcessUnit(Activator.CreateInstance(t) as IPipedProcessUnit);
                                 }
                             }
