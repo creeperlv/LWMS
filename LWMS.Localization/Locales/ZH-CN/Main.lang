@@ -18,3 +18,4 @@ Utilities.Tools00.SendFile.Failed=无法发送文件：{0}.
 ErrorResponseUnit.UnhandledRequest=未处理的HTTP管线。请求：{0}。
 Server.Suspended=监听器已暂停。
 Server.Resumed=监听器已恢复。
+Command.AuthReject=操作已拒绝：身份 {0} 不具有权限。

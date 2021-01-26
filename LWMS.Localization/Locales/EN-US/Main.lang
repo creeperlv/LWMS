@@ -19,3 +19,4 @@ Utilities.Tools00.SendFile.Failed=Cannot send file: {0}.
 ErrorResponseUnit.UnhandledRequest=Unhandled Http Pipeline. Request: {0}
 Server.Suspended=Listener is now suspended.
 Server.Resumed=Listener is now resumed.
+Command.AuthReject=Operation rejected: auth {0} have no permission.

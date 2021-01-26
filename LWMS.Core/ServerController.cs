@@ -50,9 +50,14 @@ namespace LWMS.Core
         /// Response to the command packs.
         /// </summary>
         /// <param name="args"></param>
-        public static void Control(params CommandPack[] args)
+        public static void Control(string Auth, params CommandPack[] args)
         {
             Trace.WriteLine(Language.Query("LWMS.Commands.ReceieveCommand", "Received Command:", args[0]));
+            if (Auth != "localhost")
+            {
+                Trace.WriteLine(Language.Query("LWMS.Command.AuthReject", "Operation rejected: auth {0} have no permission.", Auth));
+                return;
+            }
             if (args[0].ToUpper() == "SHUTDOWN" || args[0].ToUpper() == "EXIT" || args[0].ToUpper() == "CLOSE")
             {
                 Output.WriteLine("Goodbye.");

@@ -25,13 +25,13 @@ namespace LWMS
                 {
                     _commands.RemoveAt(0);
                     LWMSCoreServer.LoadCommandsFromManifest();
-                    ServerController.Control(_commands.ToArray());
+                    ServerController.Control("localhost",_commands.ToArray());
                 }
                 else if (_commands[0].PackTotal.ToUpper() == "/NOBOOT")
                 {
                     _commands.RemoveAt(0);
                     LWMSCoreServer.LoadCommandsFromManifest();
-                    ServerController.Control(_commands.ToArray());
+                    ServerController.Control("localhost", _commands.ToArray());
                     return;
                 }
                 else { }
@@ -61,7 +61,7 @@ namespace LWMS
                 {
                     cmd.Add(item);
                 }
-                ServerController.Control(cmd.ToArray());
+                ServerController.Control("localhost", cmd.ToArray());
             }
             CommandListener();
         }
@@ -73,7 +73,7 @@ namespace LWMS
                 var cmd = Console.ReadLine();
                 if (cmd == "") continue;//Skip blank line.
                 var cmdList = Tools00.ResolveCommand(cmd);
-                ServerController.Control(cmdList.ToArray());
+                ServerController.Control("localhost", cmdList.ToArray());
                 //PrintHint();
             }
         }
