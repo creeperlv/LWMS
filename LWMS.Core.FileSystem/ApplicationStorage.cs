@@ -22,7 +22,7 @@ namespace LWMS.Core.FileSystem
                 StackTrace st = new StackTrace(1);
                 var item = st.GetFrame(0);
                 var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
-                return _ModuleRoot.CreateFolder(ModuleName,true);
+                return _ModuleRoot.CreateFolder(ModuleName, true);
             }
         }
         static ApplicationStorage()
