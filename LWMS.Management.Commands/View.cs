@@ -31,7 +31,7 @@ namespace LWMS.Management.Commands
             Output.WriteLine("\t\tAllocated Memory to LWMS (Using 'Process.WorkingSet64')");
         }
 
-        public void Invoke(params CommandPack[] args)
+        public void Invoke(string AuthContext,params CommandPack[] args)
         {
             if (args.Length == 0)
             {

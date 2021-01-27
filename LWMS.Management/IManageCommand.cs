@@ -10,6 +10,6 @@ namespace LWMS.Management
         string CommandName { get; }
         List<string> Alias { get; }
         int Version { get; }
-        void Invoke(params CommandPack[] args);
+        void Invoke(string AuthContext,params CommandPack[] args);
     }
 }

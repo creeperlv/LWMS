@@ -121,7 +121,7 @@ namespace LWMS.Core
                             ManageCommandArgs.RemoveAt(0);
                             try
                             {
-                                item.Value.Invoke(ManageCommandArgs.ToArray());
+                                item.Value.Invoke(Auth, ManageCommandArgs.ToArray());
                             }
                             catch (Exception e)
                             {
@@ -145,7 +145,7 @@ namespace LWMS.Core
                             ManageCommandArgs.RemoveAt(0);
                             try
                             {
-                                item.Value.Invoke(ManageCommandArgs.ToArray());
+                                item.Value.Invoke(Auth,ManageCommandArgs.ToArray());
                             }
                             catch (Exception e)
                             {

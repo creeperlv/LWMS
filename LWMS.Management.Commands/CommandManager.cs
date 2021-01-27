@@ -16,7 +16,7 @@ namespace LWMS.Management.Commands
 
         public List<string> Alias => new List<string>(new string[] { "commands", "cmds" });
 
-        public void Invoke(params CommandPack[] args)
+        public void Invoke(string AuthContext, params CommandPack[] args)
         {
             if (args.Length > 0)
             {

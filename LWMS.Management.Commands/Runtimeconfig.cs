@@ -21,7 +21,7 @@ namespace LWMS.Management.Commands
 
         public int Version => 1;
 
-        public void Invoke(params CommandPack[] args)
+        public void Invoke(string AuthContext, params CommandPack[] args)
         {
             for (int i = 0; i < args.Length; i++)
             {

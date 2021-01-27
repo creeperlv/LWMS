@@ -81,7 +81,7 @@ namespace LWMS.Management.Commands
             Output.WriteLine("\tppl reg r LWMS.RPipelineUnits.dll LWMS.RPipelineUnits.ProcessedStaticPages");
             Output.WriteLine("\tppl rm r LWMS.RPipelineUnits.dll");
         }
-        public void Invoke(params CommandPack[] args)
+        public void Invoke(string AuthContext, params CommandPack[] args)
         {
             if (args.Length == 0)
             {

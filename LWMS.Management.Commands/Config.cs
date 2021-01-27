@@ -38,7 +38,7 @@ namespace LWMS.Management.Commands
             Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Remove", "\t\tRemove a value to target collection whose name is given Key."));
         }
 
-        public void Invoke(params CommandPack[] args)
+        public void Invoke(string AuthContext, params CommandPack[] args)
         {
             if (args.Length > 0)
             {

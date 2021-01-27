@@ -16,11 +16,33 @@ namespace LWMS.Core.Authentication
         {
 
         }
+        static LoadAuthentications()
+        {
+                
+        }
         public static void SetLocalHostAuth(string Auth)
         {
             if (CurrentLocalHost == null)
             {
                 CurrentLocalHost = Auth;
+            }
+        }
+        public static void SetPermission(string ContextAuth, string OperateAuth, string PermissionID, bool Permission)
+        {
+            AuthedAction(ContextAuth, "Core.SetPermission", () =>
+            {
+                
+            }, false);
+        }
+        public static void AuthedAction(string Auth, string PermissionID, Action action, bool DefaultPermission = false)
+        {
+            if (IsAuthed(Auth, PermissionID, DefaultPermission))
+            {
+                action();
+            }
+            else
+            {
+                throw new UnauthorizedException(Auth, PermissionID);
             }
         }
         public static bool IsAuthed(string Auth, string PermissionID, bool DefaultPermission = false)
@@ -46,6 +68,12 @@ namespace LWMS.Core.Authentication
             var s = Convert.ToBase64String(d);
             return s;
         }
+    }
+
+    [Serializable]
+    public class UnauthorizedException : Exception
+    {
+        public UnauthorizedException(string Auth, string PermissionID) : base($"{Auth} is not allow to operate for \"{PermissionID}\" is now enabled.") { }
     }
     internal class Permission
     {
