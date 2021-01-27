@@ -36,7 +36,7 @@ public class Sample : LWMS.Management.IManageCommand
         public List<string> Alias=>new List<string>();
         public int Version=1;
 
-        public void Invoke(params LWMS.Management.CommandPack[] args)
+        public void Invoke(string AuthContext, params LWMS.Management.CommandPack[] args)
         {
             LWMS.Management.Output.WriteLine("Hello, LWMS!");
         }
