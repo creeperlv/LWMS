@@ -1,5 +1,8 @@
-﻿using System;
+﻿using CLUNL.Data.Layer1;
+using CLUNL.DirectedIO;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
@@ -18,11 +21,36 @@ namespace LWMS.Core.Authentication
         }
         static void LoadAuthentications()
         {
-
+            DirectoryInfo di = new DirectoryInfo("./Auths/");
+            if (!di.Exists) di.Create();
+            foreach (var item in di.EnumerateFiles())
+            {
+                var auth = CLUNL.Data.Layer1.INILikeData.LoadFromWR(new FileWR(item));
+                string name = auth.FindValue("Auth");
+                Auths.Add(name, new());
+                foreach (var permission in auth)
+                {
+                    if (permission.Key != "Auth")
+                    {
+                        Permission p = new Permission(permission.Key, bool.Parse(permission.Value));
+                        Auths[name].Add(p);
+                    }
+                }
+            }
         }
         static void SaveAuth(string Auth)
         {
-
+            string FN = Auth.Replace("/", "_").Replace("+", "_").Replace("=", "_").Replace("\\", "_");
+            if (File.Exists(FN)) File.Delete(FN);
+            File.Create(FN).Close();
+            var f = INILikeData.CreateToFile(new FileInfo("./Auths/" + Auth));
+            f.AddValue("Auth", Auth, true, false, 0);
+            foreach (var item in Auths[Auth])
+            {
+                f.AddValue(item.ID, item.IsAllowed+"", true, false, 0);
+            }
+            f.RemoveOldDuplicatedItems();
+            f.Flush();
         }
         public static void SetLocalHostAuth(string Auth)
         {
@@ -51,7 +79,7 @@ namespace LWMS.Core.Authentication
                 }
                 if (isOperated == false)
                 {
-                    Auths[OperateAuth].Add(new(PermissionID,Permission));
+                    Auths[OperateAuth].Add(new(PermissionID, Permission));
                 }
                 SaveAuth(OperateAuth);
             }, false);
@@ -100,12 +128,12 @@ namespace LWMS.Core.Authentication
     internal class Permission
     {
         readonly string id;
-        public string ID { get=>id; }
+        public string ID { get => id; }
         internal bool IsAllowed;
 
         public Permission(string ID, bool isAllowed)
         {
-            id=ID;
+            id = ID;
             IsAllowed = isAllowed;
         }
     }
