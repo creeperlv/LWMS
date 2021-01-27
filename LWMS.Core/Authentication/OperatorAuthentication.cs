@@ -14,11 +14,15 @@ namespace LWMS.Core.Authentication
         private static Dictionary<string, List<Permission>> Auths = new Dictionary<string, List<Permission>>();
         static OperatorAuthentication()
         {
+            LoadAuthentications();
+        }
+        static void LoadAuthentications()
+        {
 
         }
-        static LoadAuthentications()
+        static void SaveAuth(string Auth)
         {
-                
+
         }
         public static void SetLocalHostAuth(string Auth)
         {
@@ -31,7 +35,25 @@ namespace LWMS.Core.Authentication
         {
             AuthedAction(ContextAuth, "Core.SetPermission", () =>
             {
-                
+                if (!Auths.ContainsKey(OperateAuth))
+                {
+                    Auths.Add(OperateAuth, new());
+                }
+                bool isOperated = false;
+                foreach (var item in Auths[OperateAuth])
+                {
+                    if (item.ID == PermissionID)
+                    {
+                        item.IsAllowed = Permission;
+                        isOperated = true;
+                        break;
+                    }
+                }
+                if (isOperated == false)
+                {
+                    Auths[OperateAuth].Add(new(PermissionID,Permission));
+                }
+                SaveAuth(OperateAuth);
             }, false);
         }
         public static void AuthedAction(string Auth, string PermissionID, Action action, bool DefaultPermission = false)
@@ -77,7 +99,14 @@ namespace LWMS.Core.Authentication
     }
     internal class Permission
     {
-        internal string ID;
+        readonly string id;
+        public string ID { get=>id; }
         internal bool IsAllowed;
+
+        public Permission(string ID, bool isAllowed)
+        {
+            id=ID;
+            IsAllowed = isAllowed;
+        }
     }
 }
