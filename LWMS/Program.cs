@@ -1,4 +1,5 @@
 ﻿using LWMS.Core;
+using LWMS.Core.Authentication;
 using LWMS.Core.Configuration;
 using LWMS.Core.Log;
 using LWMS.Core.Utilities;
@@ -13,8 +14,14 @@ namespace LWMS
 {
     class Program
     {
+        static string Auth;
         static void Main(string[] args)
         {
+            {
+                var Auth0 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
+                var Auth1 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
+                Auth = OperatorAuthentication.ObtainAuth(Auth0, Auth1);
+            }
             Console.WriteLine("Copyright (C) 2020 Creeper Lv");
             Console.WriteLine("This software is licensed under the MIT License");
             var _commands = Tools00.ResolveCommand(Environment.CommandLine);
@@ -25,13 +32,13 @@ namespace LWMS
                 {
                     _commands.RemoveAt(0);
                     LWMSCoreServer.LoadCommandsFromManifest();
-                    ServerController.Control("localhost",_commands.ToArray());
+                    ServerController.Control(Auth, _commands.ToArray());
                 }
                 else if (_commands[0].PackTotal.ToUpper() == "/NOBOOT")
                 {
                     _commands.RemoveAt(0);
                     LWMSCoreServer.LoadCommandsFromManifest();
-                    ServerController.Control("localhost", _commands.ToArray());
+                    ServerController.Control(Auth, _commands.ToArray());
                     return;
                 }
                 else { }
@@ -61,7 +68,7 @@ namespace LWMS
                 {
                     cmd.Add(item);
                 }
-                ServerController.Control("localhost", cmd.ToArray());
+                ServerController.Control(Auth, cmd.ToArray());
             }
             CommandListener();
         }
@@ -73,7 +80,7 @@ namespace LWMS
                 var cmd = Console.ReadLine();
                 if (cmd == "") continue;//Skip blank line.
                 var cmdList = Tools00.ResolveCommand(cmd);
-                ServerController.Control("localhost", cmdList.ToArray());
+                ServerController.Control(Auth, cmdList.ToArray());
                 //PrintHint();
             }
         }

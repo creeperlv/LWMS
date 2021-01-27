@@ -1,4 +1,5 @@
-﻿using LWMS.Core.Configuration;
+﻿using LWMS.Core.Authentication;
+using LWMS.Core.Configuration;
 using LWMS.Core.Log;
 using LWMS.Localization;
 using LWMS.Management;
@@ -53,7 +54,8 @@ namespace LWMS.Core
         public static void Control(string Auth, params CommandPack[] args)
         {
             Trace.WriteLine(Language.Query("LWMS.Commands.ReceieveCommand", "Received Command:", args[0]));
-            if (Auth != "localhost")
+           
+            if (OperatorAuthentication.IsAuthed(Auth, "ServerControl.ExecuteCommands"))
             {
                 Trace.WriteLine(Language.Query("LWMS.Command.AuthReject", "Operation rejected: auth {0} have no permission.", Auth));
                 return;
