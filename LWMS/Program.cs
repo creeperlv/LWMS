@@ -21,6 +21,7 @@ namespace LWMS
                 var Auth0 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
                 var Auth1 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
                 Auth = OperatorAuthentication.ObtainAuth(Auth0, Auth1);
+                OperatorAuthentication.SetLocalHostAuth(Auth);
             }
             Console.WriteLine("Copyright (C) 2020 Creeper Lv");
             Console.WriteLine("This software is licensed under the MIT License");
@@ -61,6 +62,7 @@ namespace LWMS
             //string p = Configuration.BasePath;
             coreServer.Start(100);
             Console.WriteLine("The server is now running good.");
+            Login();
             if (args.Length > 0)
             {
                 var cmd = new List<CommandPack>();
@@ -71,6 +73,23 @@ namespace LWMS
                 ServerController.Control(Auth, cmd.ToArray());
             }
             CommandListener();
+        }
+        static void Login()
+        {
+            while (true)
+            {
+
+                Console.WriteLine("User Name:");
+                var UN = Console.ReadLine();
+                Console.WriteLine("Password:");
+                var PW = ReadPassword();
+                if (OperatorAuthentication.IsAuthPresent(OperatorAuthentication.ObtainAuth(UN, PW))){
+                    Auth = OperatorAuthentication.ObtainAuth(UN, PW);
+                    Console.WriteLine("Welcome, "+UN);
+                    return;
+                }
+                Console.WriteLine("Username + Password combination no found, please retry.");
+            }
         }
         static void CommandListener()
         {
@@ -108,6 +127,55 @@ namespace LWMS
                 GlobalConfiguration.ListenPrefixes = RecordedUrls;
                 Console.WriteLine("Done!");
             }
+            if (OperatorAuthentication.HasAdmin() is not true)
+            {
+                Console.WriteLine("Create an administrator::");
+                Console.WriteLine("User Name:");
+                string Name = Console.ReadLine();
+                bool isSucceed = false;
+                while (isSucceed is not true)
+                {
+                    Console.WriteLine("Enter password for the first time:");
+                    var pw0 = ReadPassword();
+                    Console.WriteLine("Please repeat your password:");
+                    var pw1 = ReadPassword();
+                    if (pw0 == pw1)
+                    {
+                        OperatorAuthentication.SetPermission(Auth, OperatorAuthentication.ObtainAuth(Name, pw0), "Class1Admin", true);
+                        Auth = OperatorAuthentication.ObtainAuth(Name, pw0);
+                        Console.WriteLine("Succeed.");
+                        isSucceed = true;
+                    }
+                }
+            }
+        }
+        static string ReadPassword()
+        {
+            StringBuilder password = new StringBuilder();
+            ConsoleKeyInfo con;
+
+            do
+            {
+                con = Console.ReadKey(true);
+                if (con.Key == ConsoleKey.Backspace)
+                {
+                    try
+                    {
+                        password.Remove(password.Length - 1, 1);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+                else
+                {
+                    if (con.Key is >= ConsoleKey.D0 and <= ConsoleKey.Z)
+                    {
+                        password.Append(con.KeyChar.ToString());
+                    }
+                }
+            } while (con.Key != ConsoleKey.Enter);
+            return password.ToString();
         }
     }
 }

@@ -24,6 +24,7 @@ namespace LWMS.Core.Configuration
                 StorageFile ManageModuleFile;
                 if (ApplicationStorage.Configuration.CreateFile("ManageModules.ini", out ManageModuleFile))
                 {
+                    Trace.WriteLine(Localization.Language.Query("LWMS.Config.CreateDefaultCommandManifest", "Create default command module manifest."));
                     ManageCommandModules = ListData<string>.LoadFromStream(ManageModuleFile.OpenFile());
                     ManageCommandModules.Add(Path.Combine(ApplicationStorage.BasePath, "LWMS.Management.Commands.dll"));
                     ManageCommandModules.Save();

@@ -20,3 +20,4 @@ ErrorResponseUnit.UnhandledRequest=Unhandled Http Pipeline. Request: {0}
 Server.Suspended=Listener is now suspended.
 Server.Resumed=Listener is now resumed.
 Command.AuthReject=Operation rejected: auth {0} have no permission.
+Config.CreateDefaultCommandManifest=Create default command module manifest.

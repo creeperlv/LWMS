@@ -25,7 +25,7 @@ namespace LWMS.Core.Authentication
             if (!di.Exists) di.Create();
             foreach (var item in di.EnumerateFiles())
             {
-                var auth = CLUNL.Data.Layer1.INILikeData.LoadFromWR(new FileWR(item));
+                var auth = INILikeData.LoadFromWR(new FileWR(item));
                 string name = auth.FindValue("Auth");
                 Auths.Add(name, new());
                 foreach (var permission in auth)
@@ -38,16 +38,17 @@ namespace LWMS.Core.Authentication
                 }
             }
         }
+        public static int GetAuthCount() => Auths.Count;
         static void SaveAuth(string Auth)
         {
             string FN = Auth.Replace("/", "_").Replace("+", "_").Replace("=", "_").Replace("\\", "_");
             if (File.Exists(FN)) File.Delete(FN);
             File.Create(FN).Close();
-            var f = INILikeData.CreateToFile(new FileInfo("./Auths/" + Auth));
+            var f = INILikeData.CreateToFile(new FileInfo("./Auths/" + FN));
             f.AddValue("Auth", Auth, true, false, 0);
             foreach (var item in Auths[Auth])
             {
-                f.AddValue(item.ID, item.IsAllowed+"", true, false, 0);
+                f.AddValue(item.ID, item.IsAllowed + "", true, false, 0);
             }
             f.RemoveOldDuplicatedItems();
             f.Flush();
@@ -104,6 +105,17 @@ namespace LWMS.Core.Authentication
             {
                 foreach (var item in Auths[Auth])
                 {
+                    if (item.ID == "Class1Admin")
+                    {
+                        if (item.IsAllowed == true)
+                        {
+                            if (PermissionID != "Core.SetPermission")
+                                return true;
+                        }
+                    }
+                }
+                foreach (var item in Auths[Auth])
+                {
                     if (item.ID == PermissionID)
                     {
                         return item.IsAllowed;
@@ -111,6 +123,18 @@ namespace LWMS.Core.Authentication
                 }
             }
             return DefaultPermission;
+        }
+        public static bool IsAuthPresent(string Auth)
+        {
+            return Auth.Contains(Auth);
+        }
+        public static bool HasAdmin()
+        {
+            foreach (var item in Auths)
+            {
+                return IsAuthed(item.Key, "Class1Admin");
+            }
+            return false;
         }
         public static string ObtainAuth(string Name, string Password)
         {
@@ -123,7 +147,7 @@ namespace LWMS.Core.Authentication
     [Serializable]
     public class UnauthorizedException : Exception
     {
-        public UnauthorizedException(string Auth, string PermissionID) : base($"{Auth} is not allow to operate for \"{PermissionID}\" is now enabled.") { }
+        public UnauthorizedException(string Auth, string PermissionID) : base($"{Auth} is not allow to operate for \"{PermissionID}\" is not enabled.") { }
     }
     internal class Permission
     {
