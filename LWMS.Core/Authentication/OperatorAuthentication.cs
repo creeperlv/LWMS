@@ -53,6 +53,15 @@ namespace LWMS.Core.Authentication
             f.RemoveOldDuplicatedItems();
             f.Flush();
         }
+        public static void RemoveAuth(string ContextAuth,string TargetAuth)
+        {
+            AuthedAction(ContextAuth, "Core.SetPermission", () => {
+                if(Auths.ContainsKey(TargetAuth))
+                Auths.Remove(TargetAuth);
+                string FN = TargetAuth.Replace("/", "_").Replace("+", "_").Replace("=", "_").Replace("\\", "_");
+                if (File.Exists(FN)) File.Delete(FN);
+            });
+        }
         public static void SetLocalHostAuth(string Auth)
         {
             if (CurrentLocalHost == null)
