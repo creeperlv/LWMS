@@ -66,9 +66,10 @@ Help.Log.Stopwatch=\t\t停止监听日志缓存，新日志将不会被写入至
 
 Help.Auth.Usage=Auth <操作 0> [参数 0], [参数 1]...,<操作 1> [参数 0], [参数 1]...,...
 Help.Auth.Warning=\t该命令需要执行上下文拥有"Core.SetPermission"权限。
-Help.Auth.Create=\t\t创建一个具有给定权限的认证。"Class1Admin"是有除了"Core.SetPermission"权限外的一级管理员。
+Help.Auth.Create=\t\t创建一个认证。
 Help.Auth.Remove=\t\t移除一个认证。
-Help.Auth.Set=\t\t为给定认证设置一个权限。
+Help.Auth.List=\t\t列出所有认证ID和用户名。
+Help.Auth.Set=\t\t为给定认证设置一个权限。"Class1Admin"是有除了"Core.SetPermission"权限外的一级管理员。
 
 Universal.Succeed=成功。
 Universal.Failed=失败。

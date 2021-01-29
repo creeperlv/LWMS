@@ -25,14 +25,17 @@ namespace LWMS.Management.Commands
             Output.WriteLine("");
             Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"));
             Output.WriteLine("");
-            Output.WriteLine("\tCreate");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Create", "\t\tCreate an auth with given permission. \"Class1Admin\" is tier 1 administrator except \"Core.SetPermission\" permission."));
+            Output.WriteLine("\tCreate [Username] [Password]");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Create", "\t\tCreate an auth."));
             Output.WriteLine("");
-            Output.WriteLine("\tRemove");
+            Output.WriteLine("\tRemove [AuthID]");
             Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Remove", "\t\tRemove an auth."));
             Output.WriteLine("");
-            Output.WriteLine("\tSet");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Set", "\t\tSet a permission to given auth."));
+            Output.WriteLine("\tSet [AuthID] [PermissionID] [Value]");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Set", "\t\tSet a permission to given auth. \"Class1Admin\" is tier 1 administrator except \"Core.SetPermission\" permission."));
+            Output.WriteLine("");
+            Output.WriteLine("\tList|Ls");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.List", "\t\tList all auth IDs with username."));
             Output.WriteLine("");
         }
         public void Invoke(string AuthContext, params CommandPack[] args)
@@ -60,12 +63,7 @@ namespace LWMS.Management.Commands
                                 var UN = args[i].PackTotal;
                                 i++;
                                 var PW = args[i].PackTotal;
-                                i++;
-                                var PID = args[i].PackTotal;
-                                i++;
-                                var P = args[i].PackTotal;
-                                bool P_ = bool.Parse(P);
-                                OperatorAuthentication.SetPermission(AuthContext, OperatorAuthentication.ObtainAuth(UN, PW), PID, P_,UN);
+                                OperatorAuthentication.CreateAuth(AuthContext,UN,PW);
                                 Output.WriteLine(Language.Query("ManageCmd.Universal.Succeed", "Succeed."));
                             }
                             break;
@@ -90,6 +88,16 @@ namespace LWMS.Management.Commands
                                 bool P_ = bool.Parse(P);
                                 OperatorAuthentication.SetPermission(AuthContext, Auth, PID, P_);
                                 Output.WriteLine(Language.Query("ManageCmd.Universal.Succeed", "Succeed."));
+                            }
+                            break;
+                        case "LIST":
+                        case "LS":
+                            {
+                                var ls=OperatorAuthentication.ObtainAuthList(AuthContext);
+                                foreach (var item in ls)
+                                {
+                                    Console.WriteLine(item.Value + ": " + item.Key);
+                                }
                             }
                             break;
                         default:

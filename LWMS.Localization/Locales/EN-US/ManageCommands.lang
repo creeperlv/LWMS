@@ -69,9 +69,10 @@ Help.Log.Stopwatch=\t\tStop watching log cache, new logs will now be writtern to
 
 Help.Auth.Usage=Auth <Operation 0> [parameter 0], [parameter 1]...,<Operation 1> [parameter 0], [parameter 1]...,...
 Help.Auth.Warning=\tThis command requires execute context has "Core.SetPermission" permission.
-Help.Auth.Create=\t\tCreate an auth with given permission. "Class1Admin" is tier 1 administrator except "Core.SetPermission" permission.
+Help.Auth.Create=\t\tCreate an auth. 
 Help.Auth.Remove=\t\tRemove an auth.
-Help.Auth.Set=\t\tSet a permission to given auth.
+Help.Auth.List=\t\tList all auth IDs with username.
+Help.Auth.Set=\t\tSet a permission to given auth. "Class1Admin" is tier 1 administrator except "Core.SetPermission" permission.
 
 Universal.Succeed=Succeed.
 Universal.Failed=Failed.

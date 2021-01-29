@@ -20,7 +20,7 @@ namespace LWMS
             {
                 var Auth0 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
                 var Auth1 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
-                Auth = OperatorAuthentication.ObtainAuth(Auth0, Auth1);
+                Auth = OperatorAuthentication.ObtainRTAuth(Auth0, Auth1);
                 OperatorAuthentication.SetLocalHostAuth(Auth);
             }
             Console.WriteLine("Copyright (C) 2020 Creeper Lv");
@@ -83,8 +83,8 @@ namespace LWMS
                 var UN = Console.ReadLine();
                 Console.WriteLine("Password:");
                 var PW = ReadPassword();
-                if (OperatorAuthentication.IsAuthPresent(OperatorAuthentication.ObtainAuth(UN, PW)) is true){
-                    Auth = OperatorAuthentication.ObtainAuth(UN, PW);
+                if (OperatorAuthentication.IsAuthPresent(OperatorAuthentication.ObtainRTAuth(UN, PW)) is true){
+                    Auth = OperatorAuthentication.ObtainRTAuth(UN, PW);
                     Console.WriteLine("Welcome, "+UN);
                     return;
                 }
@@ -141,8 +141,9 @@ namespace LWMS
                     var pw1 = ReadPassword();
                     if (pw0 == pw1)
                     {
-                        OperatorAuthentication.SetPermission(Auth, OperatorAuthentication.ObtainAuth(Name, pw0), "Class1Admin", true);
-                        Auth = OperatorAuthentication.ObtainAuth(Name, pw0);
+                        var ID=OperatorAuthentication.CreateAuth(Auth, Name, pw0);
+                        OperatorAuthentication.SetPermission(Auth, ID, "Class1Admin", true);
+                        Auth = OperatorAuthentication.ObtainRTAuth(Name, pw0);
                         Console.WriteLine("Succeed.");
                         isSucceed = true;
                     }
