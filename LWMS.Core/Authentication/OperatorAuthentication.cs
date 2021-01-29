@@ -96,6 +96,20 @@ namespace LWMS.Core.Authentication
                 throw new UnauthorizedException(Auth, PermissionID);
             }
         }
+        public static void AuthedAction(string Auth, Action action, bool DefaultPermission = false, bool ProduceError = false, params string[] PermissionIDs)
+        {
+            foreach (var item in PermissionIDs)
+            {
+                if (IsAuthed(Auth, item, DefaultPermission) is true)
+                {
+                    action();
+                    return;
+                }
+            }
+            if (ProduceError is true)
+                throw new UnauthorizedException(Auth, PermissionIDs[0]);
+            else return;
+        }
         public static bool IsAuthed(string Auth, string PermissionID, bool DefaultPermission = false)
         {
             if (CurrentLocalHost == Auth) return true;

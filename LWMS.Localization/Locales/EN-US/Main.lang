@@ -21,3 +21,4 @@ Server.Suspended=Listener is now suspended.
 Server.Resumed=Listener is now resumed.
 Command.AuthReject=Operation rejected: auth {0} have no permission.
 Config.CreateDefaultCommandManifest=Create default command module manifest.
+Auth.Reject=Operation rejected: auth {0} have no permission of {1}.

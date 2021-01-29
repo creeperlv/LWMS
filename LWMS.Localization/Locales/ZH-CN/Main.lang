@@ -20,3 +20,4 @@ Server.Suspended=监听器已暂停。
 Server.Resumed=监听器已恢复。
 Command.AuthReject=操作已拒绝：身份 {0} 不具有权限。
 Config.CreateDefaultCommandManifest=创建默认命令模块清单。
+Auth.Reject=操作已拒绝：身份 {0} 不具有 {1} 权限。

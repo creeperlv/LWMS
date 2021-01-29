@@ -54,7 +54,7 @@ namespace LWMS.Core
         public static void Control(string Auth, params CommandPack[] args)
         {
             Trace.WriteLine(Language.Query("LWMS.Commands.ReceieveCommand", "Received Command:", args[0]));
-           
+
             if (!OperatorAuthentication.IsAuthed(Auth, "ServerControl.ExecuteCommands"))
             {
                 Trace.WriteLine(Language.Query("LWMS.Command.AuthReject", "Operation rejected: auth {0} have no permission.", Auth));
@@ -62,10 +62,21 @@ namespace LWMS.Core
             }
             if (args[0].ToUpper() == "SHUTDOWN" || args[0].ToUpper() == "EXIT" || args[0].ToUpper() == "CLOSE")
             {
-                Output.WriteLine("Goodbye.");
-                if (LWMSTraceListener.WriteToFile)
-                    LWMSTraceListener.FlushImmediately();
-                Environment.Exit(0);
+                try
+                {
+
+                    OperatorAuthentication.AuthedAction(Auth, () =>
+                    {
+                        Output.WriteLine("Goodbye.");
+                        if (LWMSTraceListener.WriteToFile)
+                            LWMSTraceListener.FlushImmediately();
+                        Environment.Exit(0);
+                    }, false, false, "ServerControl.Shutdown", "ServerControl.All");
+                }
+                catch (Exception)
+                {
+                    Trace.WriteLine(Language.Query("LWMS.Auth.Reject", "Operation rejected: auth {0} have no permission of {1}.", Auth, "ServerControl.Shutdown"));
+                }
             }
             else if (args[0].ToUpper() == "VER" || args[0].ToUpper() == "VERSION")
             {
@@ -80,33 +91,58 @@ namespace LWMS.Core
             }
             else if (args[0].ToUpper() == "SUSPEND")
             {
-                //LWMSCoreServer.Listener.Stop();
-                if (LWMSCoreServer.Listener != null)
+
+                try
                 {
 
-                    LWMSCoreServer.Listener.Abort();
-                    LWMSCoreServer.Listener.Close();
-                    LWMSCoreServer.Listener = null;
-                    LWMSCoreServer.isSuspend = true;
-                    Output.WriteLine(Language.Query("Server.Suspended", "Listener is now suspended."));
+                    OperatorAuthentication.AuthedAction(Auth, () =>
+                    {
+                        if (LWMSCoreServer.Listener != null)
+                        {
+
+                            LWMSCoreServer.Listener.Abort();
+                            LWMSCoreServer.Listener.Close();
+                            LWMSCoreServer.Listener = null;
+                            LWMSCoreServer.isSuspend = true;
+                            Output.WriteLine(Language.Query("Server.Suspended", "Listener is now suspended."));
+                        }
+                    }, false, false, "ServerControl.Suspend","ServerControl.ListenerControl", "ServerControl.All");
+                }
+                catch (Exception)
+                {
+                    Trace.WriteLine(Language.Query("LWMS.Auth.Reject", "Operation rejected: auth {0} have no permission of {1}.", Auth, "ServerControl.Suspend"));
                 }
             }
             else if (args[0].ToUpper() == "RESUME")
             {
                 //LWMSCoreServer.Listener.Start();
                 //                I do not know why HttpListener.Start() will not resume.
-                if (LWMSCoreServer.Listener == null)
+
+
+
+                try
                 {
-                    LWMSCoreServer.Listener = new System.Net.HttpListener();
 
-                    foreach (var item in GlobalConfiguration.ListenPrefixes)
+                    OperatorAuthentication.AuthedAction(Auth, () =>
                     {
+                        if (LWMSCoreServer.Listener == null)
+                        {
+                            LWMSCoreServer.Listener = new System.Net.HttpListener();
 
-                        LWMSCoreServer.Listener.Prefixes.Add(item);
-                    }
-                    LWMSCoreServer.Listener.Start();
-                    LWMSCoreServer.isSuspend = false;
-                    Output.WriteLine(Language.Query("Server.Resumed", "Listener is now resumed."));
+                            foreach (var item in GlobalConfiguration.ListenPrefixes)
+                            {
+
+                                LWMSCoreServer.Listener.Prefixes.Add(item);
+                            }
+                            LWMSCoreServer.Listener.Start();
+                            LWMSCoreServer.isSuspend = false;
+                            Output.WriteLine(Language.Query("Server.Resumed", "Listener is now resumed."));
+                        }
+                    }, false, false, "ServerControl.Resume", "ServerControl.ListenerControl", "ServerControl.All");
+                }
+                catch (Exception)
+                {
+                    Trace.WriteLine(Language.Query("LWMS.Auth.Reject", "Operation rejected: auth {0} have no permission of {1}.", Auth, "ServerControl.Resume"));
                 }
             }
             else
@@ -145,7 +181,7 @@ namespace LWMS.Core
                             ManageCommandArgs.RemoveAt(0);
                             try
                             {
-                                item.Value.Invoke(Auth,ManageCommandArgs.ToArray());
+                                item.Value.Invoke(Auth, ManageCommandArgs.ToArray());
                             }
                             catch (Exception e)
                             {
