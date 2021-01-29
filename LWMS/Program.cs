@@ -26,6 +26,7 @@ namespace LWMS
             Console.WriteLine("Copyright (C) 2020 Creeper Lv");
             Console.WriteLine("This software is licensed under the MIT License");
             var _commands = Tools00.ResolveCommand(Environment.CommandLine);
+            bool ignore_Arg = false;
             _commands.RemoveAt(0);//Remove start command.
             if (_commands.Count > 0)
             {
@@ -34,6 +35,7 @@ namespace LWMS
                     _commands.RemoveAt(0);
                     LWMSCoreServer.LoadCommandsFromManifest();
                     ServerController.Control(Auth, _commands.ToArray());
+                    ignore_Arg = true;
                 }
                 else if (_commands[0].PackTotal.ToUpper() == "/NOBOOT")
                 {
@@ -63,6 +65,7 @@ namespace LWMS
             coreServer.Start(100);
             Console.WriteLine("The server is now running good.");
             Login();
+            if(ignore_Arg==false)
             if (args.Length > 0)
             {
                 var cmd = new List<CommandPack>();
@@ -98,6 +101,7 @@ namespace LWMS
             {
                 var cmd = Console.ReadLine();
                 if (cmd == "") continue;//Skip blank line.
+                if (cmd.ToLower() == "relogin") { Login(); continue; }
                 var cmdList = Tools00.ResolveCommand(cmd);
                 ServerController.Control(Auth, cmdList.ToArray());
                 //PrintHint();
@@ -146,6 +150,10 @@ namespace LWMS
                         Auth = OperatorAuthentication.ObtainRTAuth(Name, pw0);
                         Console.WriteLine("Succeed.");
                         isSucceed = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Password mismatch.");
                     }
                 }
             }
