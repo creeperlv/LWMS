@@ -55,7 +55,7 @@ namespace LWMS.Core
         {
             Trace.WriteLine(Language.Query("LWMS.Commands.ReceieveCommand", "Received Command:", args[0]));
 
-            if (!OperatorAuthentication.IsAuthed(Auth, "ServerControl.ExecuteCommands"))
+            if (!OperatorAuthentication.IsAuthed(Auth, "Basic.ExecuteCommand"))
             {
                 Trace.WriteLine(Language.Query("LWMS.Command.AuthReject", "Operation rejected: auth {0} have no permission.", Auth));
                 return;

@@ -1,4 +1,5 @@
 ﻿using LWMS.Core;
+using LWMS.Core.Authentication;
 using LWMS.Core.Configuration;
 using LWMS.Core.Log;
 using LWMS.Localization;
@@ -23,52 +24,54 @@ namespace LWMS.Management.Commands
 
         public void Invoke(string AuthContext, params CommandPack[] args)
         {
-            for (int i = 0; i < args.Length; i++)
-            {
-                var item = args[i];
-                switch (item.ToUpper())
+            OperatorAuthentication.AuthedAction(AuthContext, () => {
+                for (int i = 0; i < args.Length; i++)
                 {
-                    case "/DISABLEBEAUTIFYCONSOLE":
-                        LWMSTraceListener.BeautifyConsoleOutput = false;
-                        break;
-                    case "/ENABLEBEAUTIFYCONSOLE":
-                        LWMSTraceListener.BeautifyConsoleOutput = true;
-                        break;
-                    case "/DISABLECONSOLE":
-                        LWMSTraceListener.EnableConsoleOutput = false;
-                        break;
-                    case "/DISABLELOGTOFILE":
-                        LWMSTraceListener.WriteToFile = false;
-                        break;
-                    case "/ENABLECONSOLE":
-                        LWMSTraceListener.EnableConsoleOutput = true;
-                        break;
-                    default:
-                        {
-                            switch (item.PackParted[0].ToUpper())
+                    var item = args[i];
+                    switch (item.ToUpper())
+                    {
+                        case "/DISABLEBEAUTIFYCONSOLE":
+                            LWMSTraceListener.BeautifyConsoleOutput = false;
+                            break;
+                        case "/ENABLEBEAUTIFYCONSOLE":
+                            LWMSTraceListener.BeautifyConsoleOutput = true;
+                            break;
+                        case "/DISABLECONSOLE":
+                            LWMSTraceListener.EnableConsoleOutput = false;
+                            break;
+                        case "/DISABLELOGTOFILE":
+                            LWMSTraceListener.WriteToFile = false;
+                            break;
+                        case "/ENABLECONSOLE":
+                            LWMSTraceListener.EnableConsoleOutput = true;
+                            break;
+                        default:
                             {
-                                case "BUF_LENGTH":
-                                    {
-                                        int B;
-                                        int.TryParse(args[i].PackParted[1], out B);
-                                        GlobalConfiguration.Set_BUF_LENGTH_RT(B);
-                                        Console.WriteLine(Language.Query("ManageCmd.RuntimeConfig.SetValue", "{0} is temporarily set to {1} without saving to GlobalConfiguration file.","BUT_LENGTH",B.ToString()));
-                                    }
-                                    break;
-                                case "WEBROOT":
-                                    {
-                                        string path = args[i].PackParted[1];
-                                        GlobalConfiguration.Set_WebRoot_RT(path);
-                                        Console.WriteLine(Language.Query("ManageCmd.RuntimeConfig.SetValue", "{0} is temporarily set to {1} without saving to GlobalConfiguration file.","WebRoot",path));
-                                    }
-                                    break;
-                                default:
-                                    break;
+                                switch (item.PackParted[0].ToUpper())
+                                {
+                                    case "BUF_LENGTH":
+                                        {
+                                            int B;
+                                            int.TryParse(args[i].PackParted[1], out B);
+                                            GlobalConfiguration.Set_BUF_LENGTH_RT(B);
+                                            Console.WriteLine(Language.Query("ManageCmd.RuntimeConfig.SetValue", "{0} is temporarily set to {1} without saving to GlobalConfiguration file.", "BUT_LENGTH", B.ToString()));
+                                        }
+                                        break;
+                                    case "WEBROOT":
+                                        {
+                                            string path = args[i].PackParted[1];
+                                            GlobalConfiguration.Set_WebRoot_RT(path);
+                                            Console.WriteLine(Language.Query("ManageCmd.RuntimeConfig.SetValue", "{0} is temporarily set to {1} without saving to GlobalConfiguration file.", "WebRoot", path));
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
-                        }
-                        break;
+                            break;
+                    }
                 }
-            }
+            }, false, true, "Core.Config.Runtime");
         }
     }
 }

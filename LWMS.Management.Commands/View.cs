@@ -1,4 +1,5 @@
 ﻿using LWMS.Core;
+using LWMS.Core.Authentication;
 using LWMS.Core.Configuration;
 using System;
 using System.Collections.Generic;
@@ -38,31 +39,34 @@ namespace LWMS.Management.Commands
                 PrintHelp();
                 return;
             }
-            foreach (var item in args)
-            {
-                if (item.PackTotal.ToUpper() == "WEBROOT")
+            OperatorAuthentication.AuthedAction(AuthContext, () => {
+                foreach (var item in args)
                 {
-                    DirectoryInfo directoryInfo = new DirectoryInfo(GlobalConfiguration.WebSiteContentRoot);
-                    Output.WriteLine(directoryInfo.FullName);
-                }
-                else
-                if (item.PackTotal.ToUpper() == "WEBROOTDIR")
-                {
-                    DirectoryInfo directoryInfo = new DirectoryInfo(GlobalConfiguration.WebSiteContentRoot);
-                    foreach (var dir in directoryInfo.EnumerateDirectories())
+                    if (item.PackTotal.ToUpper() == "WEBROOT")
                     {
-                        Output.WriteLine("D:"+dir.FullName);
+                        DirectoryInfo directoryInfo = new DirectoryInfo(GlobalConfiguration.WebSiteContentRoot);
+                        Output.WriteLine(directoryInfo.FullName);
                     }
-                    foreach (var file in directoryInfo.EnumerateFiles())
+                    else
+                    if (item.PackTotal.ToUpper() == "WEBROOTDIR")
                     {
-                        Output.WriteLine("F:"+file.FullName);
+                        DirectoryInfo directoryInfo = new DirectoryInfo(GlobalConfiguration.WebSiteContentRoot);
+                        foreach (var dir in directoryInfo.EnumerateDirectories())
+                        {
+                            Output.WriteLine("D:" + dir.FullName);
+                        }
+                        foreach (var file in directoryInfo.EnumerateFiles())
+                        {
+                            Output.WriteLine("F:" + file.FullName);
+                        }
                     }
-                }else if (item.ToUpper() == "USINGMEM")
-                {
-                    var prop = Process.GetCurrentProcess();
-                    Output.WriteLine("Using Memory(KB):" + prop.WorkingSet64/1024.0);
+                    else if (item.ToUpper() == "USINGMEM")
+                    {
+                        var prop = Process.GetCurrentProcess();
+                        Output.WriteLine("Using Memory(KB):" + prop.WorkingSet64 / 1024.0);
+                    }
                 }
-            }
+            }, false, true, "Basic.ViewRuntimeInfo");
         }
     }
 }

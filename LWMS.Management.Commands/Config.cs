@@ -5,6 +5,7 @@ using LWMS.Core;
 using System.Diagnostics;
 using LWMS.Localization;
 using LWMS.Core.Configuration;
+using LWMS.Core.Authentication;
 
 namespace LWMS.Management.Commands
 {
@@ -40,173 +41,177 @@ namespace LWMS.Management.Commands
 
         public void Invoke(string AuthContext, params CommandPack[] args)
         {
-            if (args.Length > 0)
-            {
-                string operation = args[0];
-                if (operation.ToUpper() == "RELEASE")
+            OperatorAuthentication.AuthedAction(AuthContext, () => {
+                if (args.Length > 0)
                 {
-                    if (GlobalConfiguration.ConfigurationData != null)
+                    string operation = args[0];
+                    if (operation.ToUpper() == "RELEASE")
                     {
+                        if (GlobalConfiguration.ConfigurationData != null)
+                        {
 
-                        GlobalConfiguration.ConfigurationData.Dispose();
-                        GlobalConfiguration.ConfigurationData = null;
-                        Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip0", "GlobalConfiguration file is released and changes will not be saved."));
+                            GlobalConfiguration.ConfigurationData.Dispose();
+                            GlobalConfiguration.ConfigurationData = null;
+                            Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip0", "GlobalConfiguration file is released and changes will not be saved."));
 
-                    }
-                    else
-                    {
-                        Output.SetForegroundColor(ConsoleColor.Yellow);
-                        Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip1", "GlobalConfiguration file is already released."));
-                        Output.ResetColor();
-                    }
-                }
-                else if (operation.ToUpper() == "RESUME")
-                {
-                    GlobalConfiguration.LoadConfiguation();
-                    GlobalConfiguration.ClearLoadedSettings();
-                    Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip0", "Resumed."));
-                    Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip1", "GlobalConfiguration changes will be automatically saved now."));
-                }
-                else if (operation.ToUpper() == "RELOAD")
-                {
-                    GlobalConfiguration.LoadConfiguation();
-                    GlobalConfiguration.ClearLoadedSettings();
-                }
-                else if (operation.ToUpper() == "SET")
-                {
-                    if (args.Length >= 3)
-                    {
-                        string setitem = args[1].ToUpper();
-                        if (setitem == "BUF_LENGTH")
-                        {
-                            GlobalConfiguration.BUF_LENGTH = int.Parse(args[2]);
                         }
-                        else if (setitem == "LOG_WATCH_INTERVAL")
+                        else
                         {
-                            GlobalConfiguration.LOG_WATCH_INTERVAL = int.Parse(args[2]);
-                        }
-                        else if (setitem == "MAX_LOG_SIZE")
-                        {
-                            GlobalConfiguration.MAX_LOG_SIZE = int.Parse(args[2]);
-                        }
-                        else if (setitem == "WEBROOT" || setitem == "WEBSITEROOT" || setitem == "WEBSITECONTENTROOT" || setitem == "WEBCONTENTROOT" || setitem == "CONTENTROOT")
-                        {
-                            GlobalConfiguration.WebSiteContentRoot = args[2];
-                        }
-                        else if (setitem == "DEFAULTPAGE")
-                        {
-                            GlobalConfiguration.DefaultPage = args[2];
-                        }
-                        else if (setitem == "404PAGE")
-                        {
-                            GlobalConfiguration.Page404 = args[2];
-                        }
-                        else if (setitem == "LANGUAGE")
-                        {
-                            var a=args[2].ToString().Replace("\"",null);
-                            a=args[2].ToString().Replace("\'",null);
-                            GlobalConfiguration.Language = args[2];
                             Output.SetForegroundColor(ConsoleColor.Yellow);
-                            Output.WriteLine("Language is set to:"+GlobalConfiguration.Language);
+                            Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip1", "GlobalConfiguration file is already released."));
                             Output.ResetColor();
-                            Language.Initialize(args[2]);
                         }
-                        else if (setitem == "ENABLERANGE")
+                    }
+                    else if (operation.ToUpper() == "RESUME")
+                    {
+                        GlobalConfiguration.LoadConfiguation();
+                        GlobalConfiguration.ClearLoadedSettings();
+                        Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip0", "Resumed."));
+                        Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip1", "GlobalConfiguration changes will be automatically saved now."));
+                    }
+                    else if (operation.ToUpper() == "RELOAD")
+                    {
+                        GlobalConfiguration.LoadConfiguation();
+                        GlobalConfiguration.ClearLoadedSettings();
+                    }
+                    else if (operation.ToUpper() == "SET")
+                    {
+                        if (args.Length >= 3)
                         {
-                            try
+                            string setitem = args[1].ToUpper();
+                            if (setitem == "BUF_LENGTH")
                             {
-                                GlobalConfiguration.EnableRange = bool.Parse(args[2]);
-
+                                GlobalConfiguration.BUF_LENGTH = int.Parse(args[2]);
                             }
-                            catch (Exception)
+                            else if (setitem == "LOG_WATCH_INTERVAL")
                             {
-                                Output.SetForegroundColor(ConsoleColor.Red);
-                                Output.WriteLine("Key \"EnableRange\" only accepts bool type(true and false)!");
+                                GlobalConfiguration.LOG_WATCH_INTERVAL = int.Parse(args[2]);
+                            }
+                            else if (setitem == "MAX_LOG_SIZE")
+                            {
+                                GlobalConfiguration.MAX_LOG_SIZE = int.Parse(args[2]);
+                            }
+                            else if (setitem == "WEBROOT" || setitem == "WEBSITEROOT" || setitem == "WEBSITECONTENTROOT" || setitem == "WEBCONTENTROOT" || setitem == "CONTENTROOT")
+                            {
+                                GlobalConfiguration.WebSiteContentRoot = args[2];
+                            }
+                            else if (setitem == "DEFAULTPAGE")
+                            {
+                                GlobalConfiguration.DefaultPage = args[2];
+                            }
+                            else if (setitem == "404PAGE")
+                            {
+                                GlobalConfiguration.Page404 = args[2];
+                            }
+                            else if (setitem == "LANGUAGE")
+                            {
+                                var a = args[2].ToString().Replace("\"", null);
+                                a = args[2].ToString().Replace("\'", null);
+                                GlobalConfiguration.Language = args[2];
+                                Output.SetForegroundColor(ConsoleColor.Yellow);
+                                Output.WriteLine("Language is set to:" + GlobalConfiguration.Language);
                                 Output.ResetColor();
+                                Language.Initialize(args[2]);
                             }
-                        }
-                        else if (setitem == "LOGUA")
-                        {
-                            try
+                            else if (setitem == "ENABLERANGE")
                             {
-                                GlobalConfiguration.LogUA = bool.Parse(args[2]);
+                                try
+                                {
+                                    GlobalConfiguration.EnableRange = bool.Parse(args[2]);
 
+                                }
+                                catch (Exception)
+                                {
+                                    Output.SetForegroundColor(ConsoleColor.Red);
+                                    Output.WriteLine("Key \"EnableRange\" only accepts bool type(true and false)!");
+                                    Output.ResetColor();
+                                }
                             }
-                            catch (Exception)
+                            else if (setitem == "LOGUA")
                             {
-                                Output.SetForegroundColor(ConsoleColor.Red);
-                                Output.WriteLine("Key \"LogUA\" only accepts bool type(true and false)!");
-                                Output.ResetColor();
+                                try
+                                {
+                                    GlobalConfiguration.LogUA = bool.Parse(args[2]);
+
+                                }
+                                catch (Exception)
+                                {
+                                    Output.SetForegroundColor(ConsoleColor.Red);
+                                    Output.WriteLine("Key \"LogUA\" only accepts bool type(true and false)!");
+                                    Output.ResetColor();
+                                }
+                            }
+                            else
+                            {
+                                Output.WriteLine(Language.Query("ManageCmd.Config.UnidentifiedKey", "Unidentified Key: {0}", setitem));
                             }
                         }
                         else
                         {
-                            Output.WriteLine(Language.Query("ManageCmd.Config.UnidentifiedKey", "Unidentified Key: {0}" ,setitem));
+                            Output.SetForegroundColor(ConsoleColor.Red);
+                            Output.WriteLine(Language.Query("ManageCmd.Config.Set.ParameterMismatch", "Arguments does not match: Config set <key> <value>"));
+                            Output.ResetColor();
                         }
                     }
-                    else
+                    else if (operation.ToUpper() == "ADD")
                     {
-                        Output.SetForegroundColor(ConsoleColor.Red);
-                        Output.WriteLine(Language.Query("ManageCmd.Config.Set.ParameterMismatch", "Arguments does not match: Config set <key> <value>"));
-                        Output.ResetColor();
-                    }
-                }
-                else if (operation.ToUpper() == "ADD")
-                {
-                    if (args.Length >= 3)
-                    {
-                        string setitem = args[1].ToUpper();
-                        if (setitem == "LISTENPREFIX" || setitem == "LISTEN")
+                        if (args.Length >= 3)
                         {
-                            var prefixes = GlobalConfiguration.ListenPrefixes;
-                            prefixes.Add(args[2]);
-                            GlobalConfiguration.ListenPrefixes = prefixes;
-                        }
-                    }
-                    else
-                    {
-                        Output.SetForegroundColor(ConsoleColor.Red);
-                        Output.WriteLine(Language.Query("ManageCmd.Config.Add.ParameterMismatch", "Arguments does not match: Config add <key> <value>"));
-                        Output.ResetColor();
-                    }
-                }
-                else if (operation.ToUpper() == "RM" || operation.ToUpper() == "REMOVE")
-                {
-
-                    if (args.Length >= 3)
-                    {
-                        string setitem = args[1].ToUpper();
-                        if (setitem == "LISTENPREFIX" || setitem == "LISTEN")
-                        {
-                            try
+                            string setitem = args[1].ToUpper();
+                            if (setitem == "LISTENPREFIX" || setitem == "LISTEN")
                             {
-
                                 var prefixes = GlobalConfiguration.ListenPrefixes;
-                                prefixes.Remove(args[2]);
+                                prefixes.Add(args[2]);
                                 GlobalConfiguration.ListenPrefixes = prefixes;
-
-                            }
-                            catch (Exception)
-                            {
                             }
                         }
+                        else
+                        {
+                            Output.SetForegroundColor(ConsoleColor.Red);
+                            Output.WriteLine(Language.Query("ManageCmd.Config.Add.ParameterMismatch", "Arguments does not match: Config add <key> <value>"));
+                            Output.ResetColor();
+                        }
                     }
-                    else
+                    else if (operation.ToUpper() == "RM" || operation.ToUpper() == "REMOVE")
                     {
-                        Output.WriteLine(Language.Query("ManageCmd.Config.Remove.ParameterMismatch", "Arguments does not match: Config remove <key>"));
+
+                        if (args.Length >= 3)
+                        {
+                            string setitem = args[1].ToUpper();
+                            if (setitem == "LISTENPREFIX" || setitem == "LISTEN")
+                            {
+                                try
+                                {
+
+                                    var prefixes = GlobalConfiguration.ListenPrefixes;
+                                    prefixes.Remove(args[2]);
+                                    GlobalConfiguration.ListenPrefixes = prefixes;
+
+                                }
+                                catch (Exception)
+                                {
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Output.WriteLine(Language.Query("ManageCmd.Config.Remove.ParameterMismatch", "Arguments does not match: Config remove <key>"));
+                        }
                     }
-                }else if(operation.ToUpper() == "H"|| operation.ToUpper() == "-H"|| operation.ToUpper() == "--H"|| operation.ToUpper() == "HELP"|| operation.ToUpper() == "?"|| operation.ToUpper() == "-?"|| operation.ToUpper() == "--?")
+                    else if (operation.ToUpper() == "H" || operation.ToUpper() == "-H" || operation.ToUpper() == "--H" || operation.ToUpper() == "HELP" || operation.ToUpper() == "?" || operation.ToUpper() == "-?" || operation.ToUpper() == "--?")
+                    {
+                        OutputHelp();
+                    }
+                }
+                else
                 {
+                    Output.SetForegroundColor(ConsoleColor.Yellow);
+                    Output.WriteLine(Language.Query("ManageCmd.Help.Config.Error.NoOperation", "Please specify an operation."));
+                    Output.ResetColor();
                     OutputHelp();
                 }
-            }
-            else
-            {
-                Output.SetForegroundColor(ConsoleColor.Yellow);
-                Output.WriteLine(Language.Query("ManageCmd.Help.Config.Error.NoOperation","Please specify an operation."));
-                Output.ResetColor();
-                OutputHelp();
-            }
+            }, false, true, "Core.BasicConfig");
+
         }
     }
 }
