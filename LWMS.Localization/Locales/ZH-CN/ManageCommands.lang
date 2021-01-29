@@ -63,3 +63,12 @@ Help.Log.List=\t\t列出所有日志文件。
 Help.Log.Clear=\t\t删除所有旧日志。（正在使用的日志文件除外）
 Help.Log.New=\t\t创建一个新的日志文件并且将内容记录到新的日志文件。
 Help.Log.Stopwatch=\t\t停止监听日志缓存，新日志将不会被写入至文件。
+
+Help.Auth.Usage=Auth <操作 0> [参数 0], [参数 1]...,<操作 1> [参数 0], [参数 1]...,...
+Help.Auth.Warning=\t该命令需要执行上下文拥有"Core.SetPermission"权限。
+Help.Auth.Create=\t\t创建一个具有给定权限的认证。"Class1Admin"是有除了"Core.SetPermission"权限外的一级管理员。
+Help.Auth.Remove=\t\t移除一个认证。
+Help.Auth.Set=\t\t为给定认证设置一个权限。
+
+Universal.Succeed=成功。
+Universal.Failed=失败。

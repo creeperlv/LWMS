@@ -1,5 +1,6 @@
 ﻿using CLUNL.Data.Layer1;
 using CLUNL.DirectedIO;
+using LWMS.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +15,7 @@ namespace LWMS.Core.Authentication
     public static class OperatorAuthentication
     {
         private static string CurrentLocalHost = null;
-        private static Dictionary<string, List<Permission>> Auths = new Dictionary<string, List<Permission>>();
+        private static Dictionary<string, Authentication> Auths = new();
         static OperatorAuthentication()
         {
             LoadAuthentications();
@@ -26,14 +27,14 @@ namespace LWMS.Core.Authentication
             foreach (var item in di.EnumerateFiles())
             {
                 var auth = INILikeData.LoadFromWR(new FileWR(item));
-                string name = auth.FindValue("Auth");
-                Auths.Add(name, new());
+                string authID = auth.FindValue("Auth");
+                string name = auth.FindValue("Name");
+                Auths.Add(authID, new(authID, name));
                 foreach (var permission in auth)
                 {
                     if (permission.Key != "Auth")
                     {
-                        Permission p = new Permission(permission.Key, bool.Parse(permission.Value));
-                        Auths[name].Add(p);
+                        Auths[authID].SetPermission(permission.Key, bool.Parse(permission.Value));
                     }
                 }
             }
@@ -46,18 +47,20 @@ namespace LWMS.Core.Authentication
             File.Create(FN).Close();
             var f = INILikeData.CreateToFile(new FileInfo("./Auths/" + FN));
             f.AddValue("Auth", Auth, true, false, 0);
-            foreach (var item in Auths[Auth])
+            f.AddValue("Name", Auths[Auth].Name, true, false, 0);
+            foreach (var item in Auths[Auth].Permissions)
             {
-                f.AddValue(item.ID, item.IsAllowed + "", true, false, 0);
+                f.AddValue(item.Key, item.Value + "", true, false, 0);
             }
             f.RemoveOldDuplicatedItems();
             f.Flush();
         }
-        public static void RemoveAuth(string ContextAuth,string TargetAuth)
+        public static void RemoveAuth(string ContextAuth, string TargetAuth)
         {
-            AuthedAction(ContextAuth, "Core.SetPermission", () => {
-                if(Auths.ContainsKey(TargetAuth))
-                Auths.Remove(TargetAuth);
+            AuthedAction(ContextAuth, "Core.SetPermission", () =>
+            {
+                if (Auths.ContainsKey(TargetAuth))
+                    Auths.Remove(TargetAuth);
                 string FN = TargetAuth.Replace("/", "_").Replace("+", "_").Replace("=", "_").Replace("\\", "_");
                 if (File.Exists(FN)) File.Delete(FN);
             });
@@ -69,28 +72,23 @@ namespace LWMS.Core.Authentication
                 CurrentLocalHost = Auth;
             }
         }
-        public static void SetPermission(string ContextAuth, string OperateAuth, string PermissionID, bool Permission)
+        public static string GetAuthName(string Name)
+        {
+            if (Auths.ContainsKey(Name))
+            {
+                return Auths[Name].Name;
+            }
+            return null;
+        }
+        public static void SetPermission(string ContextAuth, string OperateAuth, string PermissionID, bool Permission, string Name = null)
         {
             AuthedAction(ContextAuth, "Core.SetPermission", () =>
             {
                 if (!Auths.ContainsKey(OperateAuth))
                 {
-                    Auths.Add(OperateAuth, new());
+                    Auths.Add(OperateAuth, new(OperateAuth, Name));
                 }
-                bool isOperated = false;
-                foreach (var item in Auths[OperateAuth])
-                {
-                    if (item.ID == PermissionID)
-                    {
-                        item.IsAllowed = Permission;
-                        isOperated = true;
-                        break;
-                    }
-                }
-                if (isOperated == false)
-                {
-                    Auths[OperateAuth].Add(new(PermissionID, Permission));
-                }
+                Auths[OperateAuth].SetPermission(PermissionID, Permission);
                 SaveAuth(OperateAuth);
             }, false);
         }
@@ -102,7 +100,13 @@ namespace LWMS.Core.Authentication
             }
             else
             {
-                throw new UnauthorizedException(Auth, PermissionID);
+                if (Auths.ContainsKey(Auth))
+                {
+                    throw new UnauthorizedException(Auths[Auth].Name, PermissionID);
+
+                }
+                else
+                    throw new UnauthorizedException(Auth, PermissionID);
             }
         }
         public static void AuthedAction(string Auth, Action action, bool DefaultPermission = false, bool ProduceError = false, params string[] PermissionIDs)
@@ -116,7 +120,16 @@ namespace LWMS.Core.Authentication
                 }
             }
             if (ProduceError is true)
-                throw new UnauthorizedException(Auth, PermissionIDs[0]);
+            {
+
+                if (Auths.ContainsKey(Auth))
+                {
+                    throw new UnauthorizedException(Auths[Auth].Name, PermissionIDs[0]);
+
+                }
+                else
+                    throw new UnauthorizedException(Auth, PermissionIDs[0]);
+            }
             else return;
         }
         public static bool IsAuthed(string Auth, string PermissionID, bool DefaultPermission = false)
@@ -126,30 +139,25 @@ namespace LWMS.Core.Authentication
                 return DefaultPermission;
             else
             {
-                foreach (var item in Auths[Auth])
+                if (Auths[Auth].Permissions.ContainsKey("Class1Admin"))
                 {
-                    if (item.ID == "Class1Admin")
+                    if (Auths[Auth].Permissions["Class1Admin"] is true)
                     {
-                        if (item.IsAllowed == true)
-                        {
-                            if (PermissionID != "Core.SetPermission")
-                                return true;
-                        }
+
+                        if (PermissionID != "Core.SetPermission")
+                            return true;
                     }
                 }
-                foreach (var item in Auths[Auth])
+                if (Auths[Auth].Permissions.ContainsKey(PermissionID))
                 {
-                    if (item.ID == PermissionID)
-                    {
-                        return item.IsAllowed;
-                    }
+                    return Auths[Auth].Permissions[PermissionID];
                 }
             }
             return DefaultPermission;
         }
         public static bool IsAuthPresent(string Auth)
         {
-            return Auth.Contains(Auth);
+            return Auths.ContainsKey(Auth);
         }
         public static bool HasAdmin()
         {
@@ -170,18 +178,25 @@ namespace LWMS.Core.Authentication
     [Serializable]
     public class UnauthorizedException : Exception
     {
-        public UnauthorizedException(string Auth, string PermissionID) : base($"{Auth} is not allow to operate for \"{PermissionID}\" is not enabled.") { }
+        public UnauthorizedException(string Auth, string PermissionID) : base(Language.Query("LWMS.Auth.Reject", "Operation rejected: auth {0} have no permission of {1}.", Auth, PermissionID)) { }
     }
-    internal class Permission
+    internal class Authentication
     {
-        readonly string id;
-        public string ID { get => id; }
-        internal bool IsAllowed;
-
-        public Permission(string ID, bool isAllowed)
+        internal readonly string Name;
+        internal readonly string AuthID;
+        internal Dictionary<string, bool> Permissions = new Dictionary<string, bool>();
+        public Authentication(string AuthID, string Name)
         {
-            id = ID;
-            IsAllowed = isAllowed;
+            this.AuthID = AuthID;
+            this.Name = Name;
+        }
+        internal void SetPermission(string ID, bool value)
+        {
+            if (Permissions.ContainsKey(ID))
+            {
+                Permissions[ID] = value;
+            }
+            else Permissions.Add(ID, value);
         }
     }
 }

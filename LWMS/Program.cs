@@ -83,7 +83,7 @@ namespace LWMS
                 var UN = Console.ReadLine();
                 Console.WriteLine("Password:");
                 var PW = ReadPassword();
-                if (OperatorAuthentication.IsAuthPresent(OperatorAuthentication.ObtainAuth(UN, PW))){
+                if (OperatorAuthentication.IsAuthPresent(OperatorAuthentication.ObtainAuth(UN, PW)) is true){
                     Auth = OperatorAuthentication.ObtainAuth(UN, PW);
                     Console.WriteLine("Welcome, "+UN);
                     return;

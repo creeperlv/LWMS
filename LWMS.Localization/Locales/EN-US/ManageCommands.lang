@@ -66,3 +66,12 @@ Help.Log.List=\t\tList all log files.
 Help.Log.Clear=\t\tDelete all old logs.(Except current using log file)
 Help.Log.New=\t\tCreate a new log file and log contents to the new log file.
 Help.Log.Stopwatch=\t\tStop watching log cache, new logs will now be writtern to file.
+
+Help.Auth.Usage=Auth <Operation 0> [parameter 0], [parameter 1]...,<Operation 1> [parameter 0], [parameter 1]...,...
+Help.Auth.Warning=\tThis command requires execute context has "Core.SetPermission" permission.
+Help.Auth.Create=\t\tCreate an auth with given permission. "Class1Admin" is tier 1 administrator except "Core.SetPermission" permission.
+Help.Auth.Remove=\t\tRemove an auth.
+Help.Auth.Set=\t\tSet a permission to given auth.
+
+Universal.Succeed=Succeed.
+Universal.Failed=Failed.
