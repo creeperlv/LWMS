@@ -32,7 +32,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Core.Configuration", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Core.FileSystem", "LWMS.Core.FileSystem\LWMS.Core.FileSystem.csproj", "{B5B38C30-2F91-427C-9E08-35B4A304F25E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWMS.FunctionTestModule", "LWMS.FunctionTestModule\LWMS.FunctionTestModule.csproj", "{8551C8FC-7A3E-4546-87D4-09226670549C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.FunctionTestModule", "LWMS.FunctionTestModule\LWMS.FunctionTestModule.csproj", "{8551C8FC-7A3E-4546-87D4-09226670549C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWMS.Core.Authentication", "LWMS.Core.Authentication\LWMS.Core.Authentication.csproj", "{6EC07F66-89F5-4DCC-B1D8-7B1401D5996F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +86,10 @@ Global
 		{8551C8FC-7A3E-4546-87D4-09226670549C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8551C8FC-7A3E-4546-87D4-09226670549C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8551C8FC-7A3E-4546-87D4-09226670549C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EC07F66-89F5-4DCC-B1D8-7B1401D5996F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EC07F66-89F5-4DCC-B1D8-7B1401D5996F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EC07F66-89F5-4DCC-B1D8-7B1401D5996F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EC07F66-89F5-4DCC-B1D8-7B1401D5996F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LWMS.Core.Authentication\LWMS.Core.Authentication.csproj" />
     <ProjectReference Include="..\LWMS.Core.Configuration\LWMS.Core.Configuration.csproj" />
     <ProjectReference Include="..\LWMS.Core\LWMS.Core.csproj" />
   </ItemGroup>

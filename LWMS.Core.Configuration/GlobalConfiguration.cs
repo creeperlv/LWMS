@@ -2,6 +2,8 @@
 using CLUNL.Data.Layer0;
 using CLUNL.Data.Layer1;
 using CLUNL.Data.Layer2;
+using CLUNL.Utilities;
+using LWMS.Core.Authentication;
 using LWMS.Core.FileSystem;
 using LWMS.Core.Log;
 using System;
@@ -168,6 +170,242 @@ namespace LWMS.Core.Configuration
             _Page404 = null;
             _BUF_LENGTH = 0;
             _ListenPrefixes = new List<string>();
+        }
+        public static void RemovePipeline(string AuthContext, string TYPE, string TARGETDLL)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () =>
+            {
+
+                if (TYPE == "R" || TYPE == "/R" || TYPE == "REQUEST")
+                {
+
+                    for (int a = 0; a < RProcessUnits.RootNode.Children.Count; a++)
+                    {
+                        if (RProcessUnits.RootNode.Children[a].Value == TARGETDLL)
+                        {
+                            RProcessUnits.RootNode.Children.RemoveAt(a);
+                            break;
+                        }
+                    }
+                    RProcessUnits.Serialize();
+                }
+                else
+                if (TYPE == "C" || TYPE == "/C" || TYPE == "CMDOUT")
+                {
+                    for (int a = 0; a < CMDOUTProcessUnits.RootNode.Children.Count; a++)
+                    {
+                        if (CMDOUTProcessUnits.RootNode.Children[a].Value == TARGETDLL)
+                        {
+                            CMDOUTProcessUnits.RootNode.Children.RemoveAt(a);
+                            break;
+                        }
+                    }
+                    CMDOUTProcessUnits.Serialize();
+                }
+                else
+                if (TYPE == "W" || TYPE == "/W" || TYPE == "WRITE")
+                {
+                    for (int a = 0; a < WProcessUnits.RootNode.Children.Count; a++)
+                    {
+                        if (WProcessUnits.RootNode.Children[a].Value == TARGETDLL)
+                        {
+                            WProcessUnits.RootNode.Children.RemoveAt(a);
+                            break;
+                        }
+                    }
+                    WProcessUnits.Serialize();
+                }
+                Trace.WriteLine(Localization.Language.Query("ManageCmd.Pipeline.Removed", "Removed:{0}", TARGETDLL));
+            }, false, false, "Core.Config.RemovePipeline", "Core.Config.AllPipeline");
+        }
+        public static void UnregisterPipeline(string AuthContext, string TYPE, string TARGETENTRY)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () =>
+            {
+
+                bool B = false;
+                if (TYPE == "R" || TYPE == "/R" || TYPE == "REQUEST")
+                {
+                    TYPE = Localization.Language.Query("ManageCmd.Pipeline.Types.R", "Request");
+                    foreach (var item in RProcessUnits.RootNode.Children)
+                    {
+                        for (int a = 0; a < item.Children.Count; a++)
+                        {
+                            if (item.Children[a].Value == TARGETENTRY)
+                            {
+                                item.Children.RemoveAt(a);
+                                B = true;
+                                break;
+                            }
+                        }
+                        if (B == true)
+                        {
+                            break;
+                        }
+                    }
+                    RProcessUnits.Serialize();
+                }
+                else if (TYPE == "W" || TYPE == "/W" || TYPE == "WRITE")
+                {
+                    TYPE = Localization.Language.Query("ManageCmd.Pipeline.Types.W", "Write");
+                    foreach (var item in WProcessUnits.RootNode.Children)
+                    {
+                        for (int a = 0; a < item.Children.Count; a++)
+                        {
+                            if (item.Children[a].Value == TARGETENTRY)
+                            {
+                                item.Children.RemoveAt(a);
+                                B = true;
+                                break;
+                            }
+                        }
+                        if (B == true)
+                        {
+                            break;
+                        }
+                    }
+                    WProcessUnits.Serialize();
+                }
+                else if (TYPE == "C" || TYPE == "/C" || TYPE == "CMDOUT")
+                {
+                    TYPE = Localization.Language.Query("ManageCmd.Pipeline.Types.C", "Command Output");
+                    foreach (var item in CMDOUTProcessUnits.RootNode.Children)
+                    {
+                        for (int a = 0; a < item.Children.Count; a++)
+                        {
+                            if (item.Children[a].Value == TARGETENTRY)
+                            {
+                                item.Children.RemoveAt(a);
+                                B = true;
+                                break;
+                            }
+                        }
+                        if (B == true)
+                        {
+                            break;
+                        }
+                    }
+                    CMDOUTProcessUnits.Serialize();
+                }
+                Trace.WriteLine($"Unregistered:{TARGETENTRY} At:{TYPE} pipeline");
+                Trace.WriteLine(Localization.Language.Query("ManageCmd.Pipeline.Unregistered", "Unregistered:{0} At:{1} pipeline", TARGETENTRY, TYPE));
+            }, false, false, "Core.Config.UnregisterPipeline", "Core.Config.AllPipeline");
+        }
+        public static void RegisterPipeline(string AuthContext, string TYPE, string DLL, string ENTRY)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () =>
+            {
+                if (File.Exists(DLL))
+                {
+                    bool Hit = false;
+                    if (TYPE == "W" || TYPE == "/W" || TYPE == "WRITE")
+                    {
+
+                        WProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
+                        {
+                            if (item.Value == DLL)
+                            {
+
+                                TreeNode unit = new TreeNode();
+                                unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
+                                unit.Value = ENTRY;
+                                item.AddChildren(unit);
+                                Hit = true;
+                            }
+                        });
+                        if (Hit == false)
+                        {
+                            {
+                                TreeNode treeNode = new TreeNode();
+                                treeNode.Name = "DLL";
+                                treeNode.Value = DLL;
+                                {
+                                    TreeNode unit = new TreeNode();
+                                    unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
+                                    unit.Value = ENTRY;
+                                    treeNode.AddChildren(unit);
+                                }
+                                WProcessUnits.RootNode.AddChildren(treeNode);
+                            }
+                        }
+                        WProcessUnits.Serialize();
+                    }
+                    else if (TYPE == "R" || TYPE == "/R" || TYPE == "REQUEST")
+                    {
+
+                        RProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
+                        {
+                            if (item.Value == DLL)
+                            {
+
+                                TreeNode unit = new TreeNode();
+                                unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
+                                unit.Value = ENTRY;
+                                item.AddChildren(unit);
+                                Hit = true;
+                            }
+                        });
+                        if (Hit == false)
+                        {
+                            {
+                                TreeNode treeNode = new TreeNode();
+                                treeNode.Name = "DLL";
+                                treeNode.Value = DLL;
+                                {
+                                    TreeNode unit = new TreeNode();
+                                    unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
+                                    unit.Value = ENTRY;
+                                    treeNode.AddChildren(unit);
+                                }
+                                RProcessUnits.RootNode.AddChildren(treeNode);
+                            }
+                        }
+                        RProcessUnits.Serialize();
+                    }
+                    else if (TYPE == "C" || TYPE == "/C" || TYPE == "CMDOUT")
+                    {
+
+                        CMDOUTProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
+                        {
+                            if (item.Value == DLL)
+                            {
+
+                                TreeNode unit = new TreeNode();
+                                unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
+                                unit.Value = ENTRY;
+                                item.AddChildren(unit);
+                                Hit = true;
+                            }
+                        });
+                        if (Hit == false)
+                        {
+                            {
+                                TreeNode treeNode = new TreeNode();
+                                treeNode.Name = "DLL";
+                                treeNode.Value = DLL;
+                                {
+                                    TreeNode unit = new TreeNode();
+                                    unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
+                                    unit.Value = ENTRY;
+                                    treeNode.AddChildren(unit);
+                                }
+                                CMDOUTProcessUnits.RootNode.AddChildren(treeNode);
+                            }
+                        }
+                        CMDOUTProcessUnits.Serialize();
+                    }
+                    else
+                    {
+                        Trace.WriteLine("Unknown pipeline type:" + TYPE);
+                    }
+                    Trace.WriteLine($"Registered:{ENTRY}={DLL}");
+                }
+                else
+                {
+                    Trace.WriteLine($"Cannot register pipeline unit:{ENTRY}={DLL}");
+                }
+            }, false, false, "Core.Config.RegisterPipeline", "Core.Config.AllPipeline");
+
         }
         public static bool LogUA
         {

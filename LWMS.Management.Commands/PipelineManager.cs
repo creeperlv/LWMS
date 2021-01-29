@@ -94,237 +94,25 @@ namespace LWMS.Management.Commands
             {
                 if (args[i].ToUpper() == "REG" || args[i].ToUpper() == "REGISTER")
                 {
-                    string TYPE = args[i + 1].ToUpper();
-                    string DLL = args[i + 2];
-                    string ENTRY = args[i + 3];
-
+                    string TYPE = args[i + 1].PackTotal.ToUpper();
+                    string DLL = args[i + 2].PackTotal;
+                    string ENTRY = args[i + 3].PackTotal;
+                    GlobalConfiguration.RegisterPipeline(AuthContext, TYPE, DLL, ENTRY);
                     i += 3;
-                    if (File.Exists(DLL))
-                    {
-                        bool Hit = false;
-                        if (TYPE == "W" || TYPE == "/W" || TYPE == "WRITE")
-                        {
-
-                            GlobalConfiguration.WProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
-                            {
-                                if (item.Value == DLL)
-                                {
-
-                                    TreeNode unit = new TreeNode();
-                                    unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
-                                    unit.Value = ENTRY;
-                                    item.AddChildren(unit);
-                                    Hit = true;
-                                }
-                            });
-                            if (Hit == false)
-                            {
-                                {
-                                    TreeNode treeNode = new TreeNode();
-                                    treeNode.Name = "DLL";
-                                    treeNode.Value = DLL;
-                                    {
-                                        TreeNode unit = new TreeNode();
-                                        unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
-                                        unit.Value = ENTRY;
-                                        treeNode.AddChildren(unit);
-                                    }
-                                    GlobalConfiguration.WProcessUnits.RootNode.AddChildren(treeNode);
-                                }
-                            }
-                            GlobalConfiguration.WProcessUnits.Serialize();
-                        }
-                        else if (TYPE == "R" || TYPE == "/R" || TYPE == "REQUEST")
-                        {
-
-                            GlobalConfiguration.RProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
-                            {
-                                if (item.Value == DLL)
-                                {
-
-                                    TreeNode unit = new TreeNode();
-                                    unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
-                                    unit.Value = ENTRY;
-                                    item.AddChildren(unit);
-                                    Hit = true;
-                                }
-                            });
-                            if (Hit == false)
-                            {
-                                {
-                                    TreeNode treeNode = new TreeNode();
-                                    treeNode.Name = "DLL";
-                                    treeNode.Value = DLL;
-                                    {
-                                        TreeNode unit = new TreeNode();
-                                        unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
-                                        unit.Value = ENTRY;
-                                        treeNode.AddChildren(unit);
-                                    }
-                                    GlobalConfiguration.RProcessUnits.RootNode.AddChildren(treeNode);
-                                }
-                            }
-                            GlobalConfiguration.RProcessUnits.Serialize();
-                        }
-                        else if (TYPE == "C" || TYPE == "/C" || TYPE == "CMDOUT")
-                        {
-
-                            GlobalConfiguration.CMDOUTProcessUnits.RootNode.Children.ForEach((TreeNode item) =>
-                            {
-                                if (item.Value == DLL)
-                                {
-
-                                    TreeNode unit = new TreeNode();
-                                    unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
-                                    unit.Value = ENTRY;
-                                    item.AddChildren(unit);
-                                    Hit = true;
-                                }
-                            });
-                            if (Hit == false)
-                            {
-                                {
-                                    TreeNode treeNode = new TreeNode();
-                                    treeNode.Name = "DLL";
-                                    treeNode.Value = DLL;
-                                    {
-                                        TreeNode unit = new TreeNode();
-                                        unit.Name = RandomTool.GetRandomString(8, RandomStringRange.R2);
-                                        unit.Value = ENTRY;
-                                        treeNode.AddChildren(unit);
-                                    }
-                                    GlobalConfiguration.CMDOUTProcessUnits.RootNode.AddChildren(treeNode);
-                                }
-                            }
-                            GlobalConfiguration.CMDOUTProcessUnits.Serialize();
-                        }
-                        else
-                        {
-                            Output.WriteLine("Unknown pipeline type:" + TYPE);
-                        }
-                        Output.WriteLine($"Registered:{ENTRY}={DLL}");
-                    }
-                    else
-                    {
-                        Output.WriteLine($"Cannot register pipeline unit:{ENTRY}={DLL}");
-                    }
                 }
                 else if (args[i].ToUpper() == "UNREG" || args[i].ToUpper() == "UNREGISTER")
                 {
                     string TYPE = args[i + 1].ToUpper();
                     string TARGETENTRY = args[i + 2];
                     i += 2;
-                    bool B = false;
-                    if (TYPE == "R" || TYPE == "/R" || TYPE == "REQUEST")
-                    {
-                        TYPE = Language.Query("ManageCmd.Pipeline.Types.R","Request");
-                        foreach (var item in GlobalConfiguration.RProcessUnits.RootNode.Children)
-                        {
-                            for (int a = 0; a < item.Children.Count; a++)
-                            {
-                                if (item.Children[a].Value == TARGETENTRY)
-                                {
-                                    item.Children.RemoveAt(a);
-                                    B = true;
-                                    break;
-                                }
-                            }
-                            if (B == true)
-                            {
-                                break;
-                            }
-                        }
-                        GlobalConfiguration.RProcessUnits.Serialize();
-                    }
-                    else if (TYPE == "W" || TYPE == "/W" || TYPE == "WRITE")
-                    {
-                        TYPE = Language.Query("ManageCmd.Pipeline.Types.W","Write");
-                        foreach (var item in GlobalConfiguration.WProcessUnits.RootNode.Children)
-                        {
-                            for (int a = 0; a < item.Children.Count; a++)
-                            {
-                                if (item.Children[a].Value == TARGETENTRY)
-                                {
-                                    item.Children.RemoveAt(a);
-                                    B = true;
-                                    break;
-                                }
-                            }
-                            if (B == true)
-                            {
-                                break;
-                            }
-                        }
-                        GlobalConfiguration.WProcessUnits.Serialize();
-                    }
-                    else if (TYPE == "C" || TYPE == "/C" || TYPE == "CMDOUT")
-                    {
-                        TYPE = Language.Query("ManageCmd.Pipeline.Types.C","Command Output");
-                        foreach (var item in GlobalConfiguration.CMDOUTProcessUnits.RootNode.Children)
-                        {
-                            for (int a = 0; a < item.Children.Count; a++)
-                            {
-                                if (item.Children[a].Value == TARGETENTRY)
-                                {
-                                    item.Children.RemoveAt(a);
-                                    B = true;
-                                    break;
-                                }
-                            }
-                            if (B == true)
-                            {
-                                break;
-                            }
-                        }
-                        GlobalConfiguration.CMDOUTProcessUnits.Serialize();
-                    }
-                    Output.WriteLine($"Unregistered:{TARGETENTRY} At:{TYPE} pipeline");
-                    Output.WriteLine(Language.Query("ManageCmd.Pipeline.Unregistered","Unregistered:{0} At:{1} pipeline",TARGETENTRY,TYPE));
+                    GlobalConfiguration.UnregisterPipeline(AuthContext, TYPE, TARGETENTRY);
                 }
                 else if (args[i].ToUpper() == "REMOVE" || args[i].ToUpper() == "RM")
                 {
                     string TYPE = args[i + 1].ToUpper();
                     string TARGETDLL = args[i + 2];
                     i += 2;
-
-                    if (TYPE == "R" || TYPE == "/R" || TYPE == "REQUEST")
-                    {
-
-                        for (int a = 0; a < GlobalConfiguration.RProcessUnits.RootNode.Children.Count; a++)
-                        {
-                            if (GlobalConfiguration.RProcessUnits.RootNode.Children[a].Value == TARGETDLL)
-                            {
-                                GlobalConfiguration.RProcessUnits.RootNode.Children.RemoveAt(a);
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    if (TYPE == "C" || TYPE == "/C" || TYPE == "CMDOUT")
-                    {
-                        for (int a = 0; a < GlobalConfiguration.CMDOUTProcessUnits.RootNode.Children.Count; a++)
-                        {
-                            if (GlobalConfiguration.CMDOUTProcessUnits.RootNode.Children[a].Value == TARGETDLL)
-                            {
-                                GlobalConfiguration.CMDOUTProcessUnits.RootNode.Children.RemoveAt(a);
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    if (TYPE == "W" || TYPE == "/W" || TYPE == "WRITE")
-                    {
-                        for (int a = 0; a < GlobalConfiguration.WProcessUnits.RootNode.Children.Count; a++)
-                        {
-                            if (GlobalConfiguration.WProcessUnits.RootNode.Children[a].Value == TARGETDLL)
-                            {
-                                GlobalConfiguration.WProcessUnits.RootNode.Children.RemoveAt(a);
-                                break;
-                            }
-                        }
-                    }
-                    GlobalConfiguration.RProcessUnits.Serialize();
-                    Output.WriteLine(Language.Query("ManageCmd.Pipeline.Removed","Removed:{0}", TARGETDLL));
+                    GlobalConfiguration.RemovePipeline(AuthContext, TYPE, TARGETDLL);
                 }
                 else if (args[i].ToUpper() == "H" || args[i].ToUpper() == "HELP" || args[i].ToUpper() == "--H" || args[i].ToUpper() == "-H" || args[i].ToUpper() == "?" || args[i].ToUpper() == "-?" || args[i].ToUpper() == "--?")
                 {

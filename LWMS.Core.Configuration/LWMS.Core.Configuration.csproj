@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LWMS.Core.Authentication\LWMS.Core.Authentication.csproj" />
     <ProjectReference Include="..\LWMS.Core.FileSystem\LWMS.Core.FileSystem.csproj" />
     <ProjectReference Include="..\LWMS.Core.Logger\LWMS.Core.Logger.csproj" />
     <ProjectReference Include="..\LWMS.Localization\LWMS.Localization.csproj" />
