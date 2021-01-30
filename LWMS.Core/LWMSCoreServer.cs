@@ -1,4 +1,5 @@
 ﻿using CLUNL.Pipeline;
+using LWMS.Core.Authentication;
 using LWMS.Core.Configuration;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Localization;
@@ -20,8 +21,16 @@ namespace LWMS.Core
         Semaphore semaphore;
         internal static HttpListener Listener;
         HttpPipelineProcessor HttpPipelineProcessor = new HttpPipelineProcessor();
+        internal static string TrustedInstallerAuth;
         public LWMSCoreServer()
         {
+
+            {
+                var Auth0 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
+                var Auth1 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
+                TrustedInstallerAuth = OperatorAuthentication.ObtainRTAuth(Auth0, Auth1);
+                OperatorAuthentication.SetTrustedInstaller(TrustedInstallerAuth);
+            }
             Listener = new HttpListener();
             ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString() + "-Preview";
         }
@@ -237,7 +246,7 @@ namespace LWMS.Core
             ServerController.ManageCommandAliases.Clear();
             foreach (string item in GlobalConfiguration.ManageCommandModules)
             {
-                ServerController.Register(item);
+                ServerController.Register(TrustedInstallerAuth,item);
             }
         }
 

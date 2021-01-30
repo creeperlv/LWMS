@@ -22,7 +22,7 @@ namespace LWMS.Management.Commands
         }
         public List<string> Alias { get => vs; }
 
-        public int Version => 2;
+        public int Version => 3;
 
 //        static string HelpString = @"Usage:
 //ManagePipeline <Operation> <PipelineType> [<DllFile> <EnrtyPoint>]

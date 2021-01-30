@@ -137,9 +137,9 @@ namespace LWMS.Core.Configuration
             ConfigurationData = INILikeData.LoadFromStream(storageFile.OpenFile());
         }
 
-        public static TreeStructureData RProcessUnits;
-        public static TreeStructureData WProcessUnits;
-        public static TreeStructureData CMDOUTProcessUnits;
+        public static TreeStructureData RProcessUnits { get; internal set; }
+        public static TreeStructureData WProcessUnits { get; internal set; }
+        public static TreeStructureData CMDOUTProcessUnits { get; internal set; }
         public static INILikeData ConfigurationData;
         public static ListData<string> ManageCommandModules;
 
@@ -170,6 +170,27 @@ namespace LWMS.Core.Configuration
             _Page404 = null;
             _BUF_LENGTH = 0;
             _ListenPrefixes = new List<string>();
+        }
+        public static void RegisterCommandModule(string ContextAuth, string FullPath)
+        {
+
+            OperatorAuthentication.AuthedAction(ContextAuth, () => {
+                GlobalConfiguration.ManageCommandModules.Add(FullPath);
+            }, false, true, PermissionID.UnregisterCmdModule, PermissionID.CmdModuleAll);
+        }
+        public static void UnregisterCommandModule(string ContextAuth, string Module)
+        {
+            OperatorAuthentication.AuthedAction(ContextAuth, () => {
+                for (int i = 0; i < ManageCommandModules.Count; i++)
+                {
+                    if (ManageCommandModules[i].EndsWith(Module))
+                    {
+                        ManageCommandModules.RemoveAt(i);
+                        break;
+                    }
+                }
+            }, false, true, PermissionID.UnregisterCmdModule, PermissionID.CmdModuleAll);
+
         }
         public static void RemovePipeline(string AuthContext, string TYPE, string TARGETDLL)
         {

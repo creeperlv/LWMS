@@ -19,33 +19,45 @@ namespace LWMS.Core
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public static bool Register(string item)
+        public static bool Register(string AuthContext, string item)
         {
+            bool __ = false;
             try
             {
-                var asm = Assembly.LoadFrom(item);
-                var TPS = asm.GetTypes();
-                foreach (var TP in TPS)
+                OperatorAuthentication.AuthedAction(AuthContext, () =>
                 {
-                    if (typeof(IManageCommand).IsAssignableFrom(TP))
+                    try
                     {
-                        var MC = (IManageCommand)Activator.CreateInstance(TP);
-                        Trace.WriteLine(Language.Query("LWMS.Commands.Found", "Found Manage Command:{0},{1}", MC.CommandName, TP.ToString()));
-                        ManageCommands.Add(MC.CommandName, MC);
-                        var alias = MC.Alias;
-                        foreach (var MCA in alias)
+                        var asm = Assembly.LoadFrom(item);
+                        var TPS = asm.GetTypes();
+                        foreach (var TP in TPS)
                         {
-                            ManageCommandAliases.Add(MCA, MC);
+                            if (typeof(IManageCommand).IsAssignableFrom(TP))
+                            {
+                                var MC = (IManageCommand)Activator.CreateInstance(TP);
+                                Trace.WriteLine(Language.Query("LWMS.Commands.Found", "Found Manage Command:{0},{1}", MC.CommandName, TP.ToString()));
+                                ManageCommands.Add(MC.CommandName, MC);
+                                var alias = MC.Alias;
+                                foreach (var MCA in alias)
+                                {
+                                    ManageCommandAliases.Add(MCA, MC);
+                                }
+                            }
                         }
+                        __ = true;
                     }
-                }
-                return true;
+                    catch (Exception)
+                    {
+                        Trace.Write(Language.Query("LWMS.Commands.Error.LoadModule", "Cannot load management module: {0}", item));
+                    }
+                }, false, true, PermissionID.RegisterCmdModule, PermissionID.CmdModuleAll);
+
             }
             catch (Exception)
             {
                 Trace.Write(Language.Query("LWMS.Commands.Error.LoadModule", "Cannot load management module: {0}", item));
-                return false;
             }
+            return __;
         }
         /// <summary>
         /// Response to the command packs.
@@ -106,7 +118,7 @@ namespace LWMS.Core
                             LWMSCoreServer.isSuspend = true;
                             Output.WriteLine(Language.Query("Server.Suspended", "Listener is now suspended."));
                         }
-                    }, false, false, "ServerControl.Suspend","ServerControl.ListenerControl", "ServerControl.All");
+                    }, false, false, "ServerControl.Suspend", "ServerControl.ListenerControl", "ServerControl.All");
                 }
                 catch (Exception)
                 {

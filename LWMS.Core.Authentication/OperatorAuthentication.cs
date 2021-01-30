@@ -17,10 +17,14 @@ namespace LWMS.Core.Authentication
     {
         public static readonly string SetPermission = "Core.SetPermission";
         public static readonly string ListAuths = "Auth.List";
+        public static readonly string RegisterCmdModule= "Core.CommandModule.Register";
+        public static readonly string UnregisterCmdModule= "Core.CommandModule.Unregister";
+        public static readonly string CmdModuleAll= "Core.CommandModule.All";
     }
     public static class OperatorAuthentication
     {
         private static string CurrentLocalHost = null;
+        private static string CurrentTrustedInstaller = null;
         private static Dictionary<string, Authentication> Auths = new();
         private static Dictionary<string, string> RuntimeAuth2AuthMap = new();
         private static string RuntimeSalt = null;
@@ -83,6 +87,13 @@ namespace LWMS.Core.Authentication
             if (CurrentLocalHost == null)
             {
                 CurrentLocalHost = Auth;
+            }
+        }
+        public static void SetTrustedInstaller(string Auth)
+        {
+            if (CurrentTrustedInstaller == null)
+            {
+                CurrentTrustedInstaller = Auth;
             }
         }
         public static string CreateAuth(string Context, string Name, string Password)
@@ -173,6 +184,7 @@ namespace LWMS.Core.Authentication
         public static bool IsAuthed(string Auth, string PermissionID, bool DefaultPermission = false)
         {
             if (CurrentLocalHost == Auth) return true;
+            if (CurrentTrustedInstaller == Auth) return true;
             if (!RuntimeAuth2AuthMap.ContainsKey(Auth))
                 return DefaultPermission;
             else

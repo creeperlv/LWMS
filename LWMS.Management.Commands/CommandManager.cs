@@ -12,7 +12,7 @@ namespace LWMS.Management.Commands
     public class CommandManager : IManageCommand
     {
         public string CommandName => "ManageCommand";
-        public int Version => 2;
+        public int Version => 3;
 
         public List<string> Alias => new List<string>(new string[] { "commands", "cmds" });
 
@@ -33,9 +33,9 @@ namespace LWMS.Management.Commands
                     }
                     else
                     {
-                        if (ServerController.Register(target.FullName) == true)
+                        if (ServerController.Register(AuthContext,target.FullName) == true)
                         {
-                            GlobalConfiguration.ManageCommandModules.Add(target.FullName);
+                            GlobalConfiguration.RegisterCommandModule(AuthContext,target.FullName);
                         }
                         else
                         {
@@ -50,15 +50,7 @@ namespace LWMS.Management.Commands
                     {
                         Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Unregister.Error.0", "You must specify module to unregister."));
                     }
-
-                    for (int i = 0; i < GlobalConfiguration.ManageCommandModules.Count; i++)
-                    {
-                        if (GlobalConfiguration.ManageCommandModules[i].EndsWith(args[1]))
-                        {
-                            GlobalConfiguration.ManageCommandModules.RemoveAt(i);
-                            break;
-                        }
-                    }
+                    GlobalConfiguration.UnregisterCommandModule(AuthContext, args[1]);
                 }
                 else if (args[0].PackTotal.ToUpper() == "LS" || args[0].PackTotal.ToUpper() == "LIST")
                 {
