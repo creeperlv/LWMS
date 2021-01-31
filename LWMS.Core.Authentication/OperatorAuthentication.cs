@@ -20,6 +20,7 @@ namespace LWMS.Core.Authentication
         public static readonly string RegisterCmdModule= "Core.CommandModule.Register";
         public static readonly string UnregisterCmdModule= "Core.CommandModule.Unregister";
         public static readonly string CmdModuleAll= "Core.CommandModule.All";
+        public static readonly string BindPrefix= "Core.BindPrefix";
     }
     public static class OperatorAuthentication
     {

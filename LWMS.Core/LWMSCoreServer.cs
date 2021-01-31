@@ -298,9 +298,11 @@ namespace LWMS.Core
             var output = HttpPipelineProcessor.Process(new PipelineData(a, new HttpPipelineArguments(), null, context.GetHashCode()));
             (output.PrimaryData as HttpListenerRoutedContext).Response.OutputStream.Close();
         }
-        public void Bind(string URL)
+        public void Bind(string AuthContext,string URL)
         {
-            Listener.Prefixes.Add(URL);
+            OperatorAuthentication.AuthedAction(AuthContext, () => {
+                Listener.Prefixes.Add(URL);
+            }, false, true, PermissionID.BindPrefix);
         }
     }
 
