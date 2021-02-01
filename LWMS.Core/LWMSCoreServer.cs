@@ -47,7 +47,7 @@ namespace LWMS.Core
             semaphore = new Semaphore(MaxThread, MaxThread);
             Language.Initialize(GlobalConfiguration.Language);
             //Register Listener from beginning.
-            RegisterProcessUnit(new LogUnit());
+            RegisterProcessUnit(TrustedInstallerAuth, new LogUnit());
             //Add listening prefixes
             foreach (var item in GlobalConfiguration.ListenPrefixes)
             {
@@ -62,39 +62,7 @@ namespace LWMS.Core
                         foreach (var UnitTypeName in item.Children)
                         {
                             var t = Type.GetType(UnitTypeName.Value);
-                            RegisterProcessUnit((IPipedProcessUnit)Activator.CreateInstance(t));
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            FileInfo AssemblyFile = new FileInfo(item.Value);
-                            var asm=Assembly.LoadFrom(AssemblyFile.FullName);
-                            foreach (var UnitTypeName in item.Children)
-                            {
-                                var t = asm.GetType(UnitTypeName.Value);
-                                RegisterProcessUnit(Activator.CreateInstance(t) as IPipedProcessUnit);
-                            }
-                        }
-                        catch (Exception)
-                        {
-                            Trace.WriteLine(Language.Query("LWMS.Pipeline.Error.Register.R", "Cannot load R pipeline units from: {0}", item.Value));
-                        }
-                    }
-                }
-            }
-            RegisterProcessUnit(new ErrorResponseUnit());
-            //Load W process units.
-            {
-                foreach (var item in GlobalConfiguration.WProcessUnits.RootNode.Children)
-                {
-                    if (item.Value == "LWMS.Core.dll")
-                    {
-                        foreach (var UnitTypeName in item.Children)
-                        {
-                            var t = Type.GetType(UnitTypeName.Value);
-                            RegisterWProcessUnit((IPipedProcessUnit)Activator.CreateInstance(t));
+                            RegisterProcessUnit(TrustedInstallerAuth, (IPipedProcessUnit)Activator.CreateInstance(t));
                         }
                     }
                     else
@@ -106,7 +74,39 @@ namespace LWMS.Core
                             foreach (var UnitTypeName in item.Children)
                             {
                                 var t = asm.GetType(UnitTypeName.Value);
-                                RegisterWProcessUnit(Activator.CreateInstance(t) as IPipedProcessUnit);
+                                RegisterProcessUnit(TrustedInstallerAuth, Activator.CreateInstance(t) as IPipedProcessUnit);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            Trace.WriteLine(Language.Query("LWMS.Pipeline.Error.Register.R", "Cannot load R pipeline units from: {0}", item.Value));
+                        }
+                    }
+                }
+            }
+            RegisterProcessUnit(TrustedInstallerAuth, new ErrorResponseUnit());
+            //Load W process units.
+            {
+                foreach (var item in GlobalConfiguration.WProcessUnits.RootNode.Children)
+                {
+                    if (item.Value == "LWMS.Core.dll")
+                    {
+                        foreach (var UnitTypeName in item.Children)
+                        {
+                            var t = Type.GetType(UnitTypeName.Value);
+                            RegisterWProcessUnit(TrustedInstallerAuth, (IPipedProcessUnit)Activator.CreateInstance(t));
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            FileInfo AssemblyFile = new FileInfo(item.Value);
+                            var asm = Assembly.LoadFrom(AssemblyFile.FullName);
+                            foreach (var UnitTypeName in item.Children)
+                            {
+                                var t = asm.GetType(UnitTypeName.Value);
+                                RegisterWProcessUnit(TrustedInstallerAuth, Activator.CreateInstance(t) as IPipedProcessUnit);
                             }
                         }
                         catch (Exception)
@@ -127,7 +127,7 @@ namespace LWMS.Core
                             {
 
                                 var t = asm.GetType(UnitTypeName.Value);
-                                RegisterCmdOutProcessUnit((IPipedProcessUnit)Activator.CreateInstance(t));
+                                RegisterCmdOutProcessUnit(TrustedInstallerAuth, (IPipedProcessUnit)Activator.CreateInstance(t));
                             }
                         }
                         else
@@ -139,7 +139,7 @@ namespace LWMS.Core
                                 foreach (var UnitTypeName in item.Children)
                                 {
                                     var t = asm.GetType(UnitTypeName.Value);
-                                    RegisterCmdOutProcessUnit(Activator.CreateInstance(t) as IPipedProcessUnit);
+                                    RegisterCmdOutProcessUnit(TrustedInstallerAuth, Activator.CreateInstance(t) as IPipedProcessUnit);
                                 }
                             }
                             catch (Exception)
@@ -151,9 +151,9 @@ namespace LWMS.Core
                 }
             }
             //Apply units
-            ApplyProcessUnits();
-            ApplyWProcessUnits();
-            ApplyCmdProcessUnits();
+            ApplyProcessUnits(TrustedInstallerAuth);
+            ApplyWProcessUnits(TrustedInstallerAuth);
+            ApplyCmdProcessUnits(TrustedInstallerAuth);
             {
                 //Catach all exceptions.
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -177,7 +177,7 @@ namespace LWMS.Core
                                           try
                                           {
                                               var __ = ((HttpListener)r.AsyncState).EndGetContext(r);
-                                              ProcessContext(__);
+                                              ProcessContext_Internal(__);
                                               semaphore.Release(1);
                                           }
                                           catch (Exception)
@@ -246,61 +246,101 @@ namespace LWMS.Core
             ServerController.ManageCommandAliases.Clear();
             foreach (string item in GlobalConfiguration.ManageCommandModules)
             {
-                ServerController.Register(TrustedInstallerAuth,item);
+                ServerController.Register(TrustedInstallerAuth, item);
             }
         }
 
-        public void RegisterProcessUnit(IPipedProcessUnit unit)
+        public void RegisterProcessUnit(string Context, IPipedProcessUnit unit)
         {
-            processUnits.Add(unit);
-            Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.R", "Registered R Unit: {0}", unit.GetType().ToString()));
+            OperatorAuthentication.AuthedAction(Context, () =>
+            {
+
+                processUnits.Add(unit);
+                Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.R", "Registered R Unit: {0}", unit.GetType().ToString()));
+            }, false, true, PermissionID.RTRegisterRProcessUnit, PermissionID.RuntineAll);
         }
-        public void UnregisterProcessUnit(IPipedProcessUnit unit)
+        public void UnregisterProcessUnit(string Context, IPipedProcessUnit unit)
         {
-            processUnits.Remove(unit);
+
+            OperatorAuthentication.AuthedAction(Context, () =>
+            {
+
+                processUnits.Remove(unit);
+            }, false, true, PermissionID.RTUnregisterRProcessUnit, PermissionID.RuntineAll);
+
         }
 
-        public void RegisterWProcessUnit(IPipedProcessUnit unit)
+        public void RegisterWProcessUnit(string Context, IPipedProcessUnit unit)
         {
-            WprocessUnits.Add(unit);
-            Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.W", "Registered W Unit: {0}", unit.GetType().ToString()));
+            OperatorAuthentication.AuthedAction(Context, () =>
+            {
+                WprocessUnits.Add(unit);
+                Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.W", "Registered W Unit: {0}", unit.GetType().ToString()));
+            }, false, true, PermissionID.RTRegisterWProcessUnit, PermissionID.RuntineAll);
+
         }
-        public void UnregisterWProcessUnit(IPipedProcessUnit unit)
+        public void UnregisterWProcessUnit(string Context, IPipedProcessUnit unit)
         {
-            WprocessUnits.Remove(unit);
+            OperatorAuthentication.AuthedAction(Context, () =>
+            {
+                WprocessUnits.Remove(unit);
+            }, false, true, PermissionID.RTUnregisterWProcessUnit, PermissionID.RuntineAll);
         }
-        public void RegisterCmdOutProcessUnit(IPipedProcessUnit unit)
+        public void RegisterCmdOutProcessUnit(string Context, IPipedProcessUnit unit)
         {
-            CmdOutprocessUnits.Add(unit);
-            Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.CmdOut", "Registered CmdOut Unit: {0}", unit.GetType().ToString()));
+            OperatorAuthentication.AuthedAction(Context, () =>
+            {
+                CmdOutprocessUnits.Add(unit);
+                Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.CmdOut", "Registered CmdOut Unit: {0}", unit.GetType().ToString()));
+
+            }, false, true, PermissionID.RTRegisterCmdOutProcessUnit, PermissionID.RuntineAll);
         }
-        public void UnregisterCmdOutProcessUnit(IPipedProcessUnit unit)
+        public void UnregisterCmdOutProcessUnit(string Context, IPipedProcessUnit unit)
         {
-            CmdOutprocessUnits.Remove(unit);
+            OperatorAuthentication.AuthedAction(Context, () =>
+            {
+                CmdOutprocessUnits.Remove(unit);
+            }, false, true, PermissionID.RTUnregisterCmdOutProcessUnit, PermissionID.RuntineAll);
         }
-        public void ApplyProcessUnits()
+        public void ApplyProcessUnits(string Context)
         {
-            HttpPipelineProcessor.Init(processUnits.ToArray());
+            OperatorAuthentication.AuthedAction(Context, () =>
+            {
+                HttpPipelineProcessor.Init(processUnits.ToArray());
+            }, false, true, PermissionID.RTApplyRProcessUnits, PermissionID.RuntineAll);
         }
-        public void ApplyWProcessUnits()
+        public void ApplyWProcessUnits(string Context)
         {
-            PipelineStreamProcessor.DefaultPublicStreamProcessor.Init(WprocessUnits.ToArray());
+            OperatorAuthentication.AuthedAction(Context, () =>
+            {
+                PipelineStreamProcessor.DefaultPublicStreamProcessor.Init(WprocessUnits.ToArray());
+            }, false, true, PermissionID.RTApplyWProcessUnits, PermissionID.RuntineAll);
         }
-        public void ApplyCmdProcessUnits()
+        public void ApplyCmdProcessUnits(string Context)
         {
-            var processor = new DefaultProcessor();
-            processor.Init(CmdOutprocessUnits.ToArray());
-            Output.CoreStream.Processor = processor;
+
+            OperatorAuthentication.AuthedAction(Context, () =>
+            {
+                var processor = new DefaultProcessor();
+                processor.Init(CmdOutprocessUnits.ToArray());
+                Output.SetCoreStream(Context, processor);
+            }, false, true, PermissionID.RTApplyCmdProcessUnits, PermissionID.RuntineAll);
+
         }
-        public void ProcessContext(HttpListenerContext context)
+        internal void ProcessContext_Internal(HttpListenerContext context)
         {
             var a = new HttpListenerRoutedContext(context);
             var output = HttpPipelineProcessor.Process(new PipelineData(a, new HttpPipelineArguments(), null, context.GetHashCode()));
             (output.PrimaryData as HttpListenerRoutedContext).Response.OutputStream.Close();
         }
-        public void Bind(string AuthContext,string URL)
+        public void ProcessContext(string AuthContext, HttpListenerContext context)
         {
-            OperatorAuthentication.AuthedAction(AuthContext, () => {
+
+        }
+        public void Bind(string AuthContext, string URL)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () =>
+            {
                 Listener.Prefixes.Add(URL);
             }, false, true, PermissionID.BindPrefix);
         }

@@ -21,6 +21,16 @@ namespace LWMS.Core.Authentication
         public static readonly string UnregisterCmdModule= "Core.CommandModule.Unregister";
         public static readonly string CmdModuleAll= "Core.CommandModule.All";
         public static readonly string BindPrefix= "Core.BindPrefix";
+        public static readonly string RuntineAll = "Core.Runtime.All";
+        public static readonly string RTRegisterRProcessUnit = "Core.Runtime.RegisterRProcessUnit";
+        public static readonly string RTUnregisterRProcessUnit = "Core.Runtime.UnregisterRProcessUnit";
+        public static readonly string RTRegisterWProcessUnit = "Core.Runtime.RegisterWProcessUnit";
+        public static readonly string RTUnregisterWProcessUnit = "Core.Runtime.UnregisterWProcessUnit";
+        public static readonly string RTRegisterCmdOutProcessUnit = "Core.Runtime.RegisterCmdOutProcessUnit";
+        public static readonly string RTUnregisterCmdOutProcessUnit = "Core.Runtime.UnregisterCmdOutProcessUnit";
+        public static readonly string RTApplyRProcessUnits = "Core.Runtime.ApplyProcessUnits";
+        public static readonly string RTApplyWProcessUnits = "Core.Runtime.ApplyWProcessUnits";
+        public static readonly string RTApplyCmdProcessUnits = "Core.Runtime.ApplyCmdProcessUnits";
     }
     public static class OperatorAuthentication
     {

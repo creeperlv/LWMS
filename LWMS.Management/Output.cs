@@ -1,4 +1,6 @@
-﻿using LWMS.Core.WR;
+﻿using CLUNL.Pipeline;
+using LWMS.Core.Authentication;
+using LWMS.Core.WR;
 using System;
 
 namespace LWMS.Management
@@ -8,7 +10,11 @@ namespace LWMS.Management
     /// </summary>
     public static class Output
     {
-        public static PipedRoutedConsoleLikeWR CoreStream;
+        static PipedRoutedConsoleLikeWR CoreStream;
+        public static void SetCoreStream(string AuthContext,DefaultProcessor stream)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () => { CoreStream.Processor = stream; }, false, true, PermissionID.RTApplyCmdProcessUnits, PermissionID.RuntineAll);
+        }
         static Output()
         {
             CoreStream = new PipedRoutedConsoleLikeWR();
