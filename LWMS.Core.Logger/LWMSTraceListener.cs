@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using LWMS.Core.Authentication;
 
 namespace LWMS.Core.Log
 {
@@ -36,7 +37,7 @@ namespace LWMS.Core.Log
         }
         public LWMSTraceListener(string BasePath)
         {
-            
+
             LogDir = ApplicationStorage.Logs.ItemPath;
             var Now = DateTime.Now;
             StorageFile storageFile;
@@ -54,8 +55,13 @@ namespace LWMS.Core.Log
         /// <summary>
         /// Create a new file to write logs.
         /// </summary>
-        public static void NewLogFile()
+        public static void NewLogFile(string AuthContext)
         {
+            OperatorAuthentication.AuthedAction(AuthContext, () => { NewLogFile(); }, false, true, PermissionID.Log_NewFile, PermissionID.Log_All);
+        }
+        internal static void NewLogFile()
+        {
+
             Random random = new Random();
             OperatingID = random.Next();//ID Varied, task should exit immediately.
             //if (LogTask != null) thread.;
@@ -121,7 +127,7 @@ namespace LWMS.Core.Log
             {
                 lock (LogFile)
                 {
-                    while (ContentToLog.IsEmpty!=true)
+                    while (ContentToLog.IsEmpty != true)
                     {
                         string content;
                         if (ContentToLog.TryDequeue(out content))

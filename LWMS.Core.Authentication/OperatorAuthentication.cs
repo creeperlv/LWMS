@@ -17,10 +17,10 @@ namespace LWMS.Core.Authentication
     {
         public static readonly string SetPermission = "Core.SetPermission";
         public static readonly string ListAuths = "Auth.List";
-        public static readonly string RegisterCmdModule= "Core.CommandModule.Register";
-        public static readonly string UnregisterCmdModule= "Core.CommandModule.Unregister";
-        public static readonly string CmdModuleAll= "Core.CommandModule.All";
-        public static readonly string BindPrefix= "Core.BindPrefix";
+        public static readonly string RegisterCmdModule = "Core.CommandModule.Register";
+        public static readonly string UnregisterCmdModule = "Core.CommandModule.Unregister";
+        public static readonly string CmdModuleAll = "Core.CommandModule.All";
+        public static readonly string BindPrefix = "Core.BindPrefix";
         public static readonly string RuntineAll = "Core.Runtime.All";
         public static readonly string RTRegisterRProcessUnit = "Core.Runtime.RegisterRProcessUnit";
         public static readonly string RTUnregisterRProcessUnit = "Core.Runtime.UnregisterRProcessUnit";
@@ -31,6 +31,8 @@ namespace LWMS.Core.Authentication
         public static readonly string RTApplyRProcessUnits = "Core.Runtime.ApplyProcessUnits";
         public static readonly string RTApplyWProcessUnits = "Core.Runtime.ApplyWProcessUnits";
         public static readonly string RTApplyCmdProcessUnits = "Core.Runtime.ApplyCmdProcessUnits";
+        public static readonly string Log_NewFile = "Core.Log.NewFile";
+        public static readonly string Log_All = "Core.Log.All";
     }
     public static class OperatorAuthentication
     {
@@ -140,6 +142,14 @@ namespace LWMS.Core.Authentication
             }
             return null;
         }
+        public static string GetAuthIDFromAuth(string auth)
+        {
+            if (RuntimeAuth2AuthMap.ContainsKey(auth))
+            {
+                return RuntimeAuth2AuthMap[auth];
+            }
+            return null;
+        }
         public static void SetPermission(string ContextAuth, string TargetID, string PermissionID, bool Permission, string Name = null)
         {
             AuthedAction(ContextAuth, "Core.SetPermission", () =>
@@ -236,8 +246,8 @@ namespace LWMS.Core.Authentication
         {
             foreach (var item in Auths)
             {
-                if(item.Value.GetPermission("Class1Admin")==true)
-                return true;
+                if (item.Value.GetPermission("Class1Admin") == true)
+                    return true;
             }
             return false;
         }

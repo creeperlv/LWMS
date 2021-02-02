@@ -86,10 +86,27 @@ namespace LWMS
                 var UN = Console.ReadLine();
                 Console.WriteLine("Password:");
                 var PW = ReadPassword();
-                if (OperatorAuthentication.IsAuthPresent(OperatorAuthentication.ObtainRTAuth(UN, PW)) is true){
+                if (OperatorAuthentication.IsAuthPresent(OperatorAuthentication.ObtainRTAuth(UN, PW)) is true)
+                {
                     Auth = OperatorAuthentication.ObtainRTAuth(UN, PW);
-                    Console.WriteLine("Welcome, "+UN);
+                    Console.WriteLine("Welcome, " + UN);
                     return;
+                }
+                Console.WriteLine("Username + Password combination no found, please retry.");
+            }
+        }
+        static string ObtainAuth()
+        {
+            while (true)
+            {
+
+                Console.WriteLine("User Name:");
+                var UN = Console.ReadLine();
+                Console.WriteLine("Password:");
+                var PW = ReadPassword();
+                if (OperatorAuthentication.IsAuthPresent(OperatorAuthentication.ObtainRTAuth(UN, PW)) is true)
+                {
+                    return OperatorAuthentication.ObtainRTAuth(UN, PW);
                 }
                 Console.WriteLine("Username + Password combination no found, please retry.");
             }
@@ -103,6 +120,13 @@ namespace LWMS
                 if (cmd == "") continue;//Skip blank line.
                 if (cmd.ToLower() == "relogin") { Login(); continue; }
                 var cmdList = Tools00.ResolveCommand(cmd);
+                if (cmdList[0].PackTotal.ToUpper() == "RUNAS")
+                {
+                    var tempAuth=ObtainAuth();
+                    cmdList.RemoveAt(0);
+                ServerController.Control(tempAuth, cmdList.ToArray());
+
+                }else
                 ServerController.Control(Auth, cmdList.ToArray());
                 //PrintHint();
             }

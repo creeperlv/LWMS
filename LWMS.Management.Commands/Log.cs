@@ -14,7 +14,7 @@ namespace LWMS.Management.Commands
         public string CommandName => "ManageLog";
 
         List<string> alias = new List<string>();
-        public int Version => 2;
+        public int Version => 3;
         public Log()
         {
             alias.Add("log");
@@ -54,7 +54,7 @@ namespace LWMS.Management.Commands
                         break;
                     case "NEW":
                         {
-                            LWMSTraceListener.NewLogFile();
+                            LWMSTraceListener.NewLogFile(AuthContext);
                         }
                         break;
                     case "STOPWATCH":

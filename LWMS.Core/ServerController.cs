@@ -69,7 +69,8 @@ namespace LWMS.Core
 
             if (!OperatorAuthentication.IsAuthed(Auth, "Basic.ExecuteCommand"))
             {
-                Trace.WriteLine(Language.Query("LWMS.Command.AuthReject", "Operation rejected: auth {0} have no permission.", Auth));
+                var name=OperatorAuthentication.GetAuthIDFromAuth(Auth);
+                Trace.WriteLine(Language.Query("LWMS.Command.AuthReject", "Operation rejected: auth {0} have no permission.", name==null?Auth:name));
                 return;
             }
             if (args[0].ToUpper() == "SHUTDOWN" || args[0].ToUpper() == "EXIT" || args[0].ToUpper() == "CLOSE")
