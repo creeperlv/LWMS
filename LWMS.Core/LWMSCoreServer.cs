@@ -257,7 +257,7 @@ namespace LWMS.Core
 
                 processUnits.Add(unit);
                 Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.R", "Registered R Unit: {0}", unit.GetType().ToString()));
-            }, false, true, PermissionID.RTRegisterRProcessUnit, PermissionID.RuntineAll);
+            }, false, true, PermissionID.RTRegisterRProcessUnit, PermissionID.RuntimeAll);
         }
         public void UnregisterProcessUnit(string Context, IPipedProcessUnit unit)
         {
@@ -266,7 +266,7 @@ namespace LWMS.Core
             {
 
                 processUnits.Remove(unit);
-            }, false, true, PermissionID.RTUnregisterRProcessUnit, PermissionID.RuntineAll);
+            }, false, true, PermissionID.RTUnregisterRProcessUnit, PermissionID.RuntimeAll);
 
         }
 
@@ -276,7 +276,7 @@ namespace LWMS.Core
             {
                 WprocessUnits.Add(unit);
                 Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.W", "Registered W Unit: {0}", unit.GetType().ToString()));
-            }, false, true, PermissionID.RTRegisterWProcessUnit, PermissionID.RuntineAll);
+            }, false, true, PermissionID.RTRegisterWProcessUnit, PermissionID.RuntimeAll);
 
         }
         public void UnregisterWProcessUnit(string Context, IPipedProcessUnit unit)
@@ -284,7 +284,7 @@ namespace LWMS.Core
             OperatorAuthentication.AuthedAction(Context, () =>
             {
                 WprocessUnits.Remove(unit);
-            }, false, true, PermissionID.RTUnregisterWProcessUnit, PermissionID.RuntineAll);
+            }, false, true, PermissionID.RTUnregisterWProcessUnit, PermissionID.RuntimeAll);
         }
         public void RegisterCmdOutProcessUnit(string Context, IPipedProcessUnit unit)
         {
@@ -293,28 +293,28 @@ namespace LWMS.Core
                 CmdOutprocessUnits.Add(unit);
                 Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.CmdOut", "Registered CmdOut Unit: {0}", unit.GetType().ToString()));
 
-            }, false, true, PermissionID.RTRegisterCmdOutProcessUnit, PermissionID.RuntineAll);
+            }, false, true, PermissionID.RTRegisterCmdOutProcessUnit, PermissionID.RuntimeAll);
         }
         public void UnregisterCmdOutProcessUnit(string Context, IPipedProcessUnit unit)
         {
             OperatorAuthentication.AuthedAction(Context, () =>
             {
                 CmdOutprocessUnits.Remove(unit);
-            }, false, true, PermissionID.RTUnregisterCmdOutProcessUnit, PermissionID.RuntineAll);
+            }, false, true, PermissionID.RTUnregisterCmdOutProcessUnit, PermissionID.RuntimeAll);
         }
         public void ApplyProcessUnits(string Context)
         {
             OperatorAuthentication.AuthedAction(Context, () =>
             {
                 HttpPipelineProcessor.Init(processUnits.ToArray());
-            }, false, true, PermissionID.RTApplyRProcessUnits, PermissionID.RuntineAll);
+            }, false, true, PermissionID.RTApplyRProcessUnits, PermissionID.RuntimeAll);
         }
         public void ApplyWProcessUnits(string Context)
         {
             OperatorAuthentication.AuthedAction(Context, () =>
             {
                 PipelineStreamProcessor.DefaultPublicStreamProcessor.Init(WprocessUnits.ToArray());
-            }, false, true, PermissionID.RTApplyWProcessUnits, PermissionID.RuntineAll);
+            }, false, true, PermissionID.RTApplyWProcessUnits, PermissionID.RuntimeAll);
         }
         public void ApplyCmdProcessUnits(string Context)
         {
@@ -324,7 +324,7 @@ namespace LWMS.Core
                 var processor = new DefaultProcessor();
                 processor.Init(CmdOutprocessUnits.ToArray());
                 Output.SetCoreStream(Context, processor);
-            }, false, true, PermissionID.RTApplyCmdProcessUnits, PermissionID.RuntineAll);
+            }, false, true, PermissionID.RTApplyCmdProcessUnits, PermissionID.RuntimeAll);
 
         }
         internal void ProcessContext_Internal(HttpListenerContext context)

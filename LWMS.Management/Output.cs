@@ -13,7 +13,7 @@ namespace LWMS.Management
         static PipedRoutedConsoleLikeWR CoreStream;
         public static void SetCoreStream(string AuthContext,DefaultProcessor stream)
         {
-            OperatorAuthentication.AuthedAction(AuthContext, () => { CoreStream.Processor = stream; }, false, true, PermissionID.RTApplyCmdProcessUnits, PermissionID.RuntineAll);
+            OperatorAuthentication.AuthedAction(AuthContext, () => { CoreStream.Processor = stream; }, false, true, PermissionID.RTApplyCmdProcessUnits, PermissionID.RuntimeAll);
         }
         static Output()
         {

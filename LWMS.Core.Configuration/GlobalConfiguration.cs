@@ -153,13 +153,19 @@ namespace LWMS.Core.Configuration
         internal static int _BUF_LENGTH = 0;
         internal static int _MAX_LOG_SIZE = 0;
         internal static int _LOG_WATCH_INTERVAL = 0;
-        public static void Set_BUF_LENGTH_RT(int VALUE)
+        public static void Set_BUF_LENGTH_RT(string AuthContext, int VALUE)
         {
-            _BUF_LENGTH = VALUE;
+            OperatorAuthentication.AuthedAction(AuthContext, () =>
+            {
+                _BUF_LENGTH = VALUE;
+            }, false, true, PermissionID.RTSetBufLength, PermissionID.ModifyRuntimeConfig, PermissionID.ModifyConfig, PermissionID.RuntimeAll);
         }
-        public static void Set_WebRoot_RT(string Path)
+        public static void Set_WebRoot_RT(string AuthContext, string Path)
         {
-            _WebSiteContentRoot = Path;
+            OperatorAuthentication.AuthedAction(AuthContext, () =>
+            {
+                _WebSiteContentRoot = Path;
+            }, false, true, PermissionID.RTWebroot, PermissionID.ModifyRuntimeConfig, PermissionID.ModifyConfig, PermissionID.RuntimeAll);
         }
         internal static List<string> _ListenPrefixes = new List<string>();
         public static void ClearLoadedSettings()
@@ -174,13 +180,15 @@ namespace LWMS.Core.Configuration
         public static void RegisterCommandModule(string ContextAuth, string FullPath)
         {
 
-            OperatorAuthentication.AuthedAction(ContextAuth, () => {
+            OperatorAuthentication.AuthedAction(ContextAuth, () =>
+            {
                 GlobalConfiguration.ManageCommandModules.Add(FullPath);
             }, false, true, PermissionID.UnregisterCmdModule, PermissionID.CmdModuleAll);
         }
         public static void UnregisterCommandModule(string ContextAuth, string Module)
         {
-            OperatorAuthentication.AuthedAction(ContextAuth, () => {
+            OperatorAuthentication.AuthedAction(ContextAuth, () =>
+            {
                 for (int i = 0; i < ManageCommandModules.Count; i++)
                 {
                     if (ManageCommandModules[i].EndsWith(Module))
