@@ -53,14 +53,14 @@ namespace LWMS.Management.Commands
                                         {
                                             int B;
                                             int.TryParse(args[i].PackParted[1], out B);
-                                            GlobalConfiguration.Set_BUF_LENGTH_RT(B);
+                                            GlobalConfiguration.Set_BUF_LENGTH_RT(AuthContext,B);
                                             Console.WriteLine(Language.Query("ManageCmd.RuntimeConfig.SetValue", "{0} is temporarily set to {1} without saving to GlobalConfiguration file.", "BUT_LENGTH", B.ToString()));
                                         }
                                         break;
                                     case "WEBROOT":
                                         {
                                             string path = args[i].PackParted[1];
-                                            GlobalConfiguration.Set_WebRoot_RT(path);
+                                            GlobalConfiguration.Set_WebRoot_RT(AuthContext, path);
                                             Console.WriteLine(Language.Query("ManageCmd.RuntimeConfig.SetValue", "{0} is temporarily set to {1} without saving to GlobalConfiguration file.", "WebRoot", path));
                                         }
                                         break;

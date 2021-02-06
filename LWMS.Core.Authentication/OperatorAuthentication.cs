@@ -37,6 +37,7 @@ namespace LWMS.Core.Authentication
         public static readonly string Log_All = "Core.Log.All";
         public static readonly string ModifyRuntimeConfig = "Core.Runtime.ModifyConfig";
         public static readonly string ModifyConfig = "Core.ModifyConfig";
+        public static readonly string ReadConfig = "Core.ReadConfig ";
     }
     public static class OperatorAuthentication
     {

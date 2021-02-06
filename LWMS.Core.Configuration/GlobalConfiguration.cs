@@ -492,7 +492,7 @@ namespace LWMS.Core.Configuration
 
             }
         }
-        public static int BUF_LENGTH
+        internal static int BUF_LENGTH
         {
             get
             {
@@ -535,6 +535,17 @@ namespace LWMS.Core.Configuration
                 if (ConfigurationData != null)
                     ConfigurationData.AddValue("BUF_LENGTH", _BUF_LENGTH + "", AutoSave: true);
             }
+        }
+        public static int GetBUF_LENGTH(string AuthContext)
+        {
+            int r = -1;
+            OperatorAuthentication.AuthedAction(AuthContext, () => { r = BUF_LENGTH; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
+            return r;
+        }
+        public static void SetBUF_LENGTH(string AuthContext,int Size)
+        {
+
+            OperatorAuthentication.AuthedAction(AuthContext, () => { BUF_LENGTH=Size; }, false, true, PermissionID.ModifyConfig);
         }
         public static int MAX_LOG_SIZE
         {
@@ -743,7 +754,7 @@ namespace LWMS.Core.Configuration
                 }
             }
         }
-        public static string WebSiteContentRoot
+        internal static string WebSiteContentRoot
         {
             get
             {
@@ -778,6 +789,16 @@ namespace LWMS.Core.Configuration
                 if (ConfigurationData != null)
                     ConfigurationData.Flush();
             }
+        }
+        public static string GetWebSiteContentRoot(string AuthContext)
+        {
+            string Result = null;
+            OperatorAuthentication.AuthedAction(AuthContext, () => { Result = WebSiteContentRoot; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
+            return Result;
+        }
+        public static void GetWebSiteContentRoot(string AuthContext, string Value)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () => { WebSiteContentRoot = Value; }, false, true, PermissionID.ModifyConfig);
         }
         public static string WebSiteModuleStorageRoot
         {

@@ -28,8 +28,8 @@ namespace LWMS.Core.Utilities
             {
                 try
                 {
-                    Trace.WriteLine(Language.Query("LWMS.Utilities.Tools00.SendFile.Access", "Access:{0}", f.FullName.Substring(GlobalConfiguration.WebSiteContentRoot.Length)));
-                    var BUF_LENGTH = GlobalConfiguration.BUF_LENGTH;
+                    Trace.WriteLine(Language.Query("LWMS.Utilities.Tools00.SendFile.Access", "Access:{0}", f.FullName.Substring(GlobalConfiguration.GetWebSiteContentRoot(LWMSCoreServer.TrustedInstallerAuth).Length)));
+                    var BUF_LENGTH = GlobalConfiguration.GetBUF_LENGTH(LWMSCoreServer.TrustedInstallerAuth);
                     byte[] buf = new byte[BUF_LENGTH];
                     if (ContentType == null)
                         context.Response.ContentType = ObtainMimeType(f.Extension);

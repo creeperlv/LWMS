@@ -44,13 +44,13 @@ namespace LWMS.Management.Commands
                 {
                     if (item.PackTotal.ToUpper() == "WEBROOT")
                     {
-                        DirectoryInfo directoryInfo = new DirectoryInfo(GlobalConfiguration.WebSiteContentRoot);
+                        DirectoryInfo directoryInfo = new DirectoryInfo(GlobalConfiguration.GetWebSiteContentRoot(AuthContext));
                         Output.WriteLine(directoryInfo.FullName);
                     }
                     else
                     if (item.PackTotal.ToUpper() == "WEBROOTDIR")
                     {
-                        DirectoryInfo directoryInfo = new DirectoryInfo(GlobalConfiguration.WebSiteContentRoot);
+                        DirectoryInfo directoryInfo = new DirectoryInfo(GlobalConfiguration.GetWebSiteContentRoot(AuthContext));
                         foreach (var dir in directoryInfo.EnumerateDirectories())
                         {
                             Output.WriteLine("D:" + dir.FullName);
