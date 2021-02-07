@@ -35,7 +35,8 @@ namespace LWMS.Core.Utilities
                         context.Response.ContentType = ObtainMimeType(f.Extension);
                     else context.Response.ContentType = ContentType;
                     context.Response.ContentEncoding = Encoding.UTF8;
-                    if (GlobalConfiguration.EnableRange == true)
+                    bool EnableRange = GlobalConfiguration.GetEnableRange(LWMSCoreServer.TrustedInstallerAuth);
+                    if (EnableRange == true)
                         context.Response.AddHeader("Accept-Ranges", "bytes");
                     else
                         context.Response.AddHeader("Accept-Ranges", "none");
@@ -48,7 +49,7 @@ namespace LWMS.Core.Utilities
                         context.Response.OutputStream.Flush();
                         return;
                     }
-                    if (GlobalConfiguration.EnableRange == true)
+                    if (EnableRange == true)
                         try
                         {
                             range = context.Request.Headers["Range"];

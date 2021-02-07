@@ -490,7 +490,17 @@ namespace LWMS.Core.Configuration
 
             }
         }
-        public static bool EnableRange
+        public static void SetLogUA(string Auth, bool V)
+        {
+            OperatorAuthentication.AuthedAction(Auth, () => { LogUA = V; }, false, true, PermissionID.ModifyConfig);
+        }
+        public static bool GetLogUA(string Auth)
+        {
+            bool v = false;
+            OperatorAuthentication.AuthedAction(Auth, () => { v = LogUA; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
+            return v;
+        }
+        internal static bool EnableRange
         {
             get
             {
@@ -517,6 +527,16 @@ namespace LWMS.Core.Configuration
                     ConfigurationData.AddValue("EnableRange", _EnableRange + "", false, true);
 
             }
+        }
+        public static void SetEnableRange(string Auth,bool V)
+        {
+            OperatorAuthentication.AuthedAction(Auth, () => { EnableRange = V; }, false, true, PermissionID.ModifyConfig);
+        }
+        public static bool GetEnableRange(string Auth)
+        {
+            bool v=false;
+            OperatorAuthentication.AuthedAction(Auth, () => { v = EnableRange; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
+            return v;
         }
         internal static int BUF_LENGTH
         {
@@ -665,7 +685,7 @@ namespace LWMS.Core.Configuration
                     ConfigurationData.AddValue("LOG_WATCH_INTERVAL", _LOG_WATCH_INTERVAL + "", AutoSave: true);
             }
         }
-        public static string Page404
+        internal static string Page404
         {
             get
             {
@@ -698,7 +718,16 @@ namespace LWMS.Core.Configuration
                     ConfigurationData.Flush();
             }
         }
-
+        public static void SetPage404(string AuthContext, string Location)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () => { Page404 = Location; }, false, true, PermissionID.ModifyConfig);
+        }
+        public static string GetPage404(string AuthContext, string Location)
+        {
+            string l = null;
+            OperatorAuthentication.AuthedAction(AuthContext, () => { l = Page404; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
+            return l;
+        }
         public static string Language
         {
             get
@@ -792,9 +821,9 @@ namespace LWMS.Core.Configuration
         {
             OperatorAuthentication.AuthedAction(AuthContext, () => { ListenPrefixes.Clear(); }, false, true, PermissionID.ModifyConfig);
         }
-        public static void SetListenPrefixes(string AuthContext,List<string> ItemList)
+        public static void SetListenPrefixes(string AuthContext, List<string> ItemList)
         {
-            OperatorAuthentication.AuthedAction(AuthContext, () => { ListenPrefixes=ItemList; }, false, true, PermissionID.ModifyConfig);
+            OperatorAuthentication.AuthedAction(AuthContext, () => { ListenPrefixes = ItemList; }, false, true, PermissionID.ModifyConfig);
         }
         public static int GetListenPrefixesCount(string AuthContext)
         {
