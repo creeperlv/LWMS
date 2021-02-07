@@ -1,6 +1,7 @@
 ﻿using CLUNL;
 using CLUNL.Data.Layer1;
 using CLUNL.DirectedIO;
+using LWMS.Core.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -199,27 +200,34 @@ namespace LWMS.Core.FileSystem
         public static StorageFolder SystemRoot { get; internal set; }
         static StorageFolder _Webroot;
         static StorageFolder _ModuleRoot;
-        public static void SetRealWebRoot(string WebRootPath)
+        public static void SetRealWebRoot(string AuthContext, string WebRootPath)
         {
-            StackTrace st = new StackTrace(1);
-            var item = st.GetFrame(0);
-            var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
-            if (ModuleName != "LWMS.Core" && ModuleName != "LWMS.Core.Configuration")
+            OperatorAuthentication.AuthedAction(AuthContext, () =>
             {
-                throw new Exception("Illegal access from:" + ModuleName);
-            }
-            _Webroot.SetPath(WebRootPath);
+                StackTrace st = new StackTrace(1);
+                var item = st.GetFrame(0);
+                var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
+                if (ModuleName != "LWMS.Core" && ModuleName != "LWMS.Core.Configuration")
+                {
+                    throw new Exception("Illegal access from:" + ModuleName);
+                }
+                _Webroot.SetPath(WebRootPath);
+            }, false, false, PermissionID.SetPermission);
+
         }
-        public static void SetRealModuleRoot(string ModuleRootPath)
+        public static void SetRealModuleRoot(string AuthContext, string ModuleRootPath)
         {
-            StackTrace st = new StackTrace(1);
-            var item = st.GetFrame(0);
-            var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
-            if (ModuleName != "LWMS.Core" && ModuleName != "LWMS.Core.Configuration")
+            OperatorAuthentication.AuthedAction(AuthContext, () =>
             {
-                throw new Exception("Illegal access from:" + ModuleName);
-            }
-            _ModuleRoot.SetPath(ModuleRootPath);
+                StackTrace st = new StackTrace(1);
+                var item = st.GetFrame(0);
+                var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
+                if (ModuleName != "LWMS.Core" && ModuleName != "LWMS.Core.Configuration")
+                {
+                    throw new Exception("Illegal access from:" + ModuleName);
+                }
+                _ModuleRoot.SetPath(ModuleRootPath);
+            }, false, false, PermissionID.SetPermission);
         }
         /// <summary>
         /// Webroot, same folder as GlobalConfiguration.WebSiteContentRoot.

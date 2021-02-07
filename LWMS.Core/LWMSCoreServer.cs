@@ -30,6 +30,7 @@ namespace LWMS.Core
                 var Auth1 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
                 TrustedInstallerAuth = OperatorAuthentication.ObtainRTAuth(Auth0, Auth1);
                 OperatorAuthentication.SetTrustedInstaller(TrustedInstallerAuth);
+                GlobalConfiguration.SetTrustedInstallerAuth(TrustedInstallerAuth);
             }
             Listener = new HttpListener();
             ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString() + "-Preview";

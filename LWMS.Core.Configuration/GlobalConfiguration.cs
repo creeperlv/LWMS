@@ -17,6 +17,22 @@ namespace LWMS.Core.Configuration
 {
     public class GlobalConfiguration
     {
+        internal static string TrustedInstaller;
+        public static void SetTrustedInstallerAuth(string auth)
+        {
+            if (TrustedInstaller == null)
+            {
+                TrustedInstaller = auth;
+                {
+                    var t = _WebSiteContentRoot;
+                    WebSiteContentRoot = t;
+                }
+                {
+                    var t = _WebModuleStorage;
+                    WebSiteModuleStorageRoot = t;
+                }
+            }
+        }
         static GlobalConfiguration()
         {
             LibraryInfo.SetFlag(FeatureFlags.Pipeline_AutoID_Random, 1);
@@ -542,10 +558,10 @@ namespace LWMS.Core.Configuration
             OperatorAuthentication.AuthedAction(AuthContext, () => { r = BUF_LENGTH; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
             return r;
         }
-        public static void SetBUF_LENGTH(string AuthContext,int Size)
+        public static void SetBUF_LENGTH(string AuthContext, int Size)
         {
 
-            OperatorAuthentication.AuthedAction(AuthContext, () => { BUF_LENGTH=Size; }, false, true, PermissionID.ModifyConfig);
+            OperatorAuthentication.AuthedAction(AuthContext, () => { BUF_LENGTH = Size; }, false, true, PermissionID.ModifyConfig);
         }
         public static int MAX_LOG_SIZE
         {
@@ -754,6 +770,18 @@ namespace LWMS.Core.Configuration
                 }
             }
         }
+        public static int GetListenPrefixesCount(string AuthContext)
+        {
+            int c = -1;
+            OperatorAuthentication.AuthedAction(AuthContext, () => { c = ListenPrefixes.Count; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
+            return c;
+        }
+        public static IReadOnlyList<string> GetListenPrefixes(string AuthContext)
+        {
+            IReadOnlyList<string> l = null;
+            OperatorAuthentication.AuthedAction(AuthContext, () => { l = ListenPrefixes; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
+            return l;
+        }
         internal static string WebSiteContentRoot
         {
             get
@@ -775,7 +803,7 @@ namespace LWMS.Core.Configuration
 
                     }
                     ConfigurationData.Flush();
-                    ApplicationStorage.SetRealWebRoot(_WebSiteContentRoot);
+                    ApplicationStorage.SetRealWebRoot(TrustedInstaller, _WebSiteContentRoot);
 
                 }
                 return _WebSiteContentRoot;
@@ -783,7 +811,7 @@ namespace LWMS.Core.Configuration
             set
             {
                 _WebSiteContentRoot = value;
-                ApplicationStorage.SetRealWebRoot(_WebSiteContentRoot);
+                ApplicationStorage.SetRealWebRoot(TrustedInstaller, _WebSiteContentRoot);
                 if (ConfigurationData != null)
                     ConfigurationData.AddValue("WebContentRoot", _WebSiteContentRoot, AutoSave: true);
                 if (ConfigurationData != null)
@@ -800,7 +828,7 @@ namespace LWMS.Core.Configuration
         {
             OperatorAuthentication.AuthedAction(AuthContext, () => { WebSiteContentRoot = Value; }, false, true, PermissionID.ModifyConfig);
         }
-        public static string WebSiteModuleStorageRoot
+        internal static string WebSiteModuleStorageRoot
         {
             get
             {
@@ -821,7 +849,7 @@ namespace LWMS.Core.Configuration
 
                     }
                     ConfigurationData.Flush();
-                    ApplicationStorage.SetRealModuleRoot(_WebModuleStorage);
+                    ApplicationStorage.SetRealModuleRoot(TrustedInstaller, _WebModuleStorage);
 
                 }
                 return _WebModuleStorage;
@@ -829,12 +857,22 @@ namespace LWMS.Core.Configuration
             set
             {
                 _WebModuleStorage = value;
-                ApplicationStorage.SetRealModuleRoot(_WebModuleStorage);
+                ApplicationStorage.SetRealModuleRoot(TrustedInstaller, _WebModuleStorage);
                 if (ConfigurationData != null)
                     ConfigurationData.AddValue("ModuleStorageRoot", _WebModuleStorage, AutoSave: true);
                 if (ConfigurationData != null)
                     ConfigurationData.Flush();
             }
+        }
+        public static string GetWebSiteModuleStorageRoot(string AuthContext)
+        {
+            string r = null;
+            OperatorAuthentication.AuthedAction(AuthContext, () => { r = WebSiteModuleStorageRoot; }, false, true, PermissionID.ReadConfig_WebSiteModuleStorageRoot);
+            return r;
+        }
+        public static void SetWebSiteModuleStorageRoot(string AuthContext, string Value)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () => { WebSiteModuleStorageRoot = Value; }, false, true, PermissionID.ModifyConfig);
         }
         public static string DefaultPage
         {
