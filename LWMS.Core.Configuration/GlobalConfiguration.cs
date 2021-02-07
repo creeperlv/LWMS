@@ -17,19 +17,29 @@ namespace LWMS.Core.Configuration
 {
     public class GlobalConfiguration
     {
-        internal static string TrustedInstaller;
+        internal static string TrustedInstaller = null;
         public static void SetTrustedInstallerAuth(string auth)
         {
             if (TrustedInstaller == null)
             {
                 TrustedInstaller = auth;
                 {
-                    var t = _WebSiteContentRoot;
-                    WebSiteContentRoot = t;
-                }
-                {
-                    var t = _WebModuleStorage;
-                    WebSiteModuleStorageRoot = t;
+                    try
+                    {
+                        _WebSiteContentRoot = null;
+                        _ = WebSiteContentRoot;
+                        ApplicationStorage.SetRealWebRoot(TrustedInstaller, _WebSiteContentRoot);
+                    }
+                    catch
+                    {
+                    }
+                    try
+                    {
+                        _WebModuleStorage = null;
+                        _ = WebSiteModuleStorageRoot;
+                        ApplicationStorage.SetRealModuleRoot(TrustedInstaller, _WebModuleStorage);
+                    }
+                    catch { }
                 }
             }
         }
@@ -803,7 +813,14 @@ namespace LWMS.Core.Configuration
 
                     }
                     ConfigurationData.Flush();
-                    ApplicationStorage.SetRealWebRoot(TrustedInstaller, _WebSiteContentRoot);
+                    try
+                    {
+                        ApplicationStorage.SetRealWebRoot(TrustedInstaller, _WebSiteContentRoot);
+
+                    }
+                    catch (Exception)
+                    {
+                    }
 
                 }
                 return _WebSiteContentRoot;
@@ -811,7 +828,13 @@ namespace LWMS.Core.Configuration
             set
             {
                 _WebSiteContentRoot = value;
-                ApplicationStorage.SetRealWebRoot(TrustedInstaller, _WebSiteContentRoot);
+                try
+                {
+                    ApplicationStorage.SetRealWebRoot(TrustedInstaller, _WebSiteContentRoot);
+                }
+                catch (Exception)
+                {
+                }
                 if (ConfigurationData != null)
                     ConfigurationData.AddValue("WebContentRoot", _WebSiteContentRoot, AutoSave: true);
                 if (ConfigurationData != null)
@@ -848,16 +871,26 @@ namespace LWMS.Core.Configuration
                         Trace.WriteLine(Localization.Language.Query("LWMS.Config.Error.Save", "Cannot save configurations."));
 
                     }
-                    ConfigurationData.Flush();
-                    ApplicationStorage.SetRealModuleRoot(TrustedInstaller, _WebModuleStorage);
+                    ConfigurationData.Flush(); try
+                    {
+                        ApplicationStorage.SetRealModuleRoot(TrustedInstaller, _WebModuleStorage);
+                    }
+                    catch (Exception)
+                    {
+                    }
 
                 }
                 return _WebModuleStorage;
             }
             set
             {
-                _WebModuleStorage = value;
-                ApplicationStorage.SetRealModuleRoot(TrustedInstaller, _WebModuleStorage);
+                _WebModuleStorage = value; try
+                {
+                    ApplicationStorage.SetRealModuleRoot(TrustedInstaller, _WebModuleStorage);
+                }
+                catch (Exception)
+                {
+                }
                 if (ConfigurationData != null)
                     ConfigurationData.AddValue("ModuleStorageRoot", _WebModuleStorage, AutoSave: true);
                 if (ConfigurationData != null)

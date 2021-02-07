@@ -204,8 +204,8 @@ namespace LWMS.Core.FileSystem
         {
             OperatorAuthentication.AuthedAction(AuthContext, () =>
             {
-                StackTrace st = new StackTrace(1);
-                var item = st.GetFrame(0);
+                StackTrace st = new StackTrace(2);
+                var item = st.GetFrame(1);
                 var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
                 if (ModuleName != "LWMS.Core" && ModuleName != "LWMS.Core.Configuration")
                 {
@@ -219,8 +219,8 @@ namespace LWMS.Core.FileSystem
         {
             OperatorAuthentication.AuthedAction(AuthContext, () =>
             {
-                StackTrace st = new StackTrace(1);
-                var item = st.GetFrame(0);
+                StackTrace st = new StackTrace(2);
+                var item = st.GetFrame(1);
                 var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
                 if (ModuleName != "LWMS.Core" && ModuleName != "LWMS.Core.Configuration")
                 {

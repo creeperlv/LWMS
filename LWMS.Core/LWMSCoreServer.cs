@@ -50,7 +50,7 @@ namespace LWMS.Core
             //Register Listener from beginning.
             RegisterProcessUnit(TrustedInstallerAuth, new LogUnit());
             //Add listening prefixes
-            foreach (var item in GlobalConfiguration.ListenPrefixes)
+            foreach (var item in GlobalConfiguration.GetListenPrefixes(TrustedInstallerAuth))
             {
                 Listener.Prefixes.Add(item);
             }
