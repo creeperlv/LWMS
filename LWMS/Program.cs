@@ -65,16 +65,16 @@ namespace LWMS
             coreServer.Start(100);
             Console.WriteLine("The server is now running good.");
             Login();
-            if(ignore_Arg==false)
-            if (args.Length > 0)
-            {
-                var cmd = new List<CommandPack>();
-                foreach (var item in _commands)
+            if (ignore_Arg == false)
+                if (args.Length > 0)
                 {
-                    cmd.Add(item);
+                    var cmd = new List<CommandPack>();
+                    foreach (var item in _commands)
+                    {
+                        cmd.Add(item);
+                    }
+                    ServerController.Control(Auth, cmd.ToArray());
                 }
-                ServerController.Control(Auth, cmd.ToArray());
-            }
             CommandListener();
         }
         static void Login()
@@ -122,12 +122,13 @@ namespace LWMS
                 var cmdList = Tools00.ResolveCommand(cmd);
                 if (cmdList[0].PackTotal.ToUpper() == "RUNAS")
                 {
-                    var tempAuth=ObtainAuth();
+                    var tempAuth = ObtainAuth();
                     cmdList.RemoveAt(0);
-                ServerController.Control(tempAuth, cmdList.ToArray());
+                    ServerController.Control(tempAuth, cmdList.ToArray());
 
-                }else
-                ServerController.Control(Auth, cmdList.ToArray());
+                }
+                else
+                    ServerController.Control(Auth, cmdList.ToArray());
                 //PrintHint();
             }
         }
@@ -141,7 +142,7 @@ namespace LWMS
         //}
         static void Check00()
         {
-            if (GlobalConfiguration.ListenPrefixes.Count == 0)
+            if (GlobalConfiguration.GetListenPrefixesCount(Auth) == 0)
             {
                 Console.WriteLine("Listening Url Not Found!");
                 Console.WriteLine("Enter your own url prefixes: (End with \"END\")");
@@ -152,7 +153,7 @@ namespace LWMS
                     if (URL.ToUpper() == "UNDO") RecordedUrls.RemoveAt(RecordedUrls.Count - 1);
                     RecordedUrls.Add(URL);
                 }
-                GlobalConfiguration.ListenPrefixes = RecordedUrls;
+                GlobalConfiguration.SetListenPrefixes(Auth, RecordedUrls);
                 Console.WriteLine("Done!");
             }
             if (OperatorAuthentication.HasAdmin() is not true)
@@ -169,7 +170,7 @@ namespace LWMS
                     var pw1 = ReadPassword();
                     if (pw0 == pw1)
                     {
-                        var ID=OperatorAuthentication.CreateAuth(Auth, Name, pw0);
+                        var ID = OperatorAuthentication.CreateAuth(Auth, Name, pw0);
                         OperatorAuthentication.SetPermission(Auth, ID, "Class1Admin", true);
                         Auth = OperatorAuthentication.ObtainRTAuth(Name, pw0);
                         Console.WriteLine("Succeed.");

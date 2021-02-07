@@ -741,7 +741,7 @@ namespace LWMS.Core.Configuration
             }
         }
 
-        public static List<string> ListenPrefixes
+        internal static List<string> ListenPrefixes
         {
             get
             {
@@ -779,6 +779,22 @@ namespace LWMS.Core.Configuration
                     ConfigurationData.Flush();
                 }
             }
+        }
+        public static void RemoveListenPrefixAt(string AuthContext, int Index)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () => { ListenPrefixes.RemoveAt(Index); }, false, true, PermissionID.ModifyConfig);
+        }
+        public static void RemoveListenPrefix(string AuthContext, string item)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () => { ListenPrefixes.Remove(item); }, false, true, PermissionID.ModifyConfig);
+        }
+        public static void ClearListenPrefixes(string AuthContext)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () => { ListenPrefixes.Clear(); }, false, true, PermissionID.ModifyConfig);
+        }
+        public static void SetListenPrefixes(string AuthContext,List<string> ItemList)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () => { ListenPrefixes=ItemList; }, false, true, PermissionID.ModifyConfig);
         }
         public static int GetListenPrefixesCount(string AuthContext)
         {

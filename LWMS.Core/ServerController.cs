@@ -142,7 +142,7 @@ namespace LWMS.Core
                         {
                             LWMSCoreServer.Listener = new System.Net.HttpListener();
 
-                            foreach (var item in GlobalConfiguration.ListenPrefixes)
+                            foreach (var item in GlobalConfiguration.GetListenPrefixes(LWMSCoreServer.TrustedInstallerAuth))
                             {
 
                                 LWMSCoreServer.Listener.Prefixes.Add(item);
