@@ -215,7 +215,12 @@ namespace LWMS.Core.Log
             stringBuilder.Append(now);
             stringBuilder.Append("]");
             stringBuilder.Append("[");
-            stringBuilder.Append(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName);
+            Type t = stackTrace.GetFrame(0).GetMethod().ReflectedType;
+            if (t == typeof(PipedRoutedConsoleLikeWR))
+            {
+                t = stackTrace.GetFrame(2).GetMethod().ReflectedType;
+            }
+            stringBuilder.Append(t.FullName);
             stringBuilder.Append("]");
             stringBuilder.Append(message);
             if (EnableConsoleOutput == true)
@@ -231,7 +236,7 @@ namespace LWMS.Core.Log
                     Console.Write("]");
                     Console.Write("[");
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write(stackTrace.GetFrame(0).GetMethod().ReflectedType.FullName);
+                    Console.Write(t.FullName);
                     Console.ResetColor();
                     Console.Write("]");
                     Console.Write(message);
@@ -258,6 +263,7 @@ namespace LWMS.Core.Log
             stringBuilder.Append(now);
             stringBuilder.Append("]");
             stringBuilder.Append("[");
+
             if (t != typeof(Trace))
                 stringBuilder.Append(t.FullName);
             else

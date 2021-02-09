@@ -163,12 +163,119 @@ namespace LWMS.Core.Configuration
             ConfigurationData = INILikeData.LoadFromStream(storageFile.OpenFile());
         }
 
-        public static TreeStructureData RProcessUnits { get; internal set; }
-        public static TreeStructureData WProcessUnits { get; internal set; }
-        public static TreeStructureData CMDOUTProcessUnits { get; internal set; }
-        public static INILikeData ConfigurationData;
-        public static ListData<string> ManageCommandModules;
+        internal static TreeStructureData RProcessUnits { get; set; }
+        internal static TreeStructureData WProcessUnits { get; set; }
+        internal static TreeStructureData CMDOUTProcessUnits { get; set; }
+        internal static INILikeData ConfigurationData;
+        internal static ListData<string> ManageCommandModules;
+        public static List<string> GetManageCommandModules(string Auth)
+        {
+            List<string> l = new();
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
+                l = new List<string>(ManageCommandModules);
+            }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
+            return l;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Auth"></param>
+        /// <param name="TSD">0 - R Pipeline, 1 - W Pipeline, 2 - CMDOUT Pipeline</param>
+        /// <returns></returns>
+        public static List<KeyValuePair<string, string>> ListTSDRoot(string Auth, int TSD)
+        {
+            List<KeyValuePair<string, string>> l = new();
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
+                switch (TSD)
+                {
+                    case 0:
+                        foreach (var item in RProcessUnits.RootNode.Children)
+                        {
+                            l.Add(new(item.Name, item.Value));
+                        }
+                        break;
+                    case 1:
+                        foreach (var item in WProcessUnits.RootNode.Children)
+                        {
+                            l.Add(new(item.Name, item.Value));
+                        }
+                        break;
+                    case 2:
+                        foreach (var item in CMDOUTProcessUnits.RootNode.Children)
+                        {
+                            l.Add(new(item.Name, item.Value));
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
+            return l;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Auth"></param>
+        /// <param name="TSD">0 - R Pipeline, 1 - W Pipeline, 2 - CMDOUT Pipeline</param>
+        /// <param name="Name"></param>
+        /// <returns></returns>
+        public static List<KeyValuePair<string, string>> ListTSDChild(string Auth, int TSD, string Name)
+        {
+            List<KeyValuePair<string, string>> l = new();
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
+                switch (TSD)
+                {
+                    case 0:
+                        foreach (var item in RProcessUnits.RootNode.Children)
+                        {
+                            if (item.Name == Name)
+                            {
+                                foreach (var item2 in item.Children)
+                                {
+                                    l.Add(new(item2.Name, item2.Value));
 
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    case 1:
+                        foreach (var item in WProcessUnits.RootNode.Children)
+                        {
+                            if (item.Name == Name)
+                            {
+                                foreach (var item2 in item.Children)
+                                {
+                                    l.Add(new(item2.Name, item2.Value));
+
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    case 2:
+                        foreach (var item in CMDOUTProcessUnits.RootNode.Children)
+                        {
+                            if (item.Name == Name)
+                            {
+                                foreach (var item2 in item.Children)
+                                {
+                                    l.Add(new(item2.Name, item2.Value));
+
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
+            return l;
+        }
         internal static string _WebModuleStorage = null;
         internal static string _WebSiteContentRoot = null;
         internal static string _DefultPage = null;
@@ -462,7 +569,7 @@ namespace LWMS.Core.Configuration
             }, false, false, "Core.Config.RegisterPipeline", "Core.Config.AllPipeline");
 
         }
-        public static bool LogUA
+        internal static bool LogUA
         {
             get
             {
@@ -528,13 +635,13 @@ namespace LWMS.Core.Configuration
 
             }
         }
-        public static void SetEnableRange(string Auth,bool V)
+        public static void SetEnableRange(string Auth, bool V)
         {
             OperatorAuthentication.AuthedAction(Auth, () => { EnableRange = V; }, false, true, PermissionID.ModifyConfig);
         }
         public static bool GetEnableRange(string Auth)
         {
-            bool v=false;
+            bool v = false;
             OperatorAuthentication.AuthedAction(Auth, () => { v = EnableRange; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
             return v;
         }
@@ -722,7 +829,7 @@ namespace LWMS.Core.Configuration
         {
             OperatorAuthentication.AuthedAction(AuthContext, () => { Page404 = Location; }, false, true, PermissionID.ModifyConfig);
         }
-        public static string GetPage404(string AuthContext, string Location)
+        public static string GetPage404(string AuthContext)
         {
             string l = null;
             OperatorAuthentication.AuthedAction(AuthContext, () => { l = Page404; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);

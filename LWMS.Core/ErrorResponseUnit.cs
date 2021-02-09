@@ -25,9 +25,10 @@ namespace LWMS.Core
 
             if (context.Request.HttpMethod == HttpMethod.Get.Method)
             {
-                if (File.Exists(GlobalConfiguration.Page404))
+                var _404 = GlobalConfiguration.GetPage404(LWMSCoreServer.TrustedInstallerAuth);
+                if (File.Exists(_404))
                 {
-                    Tools00.SendFile(context, new FileInfo(GlobalConfiguration.Page404), HttpStatusCode.NotFound);
+                    Tools00.SendFile(context, new FileInfo(_404), HttpStatusCode.NotFound);
                 }
                 else
                 {

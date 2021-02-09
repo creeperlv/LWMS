@@ -23,7 +23,7 @@ namespace LWMS.Core
             var c = Input.PrimaryData as HttpListenerRoutedContext;
             b.Append(c.Request.RemoteEndPoint);
             b.Append(">>");
-            if (GlobalConfiguration.LogUA)
+            if (GlobalConfiguration.GetLogUA(LWMSCoreServer.TrustedInstallerAuth))
             {
                 b.Append(c.Request.UserAgent);
                 b.Append(">>");

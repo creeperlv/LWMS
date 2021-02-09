@@ -56,11 +56,11 @@ namespace LWMS.Core
             }
             //Load process units.
             {
-                foreach (var item in GlobalConfiguration.RProcessUnits.RootNode.Children)
+                foreach (var item in GlobalConfiguration.ListTSDRoot(TrustedInstallerAuth, 0))
                 {
                     if (item.Value == "LWMS.Core.dll")
                     {
-                        foreach (var UnitTypeName in item.Children)
+                        foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 0, item.Key))
                         {
                             var t = Type.GetType(UnitTypeName.Value);
                             RegisterProcessUnit(TrustedInstallerAuth, (IPipedProcessUnit)Activator.CreateInstance(t));
@@ -72,7 +72,7 @@ namespace LWMS.Core
                         {
                             FileInfo AssemblyFile = new FileInfo(item.Value);
                             var asm = Assembly.LoadFrom(AssemblyFile.FullName);
-                            foreach (var UnitTypeName in item.Children)
+                            foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 0, item.Key))
                             {
                                 var t = asm.GetType(UnitTypeName.Value);
                                 RegisterProcessUnit(TrustedInstallerAuth, Activator.CreateInstance(t) as IPipedProcessUnit);
@@ -88,11 +88,11 @@ namespace LWMS.Core
             RegisterProcessUnit(TrustedInstallerAuth, new ErrorResponseUnit());
             //Load W process units.
             {
-                foreach (var item in GlobalConfiguration.WProcessUnits.RootNode.Children)
+                foreach (var item in GlobalConfiguration.ListTSDRoot(TrustedInstallerAuth,1))
                 {
                     if (item.Value == "LWMS.Core.dll")
                     {
-                        foreach (var UnitTypeName in item.Children)
+                        foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth,1,item.Key))
                         {
                             var t = Type.GetType(UnitTypeName.Value);
                             RegisterWProcessUnit(TrustedInstallerAuth, (IPipedProcessUnit)Activator.CreateInstance(t));
@@ -104,7 +104,7 @@ namespace LWMS.Core
                         {
                             FileInfo AssemblyFile = new FileInfo(item.Value);
                             var asm = Assembly.LoadFrom(AssemblyFile.FullName);
-                            foreach (var UnitTypeName in item.Children)
+                            foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 1, item.Key))
                             {
                                 var t = asm.GetType(UnitTypeName.Value);
                                 RegisterWProcessUnit(TrustedInstallerAuth, Activator.CreateInstance(t) as IPipedProcessUnit);
@@ -119,12 +119,12 @@ namespace LWMS.Core
             }
             {
                 {
-                    foreach (var item in GlobalConfiguration.CMDOUTProcessUnits.RootNode.Children)
+                    foreach (var item in GlobalConfiguration.ListTSDRoot(TrustedInstallerAuth, 2))
                     {
                         if (item.Value == "LWMS.Management.dll")
                         {
                             var asm = Assembly.GetAssembly(typeof(Output));
-                            foreach (var UnitTypeName in item.Children)
+                            foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 2, item.Key))
                             {
 
                                 var t = asm.GetType(UnitTypeName.Value);
@@ -137,7 +137,7 @@ namespace LWMS.Core
                             {
                                 FileInfo AssemblyFile = new FileInfo(item.Value);
                                 var asm = Assembly.LoadFrom(AssemblyFile.FullName);
-                                foreach (var UnitTypeName in item.Children)
+                                foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 2, item.Key))
                                 {
                                     var t = asm.GetType(UnitTypeName.Value);
                                     RegisterCmdOutProcessUnit(TrustedInstallerAuth, Activator.CreateInstance(t) as IPipedProcessUnit);
@@ -245,7 +245,7 @@ namespace LWMS.Core
         {
             ServerController.ManageCommands.Clear();
             ServerController.ManageCommandAliases.Clear();
-            foreach (string item in GlobalConfiguration.ManageCommandModules)
+            foreach (string item in GlobalConfiguration.GetManageCommandModules(TrustedInstallerAuth))
             {
                 ServerController.Register(TrustedInstallerAuth, item);
             }
