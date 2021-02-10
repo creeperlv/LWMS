@@ -43,6 +43,21 @@ namespace LWMS.Core.Configuration
                 }
             }
         }
+        public static  bool Release(string Auth)
+        {
+            bool v = false;
+            OperatorAuthentication.AuthedAction(Auth, () => {
+                if (ConfigurationData != null)
+                {
+
+                    ConfigurationData.Dispose();
+                    ConfigurationData = null;
+                    v = true;
+
+                }
+            }, false, true, PermissionID.ReleaseConfig, PermissionID.ModifyConfig);
+            return v;
+        }
         static GlobalConfiguration()
         {
             LibraryInfo.SetFlag(FeatureFlags.Pipeline_AutoID_Random, 1);
@@ -924,6 +939,10 @@ namespace LWMS.Core.Configuration
         {
             OperatorAuthentication.AuthedAction(AuthContext, () => { ListenPrefixes.Remove(item); }, false, true, PermissionID.ModifyConfig);
         }
+        public static void AddListenPrefix(string AuthContext, string item)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () => { ListenPrefixes.Add(item); }, false, true, PermissionID.ModifyConfig);
+        }
         public static void ClearListenPrefixes(string AuthContext)
         {
             OperatorAuthentication.AuthedAction(AuthContext, () => { ListenPrefixes.Clear(); }, false, true, PermissionID.ModifyConfig);
@@ -999,7 +1018,7 @@ namespace LWMS.Core.Configuration
             OperatorAuthentication.AuthedAction(AuthContext, () => { Result = WebSiteContentRoot; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
             return Result;
         }
-        public static void GetWebSiteContentRoot(string AuthContext, string Value)
+        public static void SetWebSiteContentRoot(string AuthContext, string Value)
         {
             OperatorAuthentication.AuthedAction(AuthContext, () => { WebSiteContentRoot = Value; }, false, true, PermissionID.ModifyConfig);
         }
@@ -1059,7 +1078,7 @@ namespace LWMS.Core.Configuration
         {
             OperatorAuthentication.AuthedAction(AuthContext, () => { WebSiteModuleStorageRoot = Value; }, false, true, PermissionID.ModifyConfig);
         }
-        public static string DefaultPage
+        internal static string DefaultPage
         {
             get
             {
@@ -1091,6 +1110,16 @@ namespace LWMS.Core.Configuration
                     ConfigurationData.Flush();
                 }
             }
+        }
+        public static string GetDefaultPage(string Auth)
+        {
+            string r = null;
+            OperatorAuthentication.AuthedAction(Auth, () => { r = DefaultPage; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
+            return r;
+        }
+        public static void SetDefaultPage(string Auth,string Value)
+        {
+            OperatorAuthentication.AuthedAction(Auth, () => {DefaultPage=Value; }, false, true, PermissionID.ModifyConfig);
         }
     }
 }

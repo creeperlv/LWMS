@@ -29,7 +29,7 @@ namespace LWMS.Core
                     if (Result.StorageItemType == StorageItemType.Folder)
                     {
                         StorageFile DefaultPage;
-                        if (((StorageFolder)Result).GetFile(GlobalConfiguration.DefaultPage, out DefaultPage, false))
+                        if (((StorageFolder)Result).GetFile(GlobalConfiguration.GetDefaultPage(LWMSCoreServer.TrustedInstallerAuth), out DefaultPage, false))
                         {
 
                             Tools00.SendFile(context, DefaultPage);

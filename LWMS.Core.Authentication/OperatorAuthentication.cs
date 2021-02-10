@@ -38,6 +38,7 @@ namespace LWMS.Core.Authentication
         public static readonly string ModifyRuntimeConfig = "Core.Runtime.ModifyConfig";
         public static readonly string ModifyConfig = "Core.ModifyConfig";
         public static readonly string ReadConfig = "Core.ReadConfig";
+        public static readonly string ReleaseConfig = "Core.Config.Release";
         public static readonly string ReadConfig_WebSiteModuleStorageRoot = "Core.ReadConfig.WebSiteModuleStorageRoot";
     }
     public static class OperatorAuthentication

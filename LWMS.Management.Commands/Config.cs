@@ -15,7 +15,7 @@ namespace LWMS.Management.Commands
 
         public List<string> Alias => new List<string>();
 
-        public int Version => 2;
+        public int Version => 3;
 
         public static void OutputHelp()
         {
@@ -41,17 +41,15 @@ namespace LWMS.Management.Commands
 
         public void Invoke(string AuthContext, params CommandPack[] args)
         {
-            OperatorAuthentication.AuthedAction(AuthContext, () => {
+            OperatorAuthentication.AuthedAction(AuthContext, () =>
+            {
                 if (args.Length > 0)
                 {
                     string operation = args[0];
                     if (operation.ToUpper() == "RELEASE")
                     {
-                        if (GlobalConfiguration.ConfigurationData != null)
+                        if (GlobalConfiguration.Release(AuthContext) == true)
                         {
-
-                            GlobalConfiguration.ConfigurationData.Dispose();
-                            GlobalConfiguration.ConfigurationData = null;
                             Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip0", "GlobalConfiguration file is released and changes will not be saved."));
 
                         }
@@ -81,7 +79,7 @@ namespace LWMS.Management.Commands
                             string setitem = args[1].ToUpper();
                             if (setitem == "BUF_LENGTH")
                             {
-                                GlobalConfiguration.BUF_LENGTH = int.Parse(args[2]);
+                                GlobalConfiguration.SetBUF_LENGTH(AuthContext,int.Parse(args[2]));
                             }
                             else if (setitem == "LOG_WATCH_INTERVAL")
                             {
@@ -93,15 +91,15 @@ namespace LWMS.Management.Commands
                             }
                             else if (setitem == "WEBROOT" || setitem == "WEBSITEROOT" || setitem == "WEBSITECONTENTROOT" || setitem == "WEBCONTENTROOT" || setitem == "CONTENTROOT")
                             {
-                                GlobalConfiguration.WebSiteContentRoot = args[2];
+                                GlobalConfiguration.SetWebSiteContentRoot(AuthContext,args[2]);
                             }
                             else if (setitem == "DEFAULTPAGE")
                             {
-                                GlobalConfiguration.DefaultPage = args[2];
+                                GlobalConfiguration.SetDefaultPage(AuthContext, args[2]);
                             }
                             else if (setitem == "404PAGE")
                             {
-                                GlobalConfiguration.Page404 = args[2];
+                                GlobalConfiguration.SetPage404(AuthContext, args[2]);
                             }
                             else if (setitem == "LANGUAGE")
                             {
@@ -117,7 +115,7 @@ namespace LWMS.Management.Commands
                             {
                                 try
                                 {
-                                    GlobalConfiguration.EnableRange = bool.Parse(args[2]);
+                                    GlobalConfiguration.SetEnableRange(AuthContext,bool.Parse(args[2]));
 
                                 }
                                 catch (Exception)
@@ -131,7 +129,7 @@ namespace LWMS.Management.Commands
                             {
                                 try
                                 {
-                                    GlobalConfiguration.LogUA = bool.Parse(args[2]);
+                                    GlobalConfiguration.SetLogUA (AuthContext, bool.Parse(args[2]));
 
                                 }
                                 catch (Exception)
@@ -160,9 +158,7 @@ namespace LWMS.Management.Commands
                             string setitem = args[1].ToUpper();
                             if (setitem == "LISTENPREFIX" || setitem == "LISTEN")
                             {
-                                var prefixes = GlobalConfiguration.ListenPrefixes;
-                                prefixes.Add(args[2]);
-                                GlobalConfiguration.ListenPrefixes = prefixes;
+                                GlobalConfiguration.AddListenPrefix(AuthContext,args[2]);
                             }
                         }
                         else
@@ -182,11 +178,7 @@ namespace LWMS.Management.Commands
                             {
                                 try
                                 {
-
-                                    var prefixes = GlobalConfiguration.ListenPrefixes;
-                                    prefixes.Remove(args[2]);
-                                    GlobalConfiguration.ListenPrefixes = prefixes;
-
+                                    GlobalConfiguration.RemoveListenPrefix(AuthContext, args[2]);
                                 }
                                 catch (Exception)
                                 {
