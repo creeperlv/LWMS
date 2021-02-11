@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LWMS.Core.Authentication;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,110 @@ namespace LWMS.Core.FileSystem
             get
             {
                 return isroot;
+            }
+        }
+        internal string DeleteAllItemsPermissionID = null;
+        internal void SetDeleteAllItemsPermissionID(string DeletePermissionID)
+        {
+            DeleteAllItemsPermissionID = DeletePermissionID;
+        }
+        /// <summary>
+        /// Delete all items including files and folders.
+        /// </summary>
+        public void DeleteAllItems(bool IgnoreDeletionError=false)
+        {
+            if (DeleteAllItemsPermissionID == null)
+            {
+                if (IgnoreDeletionError)
+                {
+                    foreach (var item in GetFolders())
+                    {
+                        try
+                        {
+                            item.Delete();
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+                    foreach (var item in GetFiles())
+                    {
+                        try
+                        {
+                            item.Delete();
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+
+                }
+                else
+                {
+                    foreach (var item in GetFolders())
+                    {
+                        item.Delete();
+                    }
+                    foreach (var item in GetFiles())
+                    {
+                        item.Delete();
+                    }
+                }
+            }
+            else
+            {
+                throw new UnauthorizedException(null, DeleteAllItemsPermissionID);
+            }
+        }
+        /// <summary>
+        /// Delete all items including files and folders.
+        /// </summary>
+        /// <param name="Auth">In case this operation requires permission</param>
+        public void DeleteAllItems(string Auth, bool IgnoreDeletionError = false)
+        {
+            if (DeleteAllItemsPermissionID == null)
+            {
+                DeleteAllItems();
+            }
+            else
+            {
+                OperatorAuthentication.AuthedAction(Auth, () => {
+                    if (IgnoreDeletionError)
+                    {
+                        foreach (var item in GetFolders())
+                        {
+                            try
+                            {
+                                item.Delete();
+                            }
+                            catch (Exception)
+                            {
+                            }
+                        }
+                        foreach (var item in GetFiles())
+                        {
+                            try
+                            {
+                                item.Delete();
+                            }
+                            catch (Exception)
+                            {
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        foreach (var item in GetFolders())
+                        {
+                            item.Delete();
+                        }
+                        foreach (var item in GetFiles())
+                        {
+                            item.Delete();
+                        }
+                    }
+                },false,true,DeleteAllItemsPermissionID);
             }
         }
         /// <summary>

@@ -49,7 +49,8 @@ namespace LWMS
             }
             Console.OutputEncoding = Encoding.UTF8;
             Console.InputEncoding = Encoding.UTF8;
-            LWMSTraceListener.BeautifyConsoleOutput = true;
+            LWMSTraceListener.SetProperty(Auth, 0, true);
+            //LWMSTraceListener.BeautifyConsoleOutput = true;
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("This software is in active development and extremely unstable, do not use it in production environment!");

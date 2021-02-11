@@ -1,4 +1,5 @@
 ﻿using LWMS.Core;
+using LWMS.Core.FileSystem;
 using LWMS.Core.Log;
 using LWMS.Localization;
 using System;
@@ -14,13 +15,35 @@ namespace LWMS.Management.Commands
         public string CommandName => "ManageLog";
 
         List<string> alias = new List<string>();
-        public int Version => 3;
+        public int Version => 4;
         public Log()
         {
             alias.Add("log");
         }
         public List<string> Alias => alias;
+        public void PrintHelp()
+        {
 
+            {
+                Output.WriteLine(Language.Query("ManageCmd.Log.Name", "Log Manage Unit"));
+                Output.WriteLine("");
+                Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"));
+                Output.WriteLine("");
+                Output.WriteLine("LOG <OPERATION>");
+                Output.WriteLine("");
+                Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"));
+                Output.WriteLine("");
+                Output.WriteLine("\tList/LS");
+                Output.WriteLine(Language.Query("ManageCmd.Help.Log.List", "\t\tList all log files."));
+                Output.WriteLine("\tClear");
+                Output.WriteLine(Language.Query("ManageCmd.Help.Log.Clear", "\t\tDelete all old logs.(Except current using log file)"));
+                Output.WriteLine("\tNEW");
+                Output.WriteLine(Language.Query("ManageCmd.Help.Log.New", "\t\tCreate a new log file and log contents to the new log file."));
+                Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Experimental", "\t\t*This operation is experimental."));
+                Output.WriteLine("\tStopwatch");
+                Output.WriteLine(Language.Query("ManageCmd.Help.Log.Stopwatch", "\t\tStop watching log cache, new logs will now be writtern to file."));
+            }
+        }
         public void Invoke(string AuthContext, params CommandPack[] args)
         {
             if (args.Length > 0)
@@ -30,26 +53,15 @@ namespace LWMS.Management.Commands
                     case "LS":
                     case "LIST":
                         {
-                            foreach (var item in Directory.EnumerateFiles(LWMSTraceListener.LogDir))
+                            foreach (var item in ApplicationStorage.Logs.GetFiles())
                             {
-                                Output.WriteLine(item);
+                                Output.WriteLine(item.Name);
                             }
                         }
                         break;
                     case "CLEAR":
                         {
-                            foreach (var item in Directory.EnumerateFiles(LWMSTraceListener.LogDir))
-                            {
-                                try
-                                {
-                                    File.Delete(item);
-                                    Output.WriteLine(Language.Query("ManageCmd.Log.Delete","Log>>Delete: {0}", item));
-                                }
-                                catch (Exception)
-                                {
-                                }
-                            }
-
+                            ApplicationStorage.Logs.DeleteAllItems(AuthContext, true);
                         }
                         break;
                     case "NEW":
@@ -59,7 +71,7 @@ namespace LWMS.Management.Commands
                         break;
                     case "STOPWATCH":
                         {
-                            LWMSTraceListener.StopWatch();
+                            LWMSTraceListener.StopWatch(AuthContext);
                         }
                         break;
                     case "HELP":
@@ -68,30 +80,14 @@ namespace LWMS.Management.Commands
                     case "--?":
                     case "--H":
                     case "-H":
-                        {
-                            Output.WriteLine(Language.Query("ManageCmd.Log.Name", "Log Manage Unit"));
-                            Output.WriteLine("");
-                            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"));
-                            Output.WriteLine("");
-                            Output.WriteLine("LOG <OPERATION>");
-                            Output.WriteLine("");
-                            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"));
-                            Output.WriteLine("");
-                            Output.WriteLine("\tList/LS");
-                            Output.WriteLine(Language.Query("ManageCmd.Help.Log.List", "\t\tList all log files."));
-                            Output.WriteLine("\tClear");
-                            Output.WriteLine(Language.Query("ManageCmd.Help.Log.Clear", "\t\tDelete all old logs.(Except current using log file)"));
-                            Output.WriteLine("\tNEW");
-                            Output.WriteLine(Language.Query("ManageCmd.Help.Log.New", "\t\tCreate a new log file and log contents to the new log file."));
-                            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Experimental", "\t\t*This operation is experimental."));
-                            Output.WriteLine("\tStopwatch");
-                            Output.WriteLine(Language.Query("ManageCmd.Help.Log.Stopwatch", "\t\tStop watching log cache, new logs will now be writtern to file."));
-                        }
+                        PrintHelp();
                         break;
                     default:
                         break;
                 }
             }
+            else
+                PrintHelp();
         }
     }
 }

@@ -750,13 +750,13 @@ namespace LWMS.Core.Configuration
                     }
 
                 }
-                LWMSTraceListener._MAX_LOG_SIZE = _MAX_LOG_SIZE;
+                LWMSTraceListener.SetProperty(TrustedInstaller, 4, _MAX_LOG_SIZE);
                 return _MAX_LOG_SIZE;
             }
             set
             {
                 _MAX_LOG_SIZE = value;
-                LWMSTraceListener._MAX_LOG_SIZE = _MAX_LOG_SIZE;
+                LWMSTraceListener.SetProperty(TrustedInstaller, 4, _MAX_LOG_SIZE);
                 if (ConfigurationData != null)
                     ConfigurationData.AddValue("MAX_LOG_SIZE", _MAX_LOG_SIZE + "", AutoSave: true);
             }
@@ -796,13 +796,15 @@ namespace LWMS.Core.Configuration
                     }
 
                 }
-                LWMSTraceListener._LOG_WATCH_INTERVAL = _LOG_WATCH_INTERVAL;
+                LWMSTraceListener.SetProperty(TrustedInstaller, 3, _LOG_WATCH_INTERVAL);
+                //LWMSTraceListener._LOG_WATCH_INTERVAL = _LOG_WATCH_INTERVAL;
                 return _MAX_LOG_SIZE;
             }
             set
             {
                 _LOG_WATCH_INTERVAL = value;
-                LWMSTraceListener._LOG_WATCH_INTERVAL = _LOG_WATCH_INTERVAL;
+                LWMSTraceListener.SetProperty(TrustedInstaller, 3, _LOG_WATCH_INTERVAL);
+                //LWMSTraceListener._LOG_WATCH_INTERVAL = _LOG_WATCH_INTERVAL;
                 if (ConfigurationData != null)
                     ConfigurationData.AddValue("LOG_WATCH_INTERVAL", _LOG_WATCH_INTERVAL + "", AutoSave: true);
             }

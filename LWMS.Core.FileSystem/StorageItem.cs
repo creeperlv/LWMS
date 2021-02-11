@@ -100,7 +100,7 @@ namespace LWMS.Core.FileSystem
         }
         public StorageItemType StorageItemType { get; internal set; }
         /// <summary>
-        /// Delete a file.
+        /// Delete an item. If this item is a folder, delete the folder and all items recursively.
         /// </summary>
         public virtual void Delete()
         {

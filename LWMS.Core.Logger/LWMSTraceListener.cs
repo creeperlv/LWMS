@@ -13,27 +13,71 @@ namespace LWMS.Core.Log
 {
     public class LWMSTraceListener : TraceListener
     {
-        public static string CurrentLogFile;
-        public static bool BeautifyConsoleOutput = false;
-        public static bool EnableConsoleOutput = true;
-        public static bool WriteToFile = true;
+        public static string CurrentLogFile { get; internal set; }
+        public static bool BeautifyConsoleOutput { get; internal set; } = false;
+        public static bool EnableConsoleOutput { get; internal set; } = true;
+        public static bool WriteToFile { get; internal set; } = true;
         public static string LogDir { get; internal set; }
         /// <summary>
         /// Do not operate this, it will be operated by LogWatcher task.
         /// </summary>
         internal static IBaseWR LogFile;
-        public static ConcurrentQueue<string> ContentToLog = new ConcurrentQueue<string>();
-        public static Task LogTask = null;
+        internal static ConcurrentQueue<string> ContentToLog = new ConcurrentQueue<string>();
+        internal static Task LogTask = null;
         static int RemainContents = 0;
         static int OperatingID = 0;
-        public static int _LOG_WATCH_INTERVAL = 5;
-        public static int _MAX_LOG_SIZE = 0;
+        internal static int _LOG_WATCH_INTERVAL = 5;
+        internal static int _MAX_LOG_SIZE = 0;
+        /// <summary>
+        /// Set certain property.
+        /// </summary>
+        /// <param name="Auth"></param>
+        /// <param name="Property"></param>
+        /// <param name="value"></param>
+        public static void SetProperty(string Auth, int Property, object value)
+        {
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
+                switch (Property)
+                {
+                    case 0:
+                        {
+                            BeautifyConsoleOutput = (bool)value;
+                        }
+                        break;
+                    case 1:
+                        {
+                            EnableConsoleOutput = (bool)value;
+                        }
+                        break;
+                    case 2:
+                        {
+                            WriteToFile = (bool)value;
+                        }
+                        break;
+                    case 3:
+                        {
+                            _LOG_WATCH_INTERVAL = (int)value;
+                        }
+                        break;
+                    case 4:
+                        {
+                            _MAX_LOG_SIZE = (int)value;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }, false, true, PermissionID.ModifyRuntimeConfig,PermissionID.RuntimeAll,PermissionID.Log_All);
+
+        }
         /// <summary>
         /// Directly stop watching.
         /// </summary>
-        public static void StopWatch()
+        public static void StopWatch(string AuthContext)
         {
-            OperatingID = -1;
+            OperatorAuthentication.AuthedAction(AuthContext, () => { OperatingID = -1; }, false, true, PermissionID.Log_StopWatching, PermissionID.Log_All);
+
         }
         public LWMSTraceListener(string BasePath)
         {

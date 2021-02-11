@@ -20,7 +20,7 @@ namespace LWMS.Management.Commands
         }
         public List<string> Alias => alias;
 
-        public int Version => 1;
+        public int Version => 2;
 
         public void Invoke(string AuthContext, params CommandPack[] args)
         {
@@ -31,19 +31,24 @@ namespace LWMS.Management.Commands
                     switch (item.ToUpper())
                     {
                         case "/DISABLEBEAUTIFYCONSOLE":
-                            LWMSTraceListener.BeautifyConsoleOutput = false;
+                            LWMSTraceListener.SetProperty(AuthContext, 0, false);
+                            //LWMSTraceListener.BeautifyConsoleOutput = false;
                             break;
                         case "/ENABLEBEAUTIFYCONSOLE":
-                            LWMSTraceListener.BeautifyConsoleOutput = true;
+                            LWMSTraceListener.SetProperty(AuthContext, 0, true);
+                            //LWMSTraceListener.BeautifyConsoleOutput = true;
                             break;
                         case "/DISABLECONSOLE":
-                            LWMSTraceListener.EnableConsoleOutput = false;
+                            LWMSTraceListener.SetProperty(AuthContext, 1, false);
+                            //LWMSTraceListener.EnableConsoleOutput = false;
                             break;
                         case "/DISABLELOGTOFILE":
-                            LWMSTraceListener.WriteToFile = false;
+                            LWMSTraceListener.SetProperty(AuthContext, 2, false);
+                            //LWMSTraceListener.WriteToFile = false;
                             break;
                         case "/ENABLECONSOLE":
-                            LWMSTraceListener.EnableConsoleOutput = true;
+                            LWMSTraceListener.SetProperty(AuthContext, 1, true);
+                            //LWMSTraceListener.EnableConsoleOutput = true;
                             break;
                         default:
                             {

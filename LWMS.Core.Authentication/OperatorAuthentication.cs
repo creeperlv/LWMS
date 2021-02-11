@@ -40,6 +40,8 @@ namespace LWMS.Core.Authentication
         public static readonly string ReadConfig = "Core.ReadConfig";
         public static readonly string ReleaseConfig = "Core.Config.Release";
         public static readonly string ReadConfig_WebSiteModuleStorageRoot = "Core.ReadConfig.WebSiteModuleStorageRoot";
+        public static readonly string ClearLogFolder = "Core.Log.ClearLogFolder";
+        public static readonly string Log_StopWatching = "Core.Log.StopWatching";
     }
     public static class OperatorAuthentication
     {
