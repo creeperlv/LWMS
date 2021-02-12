@@ -61,7 +61,7 @@ namespace LWMS.Core.FileSystem
                 Logs.Parent = SystemRoot;
                 Logs.isroot = true;
                 Logs.realPath = Path.Combine(BasePath, "Logs");
-                Logs.SetDeleteAllItemsPermissionID(PermissionID.ClearLogFolder);
+                Logs.SetDeletePermissionID(PermissionID.ClearLogFolder);
                 if (!Directory.Exists(Logs.realPath))
                 {
                     Directory.CreateDirectory(Logs.realPath);
@@ -213,7 +213,7 @@ namespace LWMS.Core.FileSystem
                     throw new Exception("Illegal access from:" + ModuleName);
                 }
                 _Webroot.SetPath(WebRootPath);
-            }, false, false, PermissionID.SetPermission);
+            }, false, true, PermissionID.SetPermission);
 
         }
         public static void SetRealModuleRoot(string AuthContext, string ModuleRootPath)
@@ -228,7 +228,7 @@ namespace LWMS.Core.FileSystem
                     throw new Exception("Illegal access from:" + ModuleName);
                 }
                 _ModuleRoot.SetPath(ModuleRootPath);
-            }, false, false, PermissionID.SetPermission);
+            }, false, true, PermissionID.SetPermission);
         }
         /// <summary>
         /// Webroot, same folder as GlobalConfiguration.WebSiteContentRoot.
@@ -241,13 +241,13 @@ namespace LWMS.Core.FileSystem
             }
             internal set { _Webroot = value; }
         }
-        public static StorageFolder Moduleroot
+        internal static StorageFolder Moduleroot
         {
             get
             {
                 return _ModuleRoot;
             }
-            internal set { _ModuleRoot = value; }
+            set { _ModuleRoot = value; }
         }
         public static StorageFolder Configuration { get; internal set; }
         public static StorageFolder Logs { get; internal set; }

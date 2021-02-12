@@ -35,17 +35,12 @@ namespace LWMS.Core.FileSystem
                 return isroot;
             }
         }
-        internal string DeleteAllItemsPermissionID = null;
-        internal void SetDeleteAllItemsPermissionID(string DeletePermissionID)
-        {
-            DeleteAllItemsPermissionID = DeletePermissionID;
-        }
         /// <summary>
         /// Delete all items including files and folders.
         /// </summary>
         public void DeleteAllItems(bool IgnoreDeletionError=false)
         {
-            if (DeleteAllItemsPermissionID == null)
+            if (DeletePermissionID == null)
             {
                 if (IgnoreDeletionError)
                 {
@@ -85,7 +80,7 @@ namespace LWMS.Core.FileSystem
             }
             else
             {
-                throw new UnauthorizedException(null, DeleteAllItemsPermissionID);
+                throw new UnauthorizedException(null, DeletePermissionID);
             }
         }
         /// <summary>
@@ -94,7 +89,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Auth">In case this operation requires permission</param>
         public void DeleteAllItems(string Auth, bool IgnoreDeletionError = false)
         {
-            if (DeleteAllItemsPermissionID == null)
+            if (DeletePermissionID == null)
             {
                 DeleteAllItems();
             }
@@ -136,7 +131,7 @@ namespace LWMS.Core.FileSystem
                             item.Delete();
                         }
                     }
-                },false,true,DeleteAllItemsPermissionID);
+                },false,true, DeletePermissionID);
             }
         }
         /// <summary>
@@ -149,6 +144,7 @@ namespace LWMS.Core.FileSystem
         {
 
             StorageFile storageItem = new StorageFile();
+            storageItem.DeletePermissionID = DeletePermissionID;
             var entries = Directory.EnumerateFiles(realPath);
             string Target = Path.Combine(realPath, Name);
             string TARGET = Target.ToUpper();
@@ -188,6 +184,7 @@ namespace LWMS.Core.FileSystem
         {
 
             StorageFile storageItem = new StorageFile();
+            storageItem.DeletePermissionID = DeletePermissionID;
             var entries = Directory.EnumerateFiles(realPath);
             string Target = Path.Combine(realPath, Name);
             string TARGET = Target.ToUpper();
@@ -229,6 +226,7 @@ namespace LWMS.Core.FileSystem
         {
 
             StorageFolder storageItem = new StorageFolder();
+            storageItem.DeletePermissionID = DeletePermissionID;
             var F = GetFolder(Name, out storageItem, CaseSensitivity);
             if (F == false)
             {
@@ -264,6 +262,7 @@ namespace LWMS.Core.FileSystem
                 }
             }
             StorageFolder storageItem = new StorageFolder();
+            storageItem.DeletePermissionID = DeletePermissionID;
             var entries = Directory.EnumerateDirectories(realPath);
             string Target = Path.Combine(realPath, Name);
             string TARGET = Target.ToUpper();

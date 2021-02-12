@@ -163,8 +163,8 @@ namespace LWMS.Core.Configuration
                 //Init these fields.
                 _ = MAX_LOG_SIZE;
                 _ = LOG_WATCH_INTERVAL;
-                _ = WebSiteContentRoot;
-                _ = WebSiteModuleStorageRoot;
+                //_ = WebSiteContentRoot;
+                //_ = WebSiteModuleStorageRoot;
                 //if (l == 0)
                 //{
 

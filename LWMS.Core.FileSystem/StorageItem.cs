@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LWMS.Core.Authentication;
+using System;
 using System.IO;
 
 namespace LWMS.Core.FileSystem
@@ -27,9 +28,15 @@ namespace LWMS.Core.FileSystem
         /// Recursive Read-Only property.
         /// </summary>
         internal bool isreadonlyR;
-        public bool isReadOnly { get => isreadonly || isreadonlyR;
-            init { isreadonly = false;
-                isreadonlyR = false; } }
+        public bool isReadOnly
+        {
+            get => isreadonly || isreadonlyR;
+            init
+            {
+                isreadonly = false;
+                isreadonlyR = false;
+            }
+        }
         internal void SetPath(string path)
         {
             realPath = path;
@@ -98,14 +105,40 @@ namespace LWMS.Core.FileSystem
                 }
             }
         }
+        internal string DeletePermissionID = null;
         public StorageItemType StorageItemType { get; internal set; }
         /// <summary>
         /// Delete an item. If this item is a folder, delete the folder and all items recursively.
         /// </summary>
         public virtual void Delete()
         {
+            if (DeletePermissionID != null) throw new UnauthorizedException(null, DeletePermissionID);
             if (File.Exists(realPath)) { File.Delete(realPath); return; }
             if (Directory.Exists(realPath)) Directory.Delete(realPath, true);
+        }
+        public virtual void Delete(string Auth)
+        {
+            if (DeletePermissionID == null)
+            {
+
+                if (File.Exists(realPath)) { File.Delete(realPath); return; }
+                if (Directory.Exists(realPath)) Directory.Delete(realPath, true);
+
+            }
+            else
+            {
+                OperatorAuthentication.AuthedAction(Auth, () =>
+                {
+
+                    if (File.Exists(realPath)) { File.Delete(realPath); return; }
+                    if (Directory.Exists(realPath)) Directory.Delete(realPath, true);
+                }, false, true, DeletePermissionID);
+            }
+        }
+
+        internal void SetDeletePermissionID(string DeletePermissionID)
+        {
+            this.DeletePermissionID = DeletePermissionID;
         }
         public StorageFile ToStorageFile()
         {
