@@ -61,7 +61,8 @@ namespace LWMS.Core.FileSystem
                 Logs.Parent = SystemRoot;
                 Logs.isroot = true;
                 Logs.realPath = Path.Combine(BasePath, "Logs");
-                Logs.SetDeletePermissionID(PermissionID.ClearLogFolder);
+                Logs.SetDeletePermissionID(PermissionID.ClearLogFolder,PermissionID.Log_All);
+                Logs.SetCreateItemPermission(PermissionID.Log_NewFile, PermissionID.Log_All);
                 if (!Directory.Exists(Logs.realPath))
                 {
                     Directory.CreateDirectory(Logs.realPath);

@@ -41,6 +41,7 @@ namespace LWMS.Core.Configuration
                     }
                     catch { }
                 }
+                LWMSTraceListener.SetTrustedInstaller(auth);
             }
         }
         public static  bool Release(string Auth)

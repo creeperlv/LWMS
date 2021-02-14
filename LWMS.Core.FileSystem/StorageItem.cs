@@ -105,14 +105,14 @@ namespace LWMS.Core.FileSystem
                 }
             }
         }
-        internal string DeletePermissionID = null;
+        internal string[] DeletePermissionID = null;
         public StorageItemType StorageItemType { get; internal set; }
         /// <summary>
         /// Delete an item. If this item is a folder, delete the folder and all items recursively.
         /// </summary>
         public virtual void Delete()
         {
-            if (DeletePermissionID != null) throw new UnauthorizedException(null, DeletePermissionID);
+            if (DeletePermissionID != null) throw new UnauthorizedException(null, DeletePermissionID[0]);
             if (File.Exists(realPath)) { File.Delete(realPath); return; }
             if (Directory.Exists(realPath)) Directory.Delete(realPath, true);
         }
@@ -136,7 +136,7 @@ namespace LWMS.Core.FileSystem
             }
         }
 
-        internal void SetDeletePermissionID(string DeletePermissionID)
+        internal void SetDeletePermissionID(params string[] DeletePermissionID)
         {
             this.DeletePermissionID = DeletePermissionID;
         }

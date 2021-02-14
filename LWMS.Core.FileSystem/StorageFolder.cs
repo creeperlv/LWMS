@@ -80,7 +80,7 @@ namespace LWMS.Core.FileSystem
             }
             else
             {
-                throw new UnauthorizedException(null, DeletePermissionID);
+                throw new UnauthorizedException(null, DeletePermissionID[0]);
             }
         }
         /// <summary>
@@ -102,7 +102,7 @@ namespace LWMS.Core.FileSystem
                         {
                             try
                             {
-                                item.Delete();
+                                item.Delete(Auth);
                             }
                             catch (Exception)
                             {
@@ -112,7 +112,7 @@ namespace LWMS.Core.FileSystem
                         {
                             try
                             {
-                                item.Delete();
+                                item.Delete(Auth);
                             }
                             catch (Exception)
                             {
@@ -124,11 +124,11 @@ namespace LWMS.Core.FileSystem
                     {
                         foreach (var item in GetFolders())
                         {
-                            item.Delete();
+                            item.Delete(Auth);
                         }
                         foreach (var item in GetFiles())
                         {
-                            item.Delete();
+                            item.Delete(Auth);
                         }
                     }
                 },false,true, DeletePermissionID);
@@ -227,6 +227,7 @@ namespace LWMS.Core.FileSystem
 
             StorageFolder storageItem = new StorageFolder();
             storageItem.DeletePermissionID = DeletePermissionID;
+            storageItem.CreateItemPermission = CreateItemPermission;
             var F = GetFolder(Name, out storageItem, CaseSensitivity);
             if (F == false)
             {
@@ -263,6 +264,7 @@ namespace LWMS.Core.FileSystem
             }
             StorageFolder storageItem = new StorageFolder();
             storageItem.DeletePermissionID = DeletePermissionID;
+            storageItem.CreateItemPermission = CreateItemPermission;
             var entries = Directory.EnumerateDirectories(realPath);
             string Target = Path.Combine(realPath, Name);
             string TARGET = Target.ToUpper();

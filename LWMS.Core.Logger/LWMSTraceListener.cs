@@ -26,8 +26,16 @@ namespace LWMS.Core.Log
         internal static Task LogTask = null;
         static int RemainContents = 0;
         static int OperatingID = 0;
+        internal static string TrustedInstaller = null;
         internal static int _LOG_WATCH_INTERVAL = 5;
         internal static int _MAX_LOG_SIZE = 0;
+        public static void SetTrustedInstaller(string TrustedInstaller)
+        {
+            if(LWMSTraceListener.TrustedInstaller is null)
+            {
+                LWMSTraceListener.TrustedInstaller = TrustedInstaller;
+            }
+        }
         /// <summary>
         /// Set certain property.
         /// </summary>
@@ -85,7 +93,7 @@ namespace LWMS.Core.Log
             LogDir = ApplicationStorage.Logs.ItemPath;
             var Now = DateTime.Now;
             StorageFile storageFile;
-            ApplicationStorage.Logs.CreateFile($"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log", out storageFile);
+            ApplicationStorage.Logs.CreateFile(TrustedInstaller,$"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log", out storageFile);
             CurrentLogFile = storageFile.ItemPath;
             LogFile = new FileWR(storageFile);
             Random random = new Random();
@@ -111,7 +119,7 @@ namespace LWMS.Core.Log
             //if (LogTask != null) thread.;
             var Now = DateTime.Now;
             StorageFile storageFile;
-            ApplicationStorage.Logs.CreateFile($"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log", out storageFile);
+            ApplicationStorage.Logs.CreateFile(TrustedInstaller,$"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log", out storageFile);
             CurrentLogFile = storageFile.ItemPath;
             LogFile = new FileWR(storageFile);
             thread = new Thread(new ThreadStart(delegate () { LogWatcher(); }));
