@@ -51,6 +51,9 @@ namespace LWMS.Core.FileSystem
                 Configuration.Parent = SystemRoot;
                 Configuration.isroot = true;
                 Configuration.realPath = Path.Combine(BasePath, "Configurations");
+                Configuration.SetDeletePermissionID(PermissionID.Config_Delete, PermissionID.ConfigAll);
+                Configuration.SetBaseWritePermission(PermissionID.ModifyConfig, PermissionID.ConfigAll);
+                Configuration.SetBaseReadPermission(PermissionID.ReadConfig, PermissionID.ConfigAll);
                 if (!Directory.Exists(Configuration.realPath))
                 {
                     Directory.CreateDirectory(Configuration.realPath);
