@@ -23,6 +23,7 @@ namespace LWMS.Core.Configuration
             if (TrustedInstaller == null)
             {
                 TrustedInstaller = auth;
+                InitGlobalConfiguration();
                 {
                     try
                     {
@@ -59,7 +60,7 @@ namespace LWMS.Core.Configuration
             }, false, true, PermissionID.ReleaseConfig, PermissionID.ModifyConfig);
             return v;
         }
-        static GlobalConfiguration()
+        static void InitGlobalConfiguration()
         {
             LibraryInfo.SetFlag(FeatureFlags.Pipeline_AutoID_Random, 1);
             LibraryInfo.SetFlag(FeatureFlags.FileWR_AutoCreateFile, 1);
@@ -69,20 +70,20 @@ namespace LWMS.Core.Configuration
                 if (ApplicationStorage.Configuration.CreateFile("ManageModules.ini", out ManageModuleFile))
                 {
                     Trace.WriteLine(Localization.Language.Query("LWMS.Config.CreateDefaultCommandManifest", "Create default command module manifest."));
-                    ManageCommandModules = ListData<string>.LoadFromStream(ManageModuleFile.OpenFile());
+                    ManageCommandModules = ListData<string>.LoadFromStream(ManageModuleFile.OpenFileWR());
                     ManageCommandModules.Add(Path.Combine(ApplicationStorage.BasePath, "LWMS.Management.Commands.dll"));
                     ManageCommandModules.Save();
                 }
                 else
                 {
-                    ManageCommandModules = ListData<string>.LoadFromStream(ManageModuleFile.OpenFile());
+                    ManageCommandModules = ListData<string>.LoadFromStream(ManageModuleFile.OpenFileWR());
                 }
             }
             {
                 StorageFile RPipelineUnitDefinitionFile;
                 if (ApplicationStorage.Configuration.CreateFile("RPipelineUnit.tsd", out RPipelineUnitDefinitionFile))
                 {
-                    RProcessUnits = TreeStructureData.CreateToFile(RPipelineUnitDefinitionFile);
+                    RProcessUnits = TreeStructureData.CreateToFile(RPipelineUnitDefinitionFile.ToFileInfo());
                     {
                         //LWMS.Core.dll
                         TreeNode treeNode = new TreeNode();
@@ -100,14 +101,14 @@ namespace LWMS.Core.Configuration
                 }
                 else
                 {
-                    RProcessUnits = TreeStructureData.LoadFromStream(RPipelineUnitDefinitionFile.OpenFile());
+                    RProcessUnits = TreeStructureData.LoadFromStream(RPipelineUnitDefinitionFile.OpenFileWR());
                 }
             }
             {
                 StorageFile WPipelineUnitDefinitionFile;
                 if (ApplicationStorage.Configuration.CreateFile("WPipelineUnit.tsd", out WPipelineUnitDefinitionFile))
                 {
-                    WProcessUnits = TreeStructureData.LoadFromStream(WPipelineUnitDefinitionFile.OpenFile());
+                    WProcessUnits = TreeStructureData.LoadFromStream(WPipelineUnitDefinitionFile.OpenFileWR());
                     {
                         //LWMS.Core.dll
                         TreeNode treeNode = new TreeNode();
@@ -125,7 +126,7 @@ namespace LWMS.Core.Configuration
                 }
                 else
                 {
-                    WProcessUnits = TreeStructureData.LoadFromStream(WPipelineUnitDefinitionFile.OpenFile());
+                    WProcessUnits = TreeStructureData.LoadFromStream(WPipelineUnitDefinitionFile.OpenFileWR());
                 }
             }
             {
@@ -133,7 +134,7 @@ namespace LWMS.Core.Configuration
                 StorageFile CMDOUTPipelineUnitsFile;
                 if (ApplicationStorage.Configuration.CreateFile("CMDOUTPipelineUnit.tsd", out CMDOUTPipelineUnitsFile))
                 {
-                    CMDOUTProcessUnits = TreeStructureData.LoadFromStream(CMDOUTPipelineUnitsFile.OpenFile());
+                    CMDOUTProcessUnits = TreeStructureData.LoadFromStream(CMDOUTPipelineUnitsFile.OpenFileWR());
                     {
                         //LWMS.Core.dll
                         TreeNode treeNode = new TreeNode();
@@ -157,7 +158,7 @@ namespace LWMS.Core.Configuration
                 }
                 else
                 {
-                    CMDOUTProcessUnits = TreeStructureData.LoadFromStream(CMDOUTPipelineUnitsFile.OpenFile());
+                    CMDOUTProcessUnits = TreeStructureData.LoadFromStream(CMDOUTPipelineUnitsFile.OpenFileWR());
                 }
             }
             {
@@ -176,7 +177,7 @@ namespace LWMS.Core.Configuration
         {
             StorageFile storageFile;
             _ = ApplicationStorage.Configuration.CreateFile("Server.ini", out storageFile);
-            ConfigurationData = INILikeData.LoadFromStream(storageFile.OpenFile());
+            ConfigurationData = INILikeData.LoadFromStream(storageFile.OpenFileWR());
         }
 
         internal static TreeStructureData RProcessUnits { get; set; }

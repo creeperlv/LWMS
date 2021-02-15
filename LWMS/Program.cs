@@ -22,6 +22,7 @@ namespace LWMS
                 var Auth1 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
                 Auth = OperatorAuthentication.ObtainRTAuth(Auth0, Auth1);
                 OperatorAuthentication.SetLocalHostAuth(Auth);
+                LWMSCoreServer.FirstInit();
             }
             Console.WriteLine("Copyright (C) 2020 Creeper Lv");
             Console.WriteLine("This software is licensed under the MIT License");

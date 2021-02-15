@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LWMS.Core.Authentication;
+using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace LWMS.Core.FileSystem
@@ -57,9 +59,64 @@ namespace LWMS.Core.FileSystem
         /// Open the file.
         /// </summary>
         /// <returns></returns>
-        public FileStream OpenFile()
+        public FileStream OpenFileWR()
         {
+            if (BaseWritePermission is not null) throw new UnauthorizedException(null, BaseWritePermission[0]);
+            if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
             return RealFile.Open(FileMode.Open, FileAccess.ReadWrite);
+        }
+        /// <summary>
+        /// Open the file.
+        /// </summary>
+        /// <returns></returns>
+        public FileStream OpenFileW()
+        {
+            if (BaseWritePermission is not null) throw new UnauthorizedException(null, BaseWritePermission[0]);
+            return RealFile.Open(FileMode.Open, FileAccess.Write);
+        }
+        /// <summary>
+        /// Open the file.
+        /// </summary>
+        /// <returns></returns>
+        public FileStream OpenFileR()
+        {
+            if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
+            return RealFile.Open(FileMode.Open, FileAccess.Read);
+        }
+        /// <summary>
+        /// Open the file.
+        /// </summary>
+        /// <returns></returns>
+        public FileStream OpenFileWR(string Auth)
+        {
+            if (BaseWritePermission is null) if (BaseReadPermission is null) return OpenFileWR();
+            FileStream fs = null;
+            List<string> TotalPermission = new List<string>(BaseWritePermission);
+            TotalPermission.AddRange(BaseReadPermission);
+            OperatorAuthentication.AuthedAction(Auth, () => { fs = RealFile.Open(FileMode.Open, FileAccess.ReadWrite); }, false, true, TotalPermission.ToArray());
+            return fs;
+        }
+        /// <summary>
+        /// Open the file.
+        /// </summary>
+        /// <returns></returns>
+        public FileStream OpenFileW(string Auth)
+        {
+            if (BaseWritePermission is null) return OpenFileWR();
+            FileStream fs = null;
+            OperatorAuthentication.AuthedAction(Auth, () => { fs = RealFile.Open(FileMode.Open, FileAccess.Write); }, false, true, BaseWritePermission);
+            return fs;
+        }
+        /// <summary>
+        /// Open the file.
+        /// </summary>
+        /// <returns></returns>
+        public FileStream OpenFileR(string Auth)
+        {
+            if (BaseReadPermission is null) return OpenFileWR();
+            FileStream fs = null;
+            OperatorAuthentication.AuthedAction(Auth, () => { fs = RealFile.Open(FileMode.Open, FileAccess.Read); }, false, true, BaseReadPermission);
+            return fs;
         }
         /// <summary>
         /// Write a content to target file.
@@ -69,9 +126,28 @@ namespace LWMS.Core.FileSystem
         {
             File.WriteAllText(realPath, content);
         }
-        public static implicit operator FileInfo(StorageFile file)
+        /// <summary>
+        /// Convert to FileInfo.
+        /// </summary>
+        /// <returns></returns>
+        public FileInfo ToFileInfo()
         {
-            return file.RealFile;
+            if (BaseWritePermission is not null) throw new UnauthorizedException(null, BaseWritePermission[0]);
+            if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
+            return RealFile;
+        }
+        /// <summary>
+        /// Convert to FileInfo.
+        /// </summary>
+        /// <returns></returns>
+        public FileInfo ToFileInfo(string AuthContext)
+        {
+            if (BaseWritePermission is null) if (BaseReadPermission is null) return ToFileInfo();
+            FileInfo fi = null;
+            List<string> TotalPermission = new List<string>(BaseWritePermission);
+            TotalPermission.AddRange(BaseReadPermission);
+            OperatorAuthentication.AuthedAction(AuthContext, () => { fi = RealFile; }, false, true, TotalPermission.ToArray());
+            return fi;
         }
         /// <summary>
         /// If destination is a file, will overwrite it.
@@ -79,6 +155,8 @@ namespace LWMS.Core.FileSystem
         /// <param name="Destination"></param>
         public override void CopyTo(StorageItem Destination)
         {
+
+            if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
             if (Destination.StorageItemType == StorageItemType.Folder)
             {
                 File.Copy(realPath, Path.Combine(Destination.realPath, RealFile.Name));
@@ -87,6 +165,29 @@ namespace LWMS.Core.FileSystem
             {
                 File.Copy(realPath, Destination.realPath, true);
             }
+        }
+        /// <summary>
+        /// If destination is a file, will overwrite it.
+        /// </summary>
+        /// <param name="Destination"></param>
+        public void CopyTo(StorageItem Destination, string Auth)
+        {
+
+            if (BaseReadPermission is null) {
+                CopyTo(Destination); 
+                return;
+            }
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
+                if (Destination.StorageItemType == StorageItemType.Folder)
+                {
+                    File.Copy(realPath, Path.Combine(Destination.realPath, RealFile.Name));
+                }
+                else
+                {
+                    File.Copy(realPath, Destination.realPath, true);
+                }
+            }, false, true, BaseReadPermission);
         }
     }
 }

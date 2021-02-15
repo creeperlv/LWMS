@@ -22,9 +22,10 @@ namespace LWMS.Core
         internal static HttpListener Listener;
         HttpPipelineProcessor HttpPipelineProcessor = new HttpPipelineProcessor();
         internal static string TrustedInstallerAuth;
-        public LWMSCoreServer()
+        internal static bool Inited = false;
+        public static void FirstInit()
         {
-
+            if (Inited == true) return;
             {
                 var Auth0 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
                 var Auth1 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
@@ -32,8 +33,13 @@ namespace LWMS.Core
                 OperatorAuthentication.SetTrustedInstaller(TrustedInstallerAuth);
                 GlobalConfiguration.SetTrustedInstallerAuth(TrustedInstallerAuth);
             }
-            Listener = new HttpListener();
             ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString() + "-Preview";
+            Inited = true;
+        }
+        public LWMSCoreServer()
+        {
+
+            Listener = new HttpListener();
         }
         bool WillStop = false;
         /// <summary>

@@ -135,11 +135,6 @@ namespace LWMS.Core.FileSystem
                 }, false, true, DeletePermissionID);
             }
         }
-        internal string[] EnumeratePermissionID = null;
-        internal void SetEnumeratePermissionID(params string[] Permissions)
-        {
-            EnumeratePermissionID = Permissions;
-        }
         /// <summary>
         /// Get a contained folder. Throw an StorageItemNotExistException when cannot find it.
         /// </summary>
@@ -148,9 +143,11 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public StorageFile GetFile(string Name, bool CaseSensitivity = false)
         {
-            if (EnumeratePermissionID is not null) throw new UnauthorizedException(null, EnumeratePermissionID[0]);
+            if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
             StorageFile storageItem = new StorageFile();
             storageItem.DeletePermissionID = DeletePermissionID;
+            storageItem.BaseWritePermission = BaseWritePermission;
+            storageItem.BaseReadPermission = BaseReadPermission;
             var entries = Directory.EnumerateFiles(realPath);
             string Target = Path.Combine(realPath, Name);
             string TARGET = Target.ToUpper();
@@ -188,12 +185,14 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public StorageFile GetFile(string Auth, string Name, bool CaseSensitivity = false)
         {
-            if (EnumeratePermissionID is null) return GetFile(Name, CaseSensitivity);
+            if (BaseReadPermission is null) return GetFile(Name, CaseSensitivity);
             StorageFile storageItem = new StorageFile();
 
             OperatorAuthentication.AuthedAction(Auth, () =>
             {
                 storageItem.DeletePermissionID = DeletePermissionID;
+                storageItem.BaseWritePermission = BaseWritePermission;
+                storageItem.BaseReadPermission = BaseReadPermission;
                 var entries = Directory.EnumerateFiles(realPath);
                 string Target = Path.Combine(realPath, Name);
                 string TARGET = Target.ToUpper();
@@ -221,7 +220,7 @@ namespace LWMS.Core.FileSystem
                     }
                 }
                 storageItem = null;
-            }, false, true, EnumeratePermissionID);
+            }, false, true, BaseReadPermission);
             if (storageItem is null)
                 throw new StorageItemNotExistException(Path.Combine(realPath, Name));
             return storageItem;
@@ -235,9 +234,11 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public bool GetFile(string Name, out StorageFile OutItem, bool CaseSensitivity = false)
         {
-            if (EnumeratePermissionID is not null) throw new UnauthorizedException(null, EnumeratePermissionID[0]);
+            if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
             StorageFile storageItem = new StorageFile();
             storageItem.DeletePermissionID = DeletePermissionID;
+            storageItem.BaseWritePermission = BaseWritePermission;
+            storageItem.BaseReadPermission = BaseReadPermission;
             var entries = Directory.EnumerateFiles(realPath);
             string Target = Path.Combine(realPath, Name);
             string TARGET = Target.ToUpper();
@@ -278,7 +279,7 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public bool GetFile(string Auth, string Name, out StorageFile OutItem, bool CaseSensitivity = false)
         {
-            if (EnumeratePermissionID is null)
+            if (BaseReadPermission is null)
             {
                 return GetFile(Name, out OutItem, CaseSensitivity);
             }
@@ -288,6 +289,8 @@ namespace LWMS.Core.FileSystem
             {
 
                 storageItem.DeletePermissionID = DeletePermissionID;
+                storageItem.BaseWritePermission = BaseWritePermission;
+                storageItem.BaseReadPermission = BaseReadPermission;
                 var entries = Directory.EnumerateFiles(realPath);
                 string Target = Path.Combine(realPath, Name);
                 string TARGET = Target.ToUpper();
@@ -317,7 +320,7 @@ namespace LWMS.Core.FileSystem
                     }
                 }
                 storageItem = null;
-            }, false, true, EnumeratePermissionID);
+            }, false, true, BaseReadPermission);
             OutItem = storageItem;
             return v;
         }
@@ -330,10 +333,11 @@ namespace LWMS.Core.FileSystem
         public StorageFolder GetFolder(string Name, bool CaseSensitivity = false)
         {
 
-            if (EnumeratePermissionID is not null) throw new UnauthorizedException(null, EnumeratePermissionID[0]);
+            if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
             StorageFolder storageItem = new StorageFolder();
             storageItem.DeletePermissionID = DeletePermissionID;
-            storageItem.CreateItemPermission = CreateItemPermission;
+            storageItem.BaseWritePermission = BaseWritePermission;
+            storageItem.BaseReadPermission = BaseReadPermission;
             var F = GetFolder(Name, out storageItem, CaseSensitivity);
             if (F == false)
             {
@@ -351,18 +355,19 @@ namespace LWMS.Core.FileSystem
         public StorageFolder GetFolder(string Auth, string Name, bool CaseSensitivity = false)
         {
 
-            if (EnumeratePermissionID is null) return GetFolder(Name, CaseSensitivity);
+            if (BaseReadPermission is null) return GetFolder(Name, CaseSensitivity);
             StorageFolder storageItem = new StorageFolder();
             OperatorAuthentication.AuthedAction(Auth, () =>
             {
                 storageItem.DeletePermissionID = DeletePermissionID;
-                storageItem.CreateItemPermission = CreateItemPermission;
+                storageItem.BaseWritePermission = BaseWritePermission;
+                storageItem.BaseReadPermission = BaseReadPermission;
                 var F = GetFolder(Auth, Name, out storageItem, CaseSensitivity);
                 if (F == false)
                 {
                     throw new StorageItemNotExistException(Path.Combine(realPath, Name));
                 }
-            }, false, true, EnumeratePermissionID);
+            }, false, true, BaseReadPermission);
             return storageItem;
         }
         /// <summary>
@@ -374,7 +379,7 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public bool GetFolder(string Name, out StorageFolder OutFolder, bool CaseSensitivity = false)
         {
-            if (EnumeratePermissionID is not null) throw new UnauthorizedException(null, EnumeratePermissionID[0]);
+            if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
             if (isSystemRoot)
             {
                 switch (Name)
@@ -395,7 +400,8 @@ namespace LWMS.Core.FileSystem
             }
             StorageFolder storageItem = new StorageFolder();
             storageItem.DeletePermissionID = DeletePermissionID;
-            storageItem.CreateItemPermission = CreateItemPermission;
+            storageItem.BaseWritePermission = BaseWritePermission;
+            storageItem.BaseReadPermission = BaseReadPermission;
             var entries = Directory.EnumerateDirectories(realPath);
             string Target = Path.Combine(realPath, Name);
             string TARGET = Target.ToUpper();
@@ -437,7 +443,7 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public bool GetFolder(string Auth, string Name, out StorageFolder OutFolder, bool CaseSensitivity = false)
         {
-            if (EnumeratePermissionID is null) return GetFolder(Name, out OutFolder, CaseSensitivity);
+            if (BaseReadPermission is null) return GetFolder(Name, out OutFolder, CaseSensitivity);
             StorageFolder storageItem = new StorageFolder();
             bool v = false;
             OperatorAuthentication.AuthedAction(Auth, () =>
@@ -465,7 +471,8 @@ namespace LWMS.Core.FileSystem
                     }
                 }
                 storageItem.DeletePermissionID = DeletePermissionID;
-                storageItem.CreateItemPermission = CreateItemPermission;
+                storageItem.BaseWritePermission = BaseWritePermission;
+                storageItem.BaseReadPermission = BaseReadPermission;
                 var entries = Directory.EnumerateDirectories(realPath);
                 string Target = Path.Combine(realPath, Name);
                 string TARGET = Target.ToUpper();
@@ -495,7 +502,7 @@ namespace LWMS.Core.FileSystem
                     }
                 }
                 storageItem = null;
-            }, false, true, EnumeratePermissionID);
+            }, false, true, BaseReadPermission);
             OutFolder = storageItem;
             return v;
         }
@@ -563,7 +570,7 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public StorageItem GetItem(string Name, bool CaseSensitivity = false)
         {
-            if (EnumeratePermissionID is not null) throw new UnauthorizedException(null, EnumeratePermissionID[0]);
+            if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
             StorageItem storageItem = new StorageItem();
             if (isSystemRoot)
             {

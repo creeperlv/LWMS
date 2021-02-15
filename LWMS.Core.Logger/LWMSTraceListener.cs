@@ -95,7 +95,7 @@ namespace LWMS.Core.Log
             StorageFile storageFile;
             ApplicationStorage.Logs.CreateFile(TrustedInstaller,$"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log", out storageFile);
             CurrentLogFile = storageFile.ItemPath;
-            LogFile = new FileWR(storageFile);
+            LogFile = new FileWR(storageFile.ToFileInfo(TrustedInstaller));
             Random random = new Random();
             OperatingID = random.Next();
             thread = new Thread(new ThreadStart(delegate () { LogWatcher(); }));
@@ -121,7 +121,7 @@ namespace LWMS.Core.Log
             StorageFile storageFile;
             ApplicationStorage.Logs.CreateFile(TrustedInstaller,$"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log", out storageFile);
             CurrentLogFile = storageFile.ItemPath;
-            LogFile = new FileWR(storageFile);
+            LogFile = new FileWR(storageFile.ToFileInfo(TrustedInstaller));
             thread = new Thread(new ThreadStart(delegate () { LogWatcher(); }));
             thread.Priority = ThreadPriority.Lowest;
             thread.Start();

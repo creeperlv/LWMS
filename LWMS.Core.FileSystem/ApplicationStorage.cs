@@ -62,8 +62,8 @@ namespace LWMS.Core.FileSystem
                 Logs.isroot = true;
                 Logs.realPath = Path.Combine(BasePath, "Logs");
                 Logs.SetDeletePermissionID(PermissionID.ClearLogFolder,PermissionID.Log_All);
-                Logs.SetCreateItemPermission(PermissionID.Log_NewFile, PermissionID.Log_All);
-                Logs.SetEnumeratePermissionID(PermissionID.Log_EnumerateFile, PermissionID.Log_All);
+                Logs.SetBaseWritePermission(PermissionID.Log_NewFile, PermissionID.Log_All);
+                Logs.SetBaseReadPermission(PermissionID.Log_EnumerateFile, PermissionID.Log_All);
                 if (!Directory.Exists(Logs.realPath))
                 {
                     Directory.CreateDirectory(Logs.realPath);
@@ -73,7 +73,7 @@ namespace LWMS.Core.FileSystem
             {
                 StorageFile Routes;
                 _ = Configuration.CreateFile("RoutedLocations.ini", out Routes);
-                RouteLocationMap = INILikeData.LoadFromWR(new FileWR(Routes));
+                RouteLocationMap = INILikeData.LoadFromWR(new FileWR(Routes.ToFileInfo()));
                 foreach (var item in RouteLocationMap)
                 {
                     Map.Add(item.Key.Replace('\\', '/'), item.Value);

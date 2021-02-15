@@ -136,6 +136,16 @@ namespace LWMS.Core.FileSystem
             }
         }
 
+        internal string[] BaseWritePermission = null;
+        internal string[] BaseReadPermission = null;
+        internal void SetBaseWritePermission(params string[] Permissions)
+        {
+            BaseWritePermission = Permissions;
+        }
+        internal void SetBaseReadPermission(params string[] Permissions)
+        {
+            BaseReadPermission = Permissions;
+        }
         internal void SetDeletePermissionID(params string[] DeletePermissionID)
         {
             this.DeletePermissionID = DeletePermissionID;

@@ -32,14 +32,14 @@ namespace LWMS.Core
                         if (((StorageFolder)Result).GetFile(GlobalConfiguration.GetDefaultPage(LWMSCoreServer.TrustedInstallerAuth), out DefaultPage, false))
                         {
 
-                            Tools00.SendFile(context, DefaultPage);
+                            Tools00.SendFile(context, DefaultPage.ToFileInfo());
                             (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
                             return Input;
                         }
                     }
                     else
                     {
-                        Tools00.SendFile(context, Result.ToStorageFile());
+                        Tools00.SendFile(context, Result.ToStorageFile().ToFileInfo());
                         (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
                         return Input;
                     }
