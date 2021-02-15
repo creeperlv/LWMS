@@ -38,7 +38,7 @@ namespace LWMS.Core.FileSystem
         /// <summary>
         /// Delete all items including files and folders.
         /// </summary>
-        public void DeleteAllItems(bool IgnoreDeletionError=false)
+        public void DeleteAllItems(bool IgnoreDeletionError = false)
         {
             if (DeletePermissionID == null)
             {
@@ -95,7 +95,8 @@ namespace LWMS.Core.FileSystem
             }
             else
             {
-                OperatorAuthentication.AuthedAction(Auth, () => {
+                OperatorAuthentication.AuthedAction(Auth, () =>
+                {
                     if (IgnoreDeletionError)
                     {
                         foreach (var item in GetFolders())
@@ -131,8 +132,13 @@ namespace LWMS.Core.FileSystem
                             item.Delete(Auth);
                         }
                     }
-                },false,true, DeletePermissionID);
+                }, false, true, DeletePermissionID);
             }
+        }
+        internal string[] EnumeratePermissionID = null;
+        internal void SetEnumeratePermissionID(params string[] Permissions)
+        {
+            EnumeratePermissionID = Permissions;
         }
         /// <summary>
         /// Get a contained folder. Throw an StorageItemNotExistException when cannot find it.
@@ -142,7 +148,7 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public StorageFile GetFile(string Name, bool CaseSensitivity = false)
         {
-
+            if (EnumeratePermissionID is not null) throw new UnauthorizedException(null, EnumeratePermissionID[0]);
             StorageFile storageItem = new StorageFile();
             storageItem.DeletePermissionID = DeletePermissionID;
             var entries = Directory.EnumerateFiles(realPath);
@@ -174,6 +180,53 @@ namespace LWMS.Core.FileSystem
             throw new StorageItemNotExistException(Path.Combine(realPath, Name));
         }
         /// <summary>
+        /// Get a contained folder. Throw an StorageItemNotExistException when cannot find it.
+        /// </summary>
+        /// <param name="Auth"></param>
+        /// <param name="Name"></param>
+        /// <param name="CaseSensitivity">Whether case sensitive</param>
+        /// <returns></returns>
+        public StorageFile GetFile(string Auth, string Name, bool CaseSensitivity = false)
+        {
+            if (EnumeratePermissionID is null) return GetFile(Name, CaseSensitivity);
+            StorageFile storageItem = new StorageFile();
+
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
+                storageItem.DeletePermissionID = DeletePermissionID;
+                var entries = Directory.EnumerateFiles(realPath);
+                string Target = Path.Combine(realPath, Name);
+                string TARGET = Target.ToUpper();
+                foreach (var item in entries)
+                {
+                    if (CaseSensitivity == false)
+                    {
+
+                        if (item.ToUpper() == TARGET)
+                        {
+                            storageItem.SetPath(Target);
+                            storageItem.Parent = this;
+                            return;
+                        }
+                    }
+                    else
+                    {
+
+                        if (item == Target)
+                        {
+                            storageItem.SetPath(Target);
+                            storageItem.Parent = this;
+                            return;
+                        }
+                    }
+                }
+                storageItem = null;
+            }, false, true, EnumeratePermissionID);
+            if (storageItem is null)
+                throw new StorageItemNotExistException(Path.Combine(realPath, Name));
+            return storageItem;
+        }
+        /// <summary>
         /// Get a contained file. Return false when cannot find it.
         /// </summary>
         /// <param name="Name"></param>
@@ -182,7 +235,7 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public bool GetFile(string Name, out StorageFile OutItem, bool CaseSensitivity = false)
         {
-
+            if (EnumeratePermissionID is not null) throw new UnauthorizedException(null, EnumeratePermissionID[0]);
             StorageFile storageItem = new StorageFile();
             storageItem.DeletePermissionID = DeletePermissionID;
             var entries = Directory.EnumerateFiles(realPath);
@@ -217,6 +270,58 @@ namespace LWMS.Core.FileSystem
             return false;
         }
         /// <summary>
+        /// Get a contained file. Return false when cannot find it.
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="OutItem"></param>
+        /// <param name="CaseSensitivity"></param>
+        /// <returns></returns>
+        public bool GetFile(string Auth, string Name, out StorageFile OutItem, bool CaseSensitivity = false)
+        {
+            if (EnumeratePermissionID is null)
+            {
+                return GetFile(Name, out OutItem, CaseSensitivity);
+            }
+            StorageFile storageItem = new StorageFile();
+            bool v = false;
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
+
+                storageItem.DeletePermissionID = DeletePermissionID;
+                var entries = Directory.EnumerateFiles(realPath);
+                string Target = Path.Combine(realPath, Name);
+                string TARGET = Target.ToUpper();
+                foreach (var item in entries)
+                {
+                    if (CaseSensitivity == false)
+                    {
+
+                        if (item.ToUpper() == TARGET)
+                        {
+                            storageItem.SetPath(Target);
+                            storageItem.Parent = this;
+                            v = true;
+                            return;
+                        }
+                    }
+                    else
+                    {
+
+                        if (item == Target)
+                        {
+                            storageItem.SetPath(Target);
+                            storageItem.Parent = this;
+                            v = true;
+                            return;
+                        }
+                    }
+                }
+                storageItem = null;
+            }, false, true, EnumeratePermissionID);
+            OutItem = storageItem;
+            return v;
+        }
+        /// <summary>
         /// Get a contained folder. Throw an StorageItemNotExistException when cannot find it.
         /// </summary>
         /// <param name="Name"></param>
@@ -225,6 +330,7 @@ namespace LWMS.Core.FileSystem
         public StorageFolder GetFolder(string Name, bool CaseSensitivity = false)
         {
 
+            if (EnumeratePermissionID is not null) throw new UnauthorizedException(null, EnumeratePermissionID[0]);
             StorageFolder storageItem = new StorageFolder();
             storageItem.DeletePermissionID = DeletePermissionID;
             storageItem.CreateItemPermission = CreateItemPermission;
@@ -236,6 +342,30 @@ namespace LWMS.Core.FileSystem
             return storageItem;
         }
         /// <summary>
+        /// Get a contained folder. Throw an StorageItemNotExistException when cannot find it.
+        /// </summary>
+        /// <param name="Auth"></param>
+        /// <param name="Name"></param>
+        /// <param name="CaseSensitivity">Whether case sensitive</param>
+        /// <returns></returns>
+        public StorageFolder GetFolder(string Auth, string Name, bool CaseSensitivity = false)
+        {
+
+            if (EnumeratePermissionID is null) return GetFolder(Name, CaseSensitivity);
+            StorageFolder storageItem = new StorageFolder();
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
+                storageItem.DeletePermissionID = DeletePermissionID;
+                storageItem.CreateItemPermission = CreateItemPermission;
+                var F = GetFolder(Auth, Name, out storageItem, CaseSensitivity);
+                if (F == false)
+                {
+                    throw new StorageItemNotExistException(Path.Combine(realPath, Name));
+                }
+            }, false, true, EnumeratePermissionID);
+            return storageItem;
+        }
+        /// <summary>
         /// Get a contained folder. Return false when cannot find it.
         /// </summary>
         /// <param name="Name"></param>
@@ -244,6 +374,7 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public bool GetFolder(string Name, out StorageFolder OutFolder, bool CaseSensitivity = false)
         {
+            if (EnumeratePermissionID is not null) throw new UnauthorizedException(null, EnumeratePermissionID[0]);
             if (isSystemRoot)
             {
                 switch (Name)
@@ -297,6 +428,78 @@ namespace LWMS.Core.FileSystem
             return false;
         }
         /// <summary>
+        /// Get a contained folder. Return false when cannot find it.
+        /// </summary>
+        /// <param name="Auth">Authentication Context</param>
+        /// <param name="Name"></param>
+        /// <param name="CaseSensitivity"></param>
+        /// <param name="OutFolder"></param>
+        /// <returns></returns>
+        public bool GetFolder(string Auth, string Name, out StorageFolder OutFolder, bool CaseSensitivity = false)
+        {
+            if (EnumeratePermissionID is null) return GetFolder(Name, out OutFolder, CaseSensitivity);
+            StorageFolder storageItem = new StorageFolder();
+            bool v = false;
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
+                if (isSystemRoot)
+                {
+                    switch (Name)
+                    {
+                        case PredefinedRootFolders.WebRoot:
+                            storageItem = ApplicationStorage.Webroot;
+                            v = true;
+                            return;
+                        case PredefinedRootFolders.Configuration:
+                            storageItem = ApplicationStorage.Configuration;
+                            v = true;
+                            return;
+                        case PredefinedRootFolders.Logs:
+                            storageItem = ApplicationStorage.Logs;
+                            v = true;
+                            return;
+                        default:
+                            storageItem = null;
+                            v = false;
+                            return;
+                    }
+                }
+                storageItem.DeletePermissionID = DeletePermissionID;
+                storageItem.CreateItemPermission = CreateItemPermission;
+                var entries = Directory.EnumerateDirectories(realPath);
+                string Target = Path.Combine(realPath, Name);
+                string TARGET = Target.ToUpper();
+                foreach (var item in entries)
+                {
+                    if (CaseSensitivity == false)
+                    {
+
+                        if (item.ToUpper() == TARGET)
+                        {
+                            storageItem.SetPath(Target);
+                            storageItem.Parent = this;
+                            v = true;
+                            return;
+                        }
+                    }
+                    else
+                    {
+
+                        if (item == Target)
+                        {
+                            storageItem.SetPath(Target);
+                            storageItem.Parent = this;
+                            v = true;
+                            return;
+                        }
+                    }
+                }
+                storageItem = null;
+            }, false, true, EnumeratePermissionID);
+            OutFolder = storageItem;
+            return v;
+        }
+        /// <summary>
         /// Get all contained files in current folder.
         /// </summary>
         /// <returns></returns>
@@ -307,6 +510,20 @@ namespace LWMS.Core.FileSystem
             foreach (var item in FileNames)
             {
                 storageFiles.Add(GetFile(item, true));
+            }
+            return storageFiles;
+        }
+        /// <summary>
+        /// Get all contained files in current folder.
+        /// </summary>
+        /// <returns></returns>
+        public List<StorageFile> GetFiles(string Auth)
+        {
+            string[] FileNames = Directory.EnumerateFiles(realPath).ToArray();
+            List<StorageFile> storageFiles = new List<StorageFile>(FileNames.Length);
+            foreach (var item in FileNames)
+            {
+                storageFiles.Add(GetFile(Auth, item, true));
             }
             return storageFiles;
         }
@@ -346,6 +563,7 @@ namespace LWMS.Core.FileSystem
         /// <returns></returns>
         public StorageItem GetItem(string Name, bool CaseSensitivity = false)
         {
+            if (EnumeratePermissionID is not null) throw new UnauthorizedException(null, EnumeratePermissionID[0]);
             StorageItem storageItem = new StorageItem();
             if (isSystemRoot)
             {

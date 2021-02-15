@@ -53,7 +53,7 @@ namespace LWMS.Management.Commands
                     case "LS":
                     case "LIST":
                         {
-                            foreach (var item in ApplicationStorage.Logs.GetFiles())
+                            foreach (var item in ApplicationStorage.Logs.GetFiles(AuthContext))
                             {
                                 Output.WriteLine(item.Name);
                             }

@@ -33,6 +33,7 @@ namespace LWMS.Core.Authentication
         public static readonly string RTApplyCmdProcessUnits = "Core.Runtime.ApplyCmdProcessUnits";
         public static readonly string RTSetBufLength= "Core.Runtime.SetBufLength";
         public static readonly string RTWebroot= "Core.Runtime.SetWebroot";
+        public static readonly string Log_EnumerateFile = "Core.Log.EnumerateFile";
         public static readonly string Log_NewFile = "Core.Log.NewFile";
         public static readonly string Log_All = "Core.Log.All";
         public static readonly string ModifyRuntimeConfig = "Core.Runtime.ModifyConfig";

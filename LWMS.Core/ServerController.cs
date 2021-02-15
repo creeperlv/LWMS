@@ -94,8 +94,8 @@ namespace LWMS.Core
             else if (args[0].ToUpper() == "VER" || args[0].ToUpper() == "VERSION")
             {
                 Output.WriteLine("");
-                Output.WriteLine(Language.Query("LWMS.Commands.Ver.Shell", "Shell: {0}", Assembly.GetEntryAssembly().ToString()));
-                Output.WriteLine(Language.Query("LWMS.Commands.Ver.Core", "Core: {0}", Assembly.GetExecutingAssembly().ToString()));
+                Output.WriteLine(Language.Query("LWMS.Commands.Ver.Shell", "Shell: {0}", Assembly.GetEntryAssembly().GetName().Version.ToString()));
+                Output.WriteLine(Language.Query("LWMS.Commands.Ver.Core", "Core: {0}", Assembly.GetExecutingAssembly().GetName().Version.ToString()));
                 Output.WriteLine("");
             }
             else if (args[0].ToUpper() == "CLS" || args[0].ToUpper() == "CLEAR")
