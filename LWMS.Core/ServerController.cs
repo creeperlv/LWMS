@@ -80,7 +80,7 @@ namespace LWMS.Core
 
                     OperatorAuthentication.AuthedAction(Auth, () =>
                     {
-                        Output.WriteLine("Goodbye.");
+                        Output.WriteLine(Language.Query("LWMS.Goodbye","Goodbye."));
                         if (LWMSTraceListener.WriteToFile)
                             LWMSTraceListener.FlushImmediately();
                         Environment.Exit(0);

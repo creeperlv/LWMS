@@ -13,9 +13,19 @@ namespace LWMS.Core.FileSystem
 {
     public static class ApplicationStorage
     {
+        internal static string TrustedInstaller = null;
+        public static void SetTrustedInstaller(string Auth)
+        {
+            if(TrustedInstaller is null)
+            {
+                TrustedInstaller = Auth;
+                LoadApplicationStorage();
+            }
+        }
         static INILikeData RouteLocationMap;
         static Dictionary<string, string> Map = new Dictionary<string, string>();
-        public readonly static string BasePath;
+        internal static string _BasePath;
+        public static string BasePath => _BasePath;
         public static StorageFolder CurrentModule
         {
             get
@@ -26,9 +36,9 @@ namespace LWMS.Core.FileSystem
                 return _ModuleRoot.CreateFolder(ModuleName, true);
             }
         }
-        static ApplicationStorage()
+        static void LoadApplicationStorage()
         {
-            BasePath = new FileInfo(Assembly.GetAssembly(typeof(ApplicationStorage)).Location).DirectoryName;
+            _BasePath = new FileInfo(Assembly.GetAssembly(typeof(ApplicationStorage)).Location).DirectoryName;
             {
                 SystemRoot = new StorageFolder();
                 SystemRoot.parent = null;
@@ -50,7 +60,7 @@ namespace LWMS.Core.FileSystem
                 Configuration = new StorageFolder();
                 Configuration.Parent = SystemRoot;
                 Configuration.isroot = true;
-                Configuration.realPath = Path.Combine(BasePath, "Configurations");
+                Configuration.realPath = Path.Combine(_BasePath, "Configurations");
                 Configuration.SetDeletePermissionID(PermissionID.Config_Delete, PermissionID.ConfigAll);
                 Configuration.SetBaseWritePermission(PermissionID.ModifyConfig, PermissionID.ConfigAll);
                 Configuration.SetBaseReadPermission(PermissionID.ReadConfig, PermissionID.ConfigAll);
@@ -63,7 +73,7 @@ namespace LWMS.Core.FileSystem
                 Logs = new StorageFolder();
                 Logs.Parent = SystemRoot;
                 Logs.isroot = true;
-                Logs.realPath = Path.Combine(BasePath, "Logs");
+                Logs.realPath = Path.Combine(_BasePath, "Logs");
                 Logs.SetDeletePermissionID(PermissionID.ClearLogFolder,PermissionID.Log_All);
                 Logs.SetBaseWritePermission(PermissionID.Log_NewFile, PermissionID.Log_All);
                 Logs.SetBaseReadPermission(PermissionID.Log_EnumerateFile, PermissionID.Log_All);
@@ -75,8 +85,8 @@ namespace LWMS.Core.FileSystem
             try
             {
                 StorageFile Routes;
-                _ = Configuration.CreateFile("RoutedLocations.ini", out Routes);
-                RouteLocationMap = INILikeData.LoadFromWR(new FileWR(Routes.ToFileInfo()));
+                _ = Configuration.CreateFile(TrustedInstaller,"RoutedLocations.ini", out Routes);
+                RouteLocationMap = INILikeData.LoadFromWR(new FileWR(Routes.ToFileInfo(TrustedInstaller)));
                 foreach (var item in RouteLocationMap)
                 {
                     Map.Add(item.Key.Replace('\\', '/'), item.Value);
