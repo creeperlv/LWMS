@@ -46,4 +46,9 @@ namespace LWMS.Core.SBSDomain
             return v;
         }
     }
+    public class MappedType<T>
+    {
+        public string LibFileName;
+        public T TargetType;
+    }
 }

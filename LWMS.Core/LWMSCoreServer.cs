@@ -2,6 +2,7 @@
 using LWMS.Core.Authentication;
 using LWMS.Core.Configuration;
 using LWMS.Core.HttpRoutedLayer;
+using LWMS.Core.SBSDomain;
 using LWMS.Localization;
 using LWMS.Management;
 using System;
@@ -32,6 +33,7 @@ namespace LWMS.Core
                 TrustedInstallerAuth = OperatorAuthentication.ObtainRTAuth(Auth0, Auth1);
                 OperatorAuthentication.SetTrustedInstaller(TrustedInstallerAuth);
                 GlobalConfiguration.SetTrustedInstallerAuth(TrustedInstallerAuth);
+                DomainManager.SetTrustedInstaller(TrustedInstallerAuth);
             }
             ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString() + "-Preview";
             Inited = true;
@@ -77,7 +79,8 @@ namespace LWMS.Core
                         try
                         {
                             FileInfo AssemblyFile = new FileInfo(item.Value);
-                            var asm = Assembly.LoadFrom(AssemblyFile.FullName);
+                            //var asm = Assembly.LoadFrom(AssemblyFile.FullName);
+                            var asm = DomainManager.LoadFromFile(TrustedInstallerAuth, AssemblyFile.FullName);
                             foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 0, item.Key))
                             {
                                 var t = asm.GetType(UnitTypeName.Value);
@@ -94,11 +97,11 @@ namespace LWMS.Core
             RegisterProcessUnit(TrustedInstallerAuth, new ErrorResponseUnit());
             //Load W process units.
             {
-                foreach (var item in GlobalConfiguration.ListTSDRoot(TrustedInstallerAuth,1))
+                foreach (var item in GlobalConfiguration.ListTSDRoot(TrustedInstallerAuth, 1))
                 {
                     if (item.Value == "LWMS.Core.dll")
                     {
-                        foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth,1,item.Key))
+                        foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 1, item.Key))
                         {
                             var t = Type.GetType(UnitTypeName.Value);
                             RegisterWProcessUnit(TrustedInstallerAuth, (IPipedProcessUnit)Activator.CreateInstance(t));
@@ -109,7 +112,9 @@ namespace LWMS.Core
                         try
                         {
                             FileInfo AssemblyFile = new FileInfo(item.Value);
-                            var asm = Assembly.LoadFrom(AssemblyFile.FullName);
+                            //                            var asm = Assembly.LoadFrom(AssemblyFile.FullName);
+
+                            var asm = DomainManager.LoadFromFile(TrustedInstallerAuth, AssemblyFile.FullName);
                             foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 1, item.Key))
                             {
                                 var t = asm.GetType(UnitTypeName.Value);
@@ -142,7 +147,9 @@ namespace LWMS.Core
                             try
                             {
                                 FileInfo AssemblyFile = new FileInfo(item.Value);
-                                var asm = Assembly.LoadFrom(AssemblyFile.FullName);
+                                //var asm = Assembly.LoadFrom(AssemblyFile.FullName);
+
+                                var asm = DomainManager.LoadFromFile(TrustedInstallerAuth, AssemblyFile.FullName);
                                 foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 2, item.Key))
                                 {
                                     var t = asm.GetType(UnitTypeName.Value);
@@ -333,6 +340,10 @@ namespace LWMS.Core
                 Output.SetCoreStream(Context, processor);
             }, false, true, PermissionID.RTApplyCmdProcessUnits, PermissionID.RuntimeAll);
 
+        }
+        public void ForceUpdateHttpPipelineProcessorUnits()
+        {
+            HttpPipelineProcessor.Init(processUnits.ToArray());
         }
         internal void ProcessContext_Internal(HttpListenerContext context)
         {
