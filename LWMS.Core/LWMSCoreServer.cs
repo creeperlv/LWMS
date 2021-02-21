@@ -68,7 +68,7 @@ namespace LWMS.Core
                 {
                     if (item.Value == "LWMS.Core.dll")
                     {
-                        foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 0, item.Key))
+                        foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 0, item.Value))
                         {
                             var t = Type.GetType(UnitTypeName.Value);
                             RegisterProcessUnit(TrustedInstallerAuth, (IPipedProcessUnit)Activator.CreateInstance(t));
@@ -81,7 +81,7 @@ namespace LWMS.Core
                             FileInfo AssemblyFile = new FileInfo(item.Value);
                             //var asm = Assembly.LoadFrom(AssemblyFile.FullName);
                             var asm = DomainManager.LoadFromFile(TrustedInstallerAuth, AssemblyFile.FullName);
-                            foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 0, item.Key))
+                            foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 0, item.Value))
                             {
                                 var t = asm.GetType(UnitTypeName.Value);
                                 RegisterProcessUnit(TrustedInstallerAuth, Activator.CreateInstance(t) as IPipedProcessUnit);
@@ -101,7 +101,7 @@ namespace LWMS.Core
                 {
                     if (item.Value == "LWMS.Core.dll")
                     {
-                        foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 1, item.Key))
+                        foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 1, item.Value))
                         {
                             var t = Type.GetType(UnitTypeName.Value);
                             RegisterWProcessUnit(TrustedInstallerAuth, (IPipedProcessUnit)Activator.CreateInstance(t));
@@ -115,7 +115,7 @@ namespace LWMS.Core
                             //                            var asm = Assembly.LoadFrom(AssemblyFile.FullName);
 
                             var asm = DomainManager.LoadFromFile(TrustedInstallerAuth, AssemblyFile.FullName);
-                            foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 1, item.Key))
+                            foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 1, item.Value))
                             {
                                 var t = asm.GetType(UnitTypeName.Value);
                                 RegisterWProcessUnit(TrustedInstallerAuth, Activator.CreateInstance(t) as IPipedProcessUnit);
@@ -135,7 +135,7 @@ namespace LWMS.Core
                         if (item.Value == "LWMS.Management.dll")
                         {
                             var asm = Assembly.GetAssembly(typeof(Output));
-                            foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 2, item.Key))
+                            foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 2, item.Value))
                             {
 
                                 var t = asm.GetType(UnitTypeName.Value);
@@ -150,7 +150,7 @@ namespace LWMS.Core
                                 //var asm = Assembly.LoadFrom(AssemblyFile.FullName);
 
                                 var asm = DomainManager.LoadFromFile(TrustedInstallerAuth, AssemblyFile.FullName);
-                                foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 2, item.Key))
+                                foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 2, item.Value))
                                 {
                                     var t = asm.GetType(UnitTypeName.Value);
                                     RegisterCmdOutProcessUnit(TrustedInstallerAuth, Activator.CreateInstance(t) as IPipedProcessUnit);
@@ -269,7 +269,7 @@ namespace LWMS.Core
             OperatorAuthentication.AuthedAction(Context, () =>
             {
 
-                FileInfo fi = new FileInfo(Assembly.GetAssembly(typeof(DefaultProcessUnit)).FullName);
+                FileInfo fi = new FileInfo(Assembly.GetAssembly(unit.GetType()).FullName);
                 processUnits.Add(new (fi.Name,unit));
                 Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.R", "Registered R Unit: {0}", unit.GetType().ToString()));
             }, false, true, PermissionID.RTRegisterRProcessUnit, PermissionID.RuntimeAll);

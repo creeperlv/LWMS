@@ -249,7 +249,7 @@ namespace LWMS.Core.Configuration
                     case 0:
                         foreach (var item in RProcessUnits.RootNode.Children)
                         {
-                            if (item.Name == Name)
+                            if (item.Value == Name)
                             {
                                 foreach (var item2 in item.Children)
                                 {
@@ -263,7 +263,7 @@ namespace LWMS.Core.Configuration
                     case 1:
                         foreach (var item in WProcessUnits.RootNode.Children)
                         {
-                            if (item.Name == Name)
+                            if (item.Value == Name)
                             {
                                 foreach (var item2 in item.Children)
                                 {
@@ -277,7 +277,7 @@ namespace LWMS.Core.Configuration
                     case 2:
                         foreach (var item in CMDOUTProcessUnits.RootNode.Children)
                         {
-                            if (item.Name == Name)
+                            if (item.Value == Name)
                             {
                                 foreach (var item2 in item.Children)
                                 {

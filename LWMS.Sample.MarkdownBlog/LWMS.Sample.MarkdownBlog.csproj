@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CLUNL.Pipeline" Version="0.0.2" />
+    <PackageReference Include="Markdig" Version="0.23.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LWMS.Core.Configuration\LWMS.Core.Configuration.csproj" />
+    <ProjectReference Include="..\LWMS.Core\LWMS.Core.csproj" />
+  </ItemGroup>
+
+</Project>
