@@ -14,8 +14,8 @@ namespace LWMS.Core
 {
     public static class ServerController
     {
-        public static Dictionary<string, MappedType<IManageCommand>> ManageCommands = new Dictionary<string, MappedType<IManageCommand>>();
-        public static Dictionary<string, MappedType<IManageCommand>> ManageCommandAliases = new Dictionary<string, MappedType<IManageCommand>>();
+        public static Dictionary<string, MappedType> ManageCommands = new Dictionary<string, MappedType>();
+        public static Dictionary<string, MappedType> ManageCommandAliases = new Dictionary<string, MappedType>();
         /// <summary>
         /// Register and initialize a specified module.
         /// </summary>
@@ -39,11 +39,11 @@ namespace LWMS.Core
                             {
                                 var MC = (IManageCommand)Activator.CreateInstance(TP);
                                 Trace.WriteLine(Language.Query("LWMS.Commands.Found", "Found Manage Command:{0},{1}", MC.CommandName, TP.ToString()));
-                                ManageCommands.Add(MC.CommandName, new MappedType<IManageCommand>(fi.Name, MC));
+                                ManageCommands.Add(MC.CommandName, new MappedType(fi.Name, MC));
                                 var alias = MC.Alias;
                                 foreach (var MCA in alias)
                                 {
-                                    ManageCommandAliases.Add(MCA, new MappedType<IManageCommand>(fi.Name, MC));
+                                    ManageCommandAliases.Add(MCA, new MappedType(fi.Name, MC));
                                 }
                             }
                         }
@@ -173,7 +173,7 @@ namespace LWMS.Core
                             ManageCommandArgs.RemoveAt(0);
                             try
                             {
-                                item.Value.TargetObject.Invoke(Auth, ManageCommandArgs.ToArray());
+                                (item.Value.TargetObject as IManageCommand).Invoke(Auth, ManageCommandArgs.ToArray());
                             }
                             catch (Exception e)
                             {
@@ -197,7 +197,7 @@ namespace LWMS.Core
                             ManageCommandArgs.RemoveAt(0);
                             try
                             {
-                                item.Value.TargetObject.Invoke(Auth, ManageCommandArgs.ToArray());
+                                (item.Value.TargetObject as IManageCommand).Invoke(Auth, ManageCommandArgs.ToArray());
                             }
                             catch (Exception e)
                             {

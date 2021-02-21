@@ -48,7 +48,7 @@ namespace LWMS.Core
         /// When isSuspend = true, listener will suspend waiting for new connection.
         /// </summary>
         public static bool isSuspend = false;
-        List<IPipedProcessUnit> processUnits = new List<IPipedProcessUnit>();
+        List<MappedType> processUnits = new List<MappedType>();
         List<IPipedProcessUnit> CmdOutprocessUnits = new List<IPipedProcessUnit>();
         List<IPipedProcessUnit> WprocessUnits = new List<IPipedProcessUnit>();
         public void Start(int MaxThread)
@@ -269,7 +269,8 @@ namespace LWMS.Core
             OperatorAuthentication.AuthedAction(Context, () =>
             {
 
-                processUnits.Add(unit);
+                FileInfo fi = new FileInfo(Assembly.GetAssembly(typeof(DefaultProcessUnit)).FullName);
+                processUnits.Add(new (fi.Name,unit));
                 Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.R", "Registered R Unit: {0}", unit.GetType().ToString()));
             }, false, true, PermissionID.RTRegisterRProcessUnit, PermissionID.RuntimeAll);
         }
@@ -278,8 +279,15 @@ namespace LWMS.Core
 
             OperatorAuthentication.AuthedAction(Context, () =>
             {
-
-                processUnits.Remove(unit);
+                for (int i = 0; i < processUnits.Count; i++)
+                {
+                    if(processUnits[i].TargetObject == unit)
+                    {
+                        processUnits.RemoveAt(i);
+                        break;
+                    }
+                }
+                
             }, false, true, PermissionID.RTUnregisterRProcessUnit, PermissionID.RuntimeAll);
 
         }
