@@ -1,19 +1,21 @@
 ﻿using LWMS.Core.Authentication;
 using LWMS.Core.Configuration;
 using LWMS.Core.Log;
+using LWMS.Core.SBSDomain;
 using LWMS.Localization;
 using LWMS.Management;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 
 namespace LWMS.Core
 {
     public static class ServerController
     {
-        public static Dictionary<string, IManageCommand> ManageCommands = new Dictionary<string, IManageCommand>();
-        public static Dictionary<string, IManageCommand> ManageCommandAliases = new Dictionary<string, IManageCommand>();
+        public static Dictionary<string, MappedType<IManageCommand>> ManageCommands = new Dictionary<string, MappedType<IManageCommand>>();
+        public static Dictionary<string, MappedType<IManageCommand>> ManageCommandAliases = new Dictionary<string, MappedType<IManageCommand>>();
         /// <summary>
         /// Register and initialize a specified module.
         /// </summary>
@@ -29,6 +31,7 @@ namespace LWMS.Core
                     try
                     {
                         var asm = Assembly.LoadFrom(item);
+                        FileInfo fi = new(item);
                         var TPS = asm.GetTypes();
                         foreach (var TP in TPS)
                         {
@@ -36,11 +39,11 @@ namespace LWMS.Core
                             {
                                 var MC = (IManageCommand)Activator.CreateInstance(TP);
                                 Trace.WriteLine(Language.Query("LWMS.Commands.Found", "Found Manage Command:{0},{1}", MC.CommandName, TP.ToString()));
-                                ManageCommands.Add(MC.CommandName, MC);
+                                ManageCommands.Add(MC.CommandName, new MappedType<IManageCommand>(fi.Name, MC));
                                 var alias = MC.Alias;
                                 foreach (var MCA in alias)
                                 {
-                                    ManageCommandAliases.Add(MCA, MC);
+                                    ManageCommandAliases.Add(MCA, new MappedType<IManageCommand>(fi.Name, MC));
                                 }
                             }
                         }
@@ -170,7 +173,7 @@ namespace LWMS.Core
                             ManageCommandArgs.RemoveAt(0);
                             try
                             {
-                                item.Value.Invoke(Auth, ManageCommandArgs.ToArray());
+                                item.Value.TargetObject.Invoke(Auth, ManageCommandArgs.ToArray());
                             }
                             catch (Exception e)
                             {
@@ -194,7 +197,7 @@ namespace LWMS.Core
                             ManageCommandArgs.RemoveAt(0);
                             try
                             {
-                                item.Value.Invoke(Auth, ManageCommandArgs.ToArray());
+                                item.Value.TargetObject.Invoke(Auth, ManageCommandArgs.ToArray());
                             }
                             catch (Exception e)
                             {

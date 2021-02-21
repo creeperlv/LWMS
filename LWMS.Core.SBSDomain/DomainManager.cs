@@ -48,7 +48,15 @@ namespace LWMS.Core.SBSDomain
     }
     public class MappedType<T>
     {
+        public MappedType() { }
+        public MappedType(string File, T _object) { LibFileName = File; TargetObject = _object; }
         public string LibFileName;
-        public T TargetType;
+        public T TargetObject;
+        public void Update(string AuthContext)
+        {
+            var asm=DomainManager.GetAssembly(AuthContext, LibFileName);
+            var t=asm.GetType(TargetObject.GetType().FullName);
+            TargetObject = (T)Activator.CreateInstance(t);
+        }
     }
 }
