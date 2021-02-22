@@ -46,6 +46,7 @@ namespace LWMS.Core.Authentication
         public static readonly string ClearLogFolder = "Core.Log.ClearLogFolder";
         public static readonly string Log_StopWatching = "Core.Log.StopWatching";
         public static readonly string Core_SBS_Load = "Core.SBS.Load";
+        public static readonly string Core_SBS_Update = "Core.SBS.Update";
         public static readonly string Core_SBS_All = "Core.SBS.ALL";
         public static readonly string Core_SBS_Read = "Core.SBS.Read";
     }

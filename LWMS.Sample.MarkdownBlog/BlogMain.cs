@@ -17,25 +17,38 @@ namespace LWMS.Sample.MarkdownBlog
             Assembly.LoadFrom("Markdig.dll");
             //In case that dependency is not loaded.
         }
-        StorageFile Template = null;
+        StorageFile ArticleTemplate = null;
+        StorageFile ArticleListTemplate = null;
+        StorageFile ArticleListItemTemplate = null;
         StorageFolder Articles = null;
         public PipelineData Process(PipelineData Input)
         {
-            if (Template is null)
-                Template = ApplicationStorage.CurrentModule.GetFile("Template.html");
+            if (ArticleTemplate is null)
+                ArticleTemplate = ApplicationStorage.CurrentModule.GetFile("Template.html");
+            if (ArticleListTemplate is null)
+                ArticleListTemplate = ApplicationStorage.CurrentModule.GetFile("ArticleListTemplate.html");
+            if (ArticleListItemTemplate is null)
+                ArticleListItemTemplate = ApplicationStorage.CurrentModule.GetFile("ArticleListItemTemplate.html");
             if (Articles is null)
                 Articles = ApplicationStorage.CurrentModule.CreateFolder("Articles",true);
             HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
             var path0 = context.Request.Url.LocalPath.Substring(1);
             Console.WriteLine("MDBlog>>1");
-            if (path0.StartsWith("blogs/"))
+            if (path0.ToUpper().StartsWith("BLOGS/"))
             {
                 var path1 = path0.Substring(path0.IndexOf("/") + 1);
-                var f = Articles.GetFile(path1);
-                var MDContnet = Markdown.ToHtml(File.ReadAllText(f.ItemPath));
-                var FinalContent = File.ReadAllText(Template.ItemPath).Replace("%Content%", MDContnet);
-                context.Response.OutputStream.Write(Encoding.UTF8.GetBytes(FinalContent));
-                (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
+                StorageFile f;
+                
+                if (Articles.GetFile(path1,out f,false))
+                {
+                    var MDContnet = Markdown.ToHtml(File.ReadAllText(f.ItemPath));
+                    var FinalContent = File.ReadAllText(ArticleTemplate.ItemPath).Replace("%Content%", MDContnet);
+                    context.Response.OutputStream.Write(Encoding.UTF8.GetBytes(FinalContent));
+                    (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
+                }
+            }else if (path0.ToUpper() == "BLOGS")
+            {
+
             }
             return Input;
         }

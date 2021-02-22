@@ -36,6 +36,20 @@ namespace LWMS.Core.SBSDomain
             }, false, true, PermissionID.Core_SBS_Load, PermissionID.Core_SBS_All);
             return v;
         }
+        public static void UpdateMappedTypes(string AuthContext, string LibFileName)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () =>
+            {
+                foreach (var item in MappedType.MappedTypeObjectCollection)
+                {
+                    if (item.LibFileName == LibFileName)
+                    {
+                        item.Update(AuthContext);
+                    }
+                }
+
+            }, false, true, PermissionID.Core_SBS_Update, PermissionID.Core_SBS_All);
+        }
         public static Assembly GetAssembly(string Auth, string Name, int Version = 0)
         {
             Assembly v = null;
@@ -48,19 +62,27 @@ namespace LWMS.Core.SBSDomain
     }
     public class MappedType
     {
-        static List<MappedType> MappedTypeObjectCollection=new ();
-        public MappedType(string File, object _object) {
+        internal static List<MappedType> MappedTypeObjectCollection = new();
+        public MappedType(string File, object _object)
+        {
             LibFileName = File;
             TargetObject = _object;
             MappedTypeObjectCollection.Add(this);
         }
         public string LibFileName;
         public object TargetObject;
+        internal void Update()
+        {
+            var asm = DomainManager.GetAssembly(DomainManager.TrustedInstaller, LibFileName);
+            var t = asm.GetType(TargetObject.GetType().FullName);
+            TargetObject = (object)Activator.CreateInstance(t);
+        }
         public void Update(string AuthContext)
         {
-            var asm=DomainManager.GetAssembly(AuthContext, LibFileName);
-            var t=asm.GetType(TargetObject.GetType().FullName);
+            var asm = DomainManager.GetAssembly(AuthContext, LibFileName);
+            var t = asm.GetType(TargetObject.GetType().FullName);
             TargetObject = (object)Activator.CreateInstance(t);
+
         }
     }
 }
