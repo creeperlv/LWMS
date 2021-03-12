@@ -18,7 +18,7 @@ namespace LWMS.Core.Configuration
             {
                 StackTrace st = new StackTrace(1);
                 var item = st.GetFrame(0);
-                var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name; 
+                var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
                 ApplicationConfiguration configuration;
                 if (keyValuePairs.ContainsKey(ModuleName))
                 {
@@ -38,16 +38,22 @@ namespace LWMS.Core.Configuration
         internal ApplicationConfiguration(string ModuleName)
         {
             var moduleConfigFolder = ApplicationStorage.Configuration.CreateFolder(GlobalConfiguration.TrustedInstaller, "Modules", true);
-            var fs = moduleConfigFolder.GetFiles(GlobalConfiguration.TrustedInstaller);
-            foreach (var item in fs)
-            {
-                if (item.Name == ModuleName + ".ini")
-                {
-                    RawData = INILikeData.LoadFromWR(new FileWR(item.ToFileInfo(GlobalConfiguration.TrustedInstaller)));
-                    return;
-                }
-            }
-            INILikeData.CreateToWR(new FileWR(moduleConfigFolder.CreateFile(GlobalConfiguration.TrustedInstaller, ModuleName + ".ini").ToFileInfo(GlobalConfiguration.TrustedInstaller)));
+            StorageFile sf;
+            bool b = moduleConfigFolder.CreateFile(GlobalConfiguration.TrustedInstaller, ModuleName + ".ini", out sf);
+            //var fs = moduleConfigFolder.GetFiles(GlobalConfiguration.TrustedInstaller);
+            //foreach (var item in fs)
+            //{
+            //    if (item.Name == ModuleName + ".ini")
+            //    {
+            //        RawData = INILikeData.LoadFromWR(new FileWR(item.ToFileInfo(GlobalConfiguration.TrustedInstaller)));
+            //        return;
+            //    }
+            //}
+            if (b==false)
+                RawData = INILikeData.LoadFromWR(new FileWR(sf.ToFileInfo(GlobalConfiguration.TrustedInstaller)));
+            else RawData = INILikeData.CreateToWR(new FileWR(sf.ToFileInfo(GlobalConfiguration.TrustedInstaller)));
+
+
         }
         INILikeData RawData;
         public string GetValue(string Key, string fallback = null)

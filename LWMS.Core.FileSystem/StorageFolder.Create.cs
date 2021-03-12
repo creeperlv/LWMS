@@ -34,7 +34,6 @@ namespace LWMS.Core.FileSystem
             StorageFile f = null;
             OperatorAuthentication.AuthedAction(Auth, () =>
             {
-                if (BaseWritePermission is not null) throw new UnauthorizedException(null, BaseWritePermission[0]);
                 if (isReadOnly)
                 {
                     throw new ItemReadOnlyException();
@@ -137,6 +136,31 @@ namespace LWMS.Core.FileSystem
                 OutItem = null;
                 return false;
             }
+            if (isReadOnly)
+            {
+                OutItem = null;
+                return false;
+            }
+            var path = Path.Combine(realPath, Name);
+            bool result;
+            if (Directory.Exists(path))
+            {
+                result = false;
+            }
+            else
+            {
+                Directory.CreateDirectory(path);
+                result = true;
+            }
+            StorageFolder storageFile = new StorageFolder();
+            storageFile.parent = this;
+            storageFile.SetPath(path);
+            OutItem = storageFile;
+
+            return result;
+        }
+        internal bool _CreateFolder(string Name, out StorageFolder OutItem)
+        {
             if (isReadOnly)
             {
                 OutItem = null;
@@ -276,8 +300,7 @@ namespace LWMS.Core.FileSystem
         /// <exception cref="ItemAlreadyExistException"></exception>
         public StorageFolder CreateFolder(string Auth, string Name, bool isIgnoreExistence)
         {
-            if (BaseWritePermission is null)
-                if (BaseWritePermission is null) CreateFolder(Name, isIgnoreExistence);
+            if (BaseWritePermission is null) CreateFolder(Name, isIgnoreExistence);
             if (isReadOnly)
             {
                 throw new ItemReadOnlyException();
@@ -285,10 +308,10 @@ namespace LWMS.Core.FileSystem
             StorageFolder storageFolder = null;
             OperatorAuthentication.AuthedAction(Auth, () =>
             {
-                if (CreateFolder(Name, out storageFolder) == false)
+                if (_CreateFolder(Name, out storageFolder) == false)
                 {
                     if (isIgnoreExistence == true)
-                        storageFolder = GetFolder(Name);
+                        storageFolder = GetFolder(Auth,Name);
                     else
                         throw new ItemAlreadyExistException();
                 }

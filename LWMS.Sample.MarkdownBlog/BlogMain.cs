@@ -1,9 +1,11 @@
 ﻿using CLUNL.Pipeline;
 using LWMS.Core;
+using LWMS.Core.Configuration;
 using LWMS.Core.FileSystem;
 using LWMS.Core.HttpRoutedLayer;
 using Markdig;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -33,8 +35,7 @@ namespace LWMS.Sample.MarkdownBlog
                 Articles = ApplicationStorage.CurrentModule.CreateFolder("Articles", true);
             HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
             var path0 = context.Request.Url.LocalPath.Substring(1);
-            Console.WriteLine("MDBlog>>1");
-            if (path0.ToUpper().StartsWith("BLOGS/"))
+            if (path0.ToUpper().StartsWith("BLOGS"))
             {
                 var path1 = path0.Substring(path0.IndexOf("/") + 1);
                 StorageFile f;
@@ -46,6 +47,7 @@ namespace LWMS.Sample.MarkdownBlog
                 {
                     if (Articles.GetFile(path1, out f, false))
                     {
+                        Trace.WriteLine("MDBlog>>Article:"+f.Name);
                         var MDContnet = Markdown.ToHtml(File.ReadAllText(f.ItemPath));
                         string Title = f.Name;
                         StorageFile info;
@@ -56,24 +58,35 @@ namespace LWMS.Sample.MarkdownBlog
                                 Title = infos[0];
                         }
 
-                        var FinalContent = File.ReadAllText(ArticleTemplate.ItemPath).Replace("%Content%", MDContnet).Replace("%Title%",Title);
+                        var FinalContent = File.ReadAllText(ArticleTemplate.ItemPath).Replace("%Content%", MDContnet).Replace("%Title%", Title);
                         context.Response.OutputStream.Write(Encoding.UTF8.GetBytes(FinalContent));
                         (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
+                        return Input;
                     }
                 }
-            }
-            else if (path0.ToUpper() == "BLOGS")
-            {
-                var list = Articles.GetFiles();
-                foreach (var item in list)
                 {
-                    if (item.Name.ToUpper().EndsWith(".INFO"))
-                    {
+                    Trace.WriteLine("MDBlog>>MainPage");
+                    var list = Articles.GetFiles();
 
+                    var MainContent = File.ReadAllText(ArticleListTemplate.ItemPath);
+                    var ItemTemplate = File.ReadAllText(ArticleListItemTemplate.ItemPath);
+                    var ItemList = "";
+                    foreach (var item in list)
+                    {
+                        if (item.Name.ToUpper().EndsWith(".INFO"))
+                        {
+                            var infos = File.ReadAllLines(item.ItemPath);
+                            if (infos.Length > 0)
+                                ItemList += ItemTemplate.Replace("%Title%", infos[0]).Replace("%Link%", "./Blogs/"+item.Name.Substring(0, item.Name.Length - 5));
+                        }
                     }
+                    var FinalContent = MainContent.Replace("%Content%", ItemList).Replace("%Title%", ApplicationConfiguration.Current.GetValue("BlogTitle", "LWMS Blog"));
+                    context.Response.OutputStream.Write(Encoding.UTF8.GetBytes(FinalContent));
+                    (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
+                    return Input;
                 }
-                (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
             }
+                (Input.SecondaryData as HttpPipelineArguments).isHandled = false;
             return Input;
         }
     }
