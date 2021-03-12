@@ -153,6 +153,7 @@ namespace LWMS
                 while ((URL = Console.ReadLine().Trim()).ToUpper() != "END")
                 {
                     if (URL.ToUpper() == "UNDO") RecordedUrls.RemoveAt(RecordedUrls.Count - 1);
+                    if (!URL.EndsWith("/")) URL += "/"; //Make sure that the listening url always ends with '/'
                     RecordedUrls.Add(URL);
                 }
                 GlobalConfiguration.SetListenPrefixes(Auth, RecordedUrls);
