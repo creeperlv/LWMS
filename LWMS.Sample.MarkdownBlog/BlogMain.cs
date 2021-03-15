@@ -82,13 +82,15 @@ namespace LWMS.Sample.MarkdownBlog
                         var MainContent = File.ReadAllText(ArticleListTemplate.ItemPath);
                         var ItemTemplate = File.ReadAllText(ArticleListItemTemplate.ItemPath);
                         var ItemList = "";
+                        string LinkPrefix = "./Blogs/";
+                        if (path0.ToUpper().StartsWith("BLOGS/")) LinkPrefix = "./";
                         foreach (var item in list)
                         {
                             if (item.Name.ToUpper().EndsWith(".INFO"))
                             {
                                 var infos = File.ReadAllLines(item.ItemPath);
                                 if (infos.Length > 0)
-                                    ItemList += ItemTemplate.Replace("%Title%", infos[0]).Replace("%Link%", "./Blogs/" + item.Name.Substring(0, item.Name.Length - 5));
+                                    ItemList += ItemTemplate.Replace("%Title%", infos[0]).Replace("%Link%", LinkPrefix + item.Name.Substring(0, item.Name.Length - 5));
                             }
                         }
                         var FinalContent = MainContent.Replace("%Content%", ItemList).Replace("%Title%", ApplicationConfiguration.Current.GetValue("BlogTitle", "LWMS Blog"));
