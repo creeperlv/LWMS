@@ -13,12 +13,14 @@ namespace LWMS.Core.HttpRoutedLayer
 {
     public class HttpListenerRoutedContext
     {
+        public readonly string PipelineAuth;
         internal HttpListenerContext CoreContext;
         public HttpListenerRequest Request { get; private set; }
         public HttpListenerRoutedResponse Response { get; private set; }
         public IPrincipal User { get; private set; }
-        public HttpListenerRoutedContext(HttpListenerContext Context)
+        public HttpListenerRoutedContext(HttpListenerContext Context,string PipelineAuth)
         {
+            this.PipelineAuth = PipelineAuth;
             CoreContext = Context;
             Request = CoreContext.Request;
             User = CoreContext.User;

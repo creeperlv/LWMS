@@ -24,6 +24,7 @@ namespace LWMS.Core
         HttpPipelineProcessor HttpPipelineProcessor = new HttpPipelineProcessor();
         internal static string TrustedInstallerAuth;
         internal static bool Inited = false;
+        internal static string PipelineAuth;
         public static void FirstInit()
         {
             if (Inited == true) return;
@@ -31,7 +32,11 @@ namespace LWMS.Core
                 var Auth0 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
                 var Auth1 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
                 TrustedInstallerAuth = OperatorAuthentication.ObtainRTAuth(Auth0, Auth1);
+                Auth0 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
+                Auth1 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
+                PipelineAuth = OperatorAuthentication.ObtainRTAuth(Auth0, Auth1);
                 OperatorAuthentication.SetTrustedInstaller(TrustedInstallerAuth);
+                OperatorAuthentication.SetPipelineAuth(PipelineAuth,TrustedInstallerAuth);
                 GlobalConfiguration.SetTrustedInstallerAuth(TrustedInstallerAuth);
                 DomainManager.SetTrustedInstaller(TrustedInstallerAuth);
             }
@@ -355,7 +360,7 @@ namespace LWMS.Core
         }
         internal void ProcessContext_Internal(HttpListenerContext context)
         {
-            var a = new HttpListenerRoutedContext(context);
+            var a = new HttpListenerRoutedContext(context,PipelineAuth);
             var output = HttpPipelineProcessor.Process(new PipelineData(a, new HttpPipelineArguments(), null, context.GetHashCode()));
             (output.PrimaryData as HttpListenerRoutedContext).Response.OutputStream.Close();
         }

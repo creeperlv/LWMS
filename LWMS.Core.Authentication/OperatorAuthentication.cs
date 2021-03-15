@@ -15,45 +15,46 @@ namespace LWMS.Core.Authentication
 {
     public static class PermissionID
     {
-        public static readonly string SetPermission = "Core.SetPermission";
-        public static readonly string ListAuths = "Auth.List";
-        public static readonly string RegisterCmdModule = "Core.CommandModule.Register";
-        public static readonly string UnregisterCmdModule = "Core.CommandModule.Unregister";
-        public static readonly string CmdModuleAll = "Core.CommandModule.All";
-        public static readonly string BindPrefix = "Core.BindPrefix";
-        public static readonly string RuntimeAll = "Core.Runtime.All";
-        public static readonly string RTRegisterRProcessUnit = "Core.Runtime.RegisterRProcessUnit";
-        public static readonly string RTUnregisterRProcessUnit = "Core.Runtime.UnregisterRProcessUnit";
-        public static readonly string RTRegisterWProcessUnit = "Core.Runtime.RegisterWProcessUnit";
-        public static readonly string RTUnregisterWProcessUnit = "Core.Runtime.UnregisterWProcessUnit";
-        public static readonly string RTRegisterCmdOutProcessUnit = "Core.Runtime.RegisterCmdOutProcessUnit";
-        public static readonly string RTUnregisterCmdOutProcessUnit = "Core.Runtime.UnregisterCmdOutProcessUnit";
-        public static readonly string RTApplyRProcessUnits = "Core.Runtime.ApplyProcessUnits";
-        public static readonly string RTApplyWProcessUnits = "Core.Runtime.ApplyWProcessUnits";
-        public static readonly string RTApplyCmdProcessUnits = "Core.Runtime.ApplyCmdProcessUnits";
-        public static readonly string RTSetBufLength= "Core.Runtime.SetBufLength";
-        public static readonly string RTWebroot= "Core.Runtime.SetWebroot";
-        public static readonly string Log_EnumerateFile = "Core.Log.EnumerateFile";
-        public static readonly string Log_NewFile = "Core.Log.NewFile";
-        public static readonly string Log_All = "Core.Log.All";
-        public static readonly string ModifyRuntimeConfig = "Core.Runtime.ModifyConfig";
-        public static readonly string ModifyConfig = "Core.ModifyConfig";
-        public static readonly string ReadConfig = "Core.ReadConfig";
-        public static readonly string ReleaseConfig = "Core.Config.Release";
-        public static readonly string ConfigAll = "Core.Config.All";
-        public static readonly string Config_Delete = "Core.Config.Delete";
-        public static readonly string ReadConfig_WebSiteModuleStorageRoot = "Core.ReadConfig.WebSiteModuleStorageRoot";
-        public static readonly string ClearLogFolder = "Core.Log.ClearLogFolder";
-        public static readonly string Log_StopWatching = "Core.Log.StopWatching";
-        public static readonly string Core_SBS_Load = "Core.SBS.Load";
-        public static readonly string Core_SBS_Update = "Core.SBS.Update";
-        public static readonly string Core_SBS_All = "Core.SBS.ALL";
-        public static readonly string Core_SBS_Read = "Core.SBS.Read";
+        public const string SetPermission = "Core.SetPermission";
+        public const string ListAuths = "Auth.List";
+        public const string RegisterCmdModule = "Core.CommandModule.Register";
+        public const string UnregisterCmdModule = "Core.CommandModule.Unregister";
+        public const string CmdModuleAll = "Core.CommandModule.All";
+        public const string BindPrefix = "Core.BindPrefix";
+        public const string RuntimeAll = "Core.Runtime.All";
+        public const string RTRegisterRProcessUnit = "Core.Runtime.RegisterRProcessUnit";
+        public const string RTUnregisterRProcessUnit = "Core.Runtime.UnregisterRProcessUnit";
+        public const string RTRegisterWProcessUnit = "Core.Runtime.RegisterWProcessUnit";
+        public const string RTUnregisterWProcessUnit = "Core.Runtime.UnregisterWProcessUnit";
+        public const string RTRegisterCmdOutProcessUnit = "Core.Runtime.RegisterCmdOutProcessUnit";
+        public const string RTUnregisterCmdOutProcessUnit = "Core.Runtime.UnregisterCmdOutProcessUnit";
+        public const string RTApplyRProcessUnits = "Core.Runtime.ApplyProcessUnits";
+        public const string RTApplyWProcessUnits = "Core.Runtime.ApplyWProcessUnits";
+        public const string RTApplyCmdProcessUnits = "Core.Runtime.ApplyCmdProcessUnits";
+        public const string RTSetBufLength = "Core.Runtime.SetBufLength";
+        public const string RTWebroot = "Core.Runtime.SetWebroot";
+        public const string Log_EnumerateFile = "Core.Log.EnumerateFile";
+        public const string Log_NewFile = "Core.Log.NewFile";
+        public const string Log_All = "Core.Log.All";
+        public const string ModifyRuntimeConfig = "Core.Runtime.ModifyConfig";
+        public const string ModifyConfig = "Core.ModifyConfig";
+        public const string ReadConfig = "Core.ReadConfig";
+        public const string ReleaseConfig = "Core.Config.Release";
+        public const string ConfigAll = "Core.Config.All";
+        public const string Config_Delete = "Core.Config.Delete";
+        public const string ReadConfig_WebSiteModuleStorageRoot = "Core.ReadConfig.WebSiteModuleStorageRoot";
+        public const string ClearLogFolder = "Core.Log.ClearLogFolder";
+        public const string Log_StopWatching = "Core.Log.StopWatching";
+        public const string Core_SBS_Load = "Core.SBS.Load";
+        public const string Core_SBS_Update = "Core.SBS.Update";
+        public const string Core_SBS_All = "Core.SBS.ALL";
+        public const string Core_SBS_Read = "Core.SBS.Read";
     }
     public static class OperatorAuthentication
     {
         private static string CurrentLocalHost = null;
         private static string CurrentTrustedInstaller = null;
+        private static string CurrentPipelineAuth = null;
         private static Dictionary<string, Authentication> Auths = new();
         private static Dictionary<string, string> RuntimeAuth2AuthMap = new();
         private static string RuntimeSalt = null;
@@ -82,6 +83,10 @@ namespace LWMS.Core.Authentication
                     }
                 }
             }
+        }
+        public static void SetPipelineAuth(string Auth, string AuthContext)
+        {
+            AuthedAction(AuthContext, () => { CurrentPipelineAuth = Auth; }, false, true, PermissionID.SetPermission);
         }
         public static int GetAuthCount() => Auths.Count;
         static void SaveAuth(string Auth)
@@ -218,10 +223,20 @@ namespace LWMS.Core.Authentication
             }
             else return;
         }
-        public static bool IsAuthed(string Auth, string PermissionID, bool DefaultPermission = false)
+        public static bool IsAuthed(string Auth, string TargetPermissionID, bool DefaultPermission = false)
         {
             if (CurrentLocalHost == Auth) return true;
             if (CurrentTrustedInstaller == Auth) return true;
+            if (CurrentPipelineAuth == Auth)
+            {
+                switch (TargetPermissionID)
+                {
+                    case PermissionID.Core_SBS_Load:
+                    case PermissionID.ReadConfig:
+                    case PermissionID.ReadConfig_WebSiteModuleStorageRoot:
+                        return true;
+                }
+            }
             if (!RuntimeAuth2AuthMap.ContainsKey(Auth))
                 return DefaultPermission;
             else
@@ -231,13 +246,13 @@ namespace LWMS.Core.Authentication
                     if (Auths[RuntimeAuth2AuthMap[Auth]].Permissions["Class1Admin"] is true)
                     {
 
-                        if (PermissionID != "Core.SetPermission")
+                        if (TargetPermissionID != "Core.SetPermission")
                             return true;
                     }
                 }
-                if (Auths[RuntimeAuth2AuthMap[Auth]].Permissions.ContainsKey(PermissionID))
+                if (Auths[RuntimeAuth2AuthMap[Auth]].Permissions.ContainsKey(TargetPermissionID))
                 {
-                    return Auths[RuntimeAuth2AuthMap[Auth]].Permissions[PermissionID];
+                    return Auths[RuntimeAuth2AuthMap[Auth]].Permissions[TargetPermissionID];
                 }
             }
             return DefaultPermission;
