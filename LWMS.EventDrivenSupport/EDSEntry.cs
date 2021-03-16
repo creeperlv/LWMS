@@ -11,7 +11,7 @@ namespace LWMS.EventDrivenSupport
 {
     public class EDSEntry : IPipedProcessUnit
     {
-        List<MappedType> RouteTargets = null;
+        internal static List<MappedType> RouteTargets = null;
         public EDSEntry()
         {
 

@@ -49,7 +49,7 @@ namespace LWMS.Core.Configuration
             //        return;
             //    }
             //}
-            if (b==false)
+            if (b == false)
                 RawData = INILikeData.LoadFromWR(new FileWR(sf.ToFileInfo(GlobalConfiguration.TrustedInstaller)));
             else RawData = INILikeData.CreateToWR(new FileWR(sf.ToFileInfo(GlobalConfiguration.TrustedInstaller)));
 
@@ -87,6 +87,23 @@ namespace LWMS.Core.Configuration
                 }
             }
             return v;
+        }
+        public void AddValueToArray(string Key, string value)
+        {
+            var c = RawData.FindValue(Key + ".Count");
+            if (c == null)
+            {
+                SetValueArray(Key, value);
+            }
+            else
+            {
+                var C = int.Parse(c);
+                RawData.AddValue(Key + ".Count", (C + 1).ToString(), true, false);
+                RawData.AddValue(Key + "."+C, value, true, false);
+                RawData.RemoveOldDuplicatedItems(false);
+                RawData.Flush();
+            }
+            //RawData.AddValue(Key + ".Count", values.Length + "", true, false, Handle);
         }
         public void SetValueArray(string Key, params string[] values)
         {
