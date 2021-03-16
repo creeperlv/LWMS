@@ -40,7 +40,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Core.SBSDomain", "LWMS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Sample.MarkdownBlog", "LWMS.Sample.MarkdownBlog\LWMS.Sample.MarkdownBlog.csproj", "{982F3EF8-D222-41FA-907D-9476F3708CB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWMS.EventDrivenSupport", "LWMS.EventDrivenSupport\LWMS.EventDrivenSupport.csproj", "{0BF56B8F-2966-4E51-B2B4-468925B47ADF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWMS.EventDrivenRequests", "LWMS.EventDrivenRequests\LWMS.EventDrivenRequests.csproj", "{0BF56B8F-2966-4E51-B2B4-468925B47ADF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

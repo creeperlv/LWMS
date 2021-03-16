@@ -12,9 +12,9 @@ namespace LWMS.EventDrivenSupport
 {
     public class EDSMgr : IManageCommand
     {
-        public string CommandName => "edsmgr";
+        public string CommandName => "edrmgr";
 
-        public List<string> Alias => new() { "eds", "edsmanager", "manage-eds" };
+        public List<string> Alias => new() { "edr", "edrmanager", "manage-edr" };
 
         public int Version => 1;
 
