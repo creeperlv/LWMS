@@ -9,10 +9,10 @@ using System.IO;
 
 namespace LWMS.EventDrivenSupport
 {
-    public class EDSEntry : IPipedProcessUnit
+    public class EDREntry : IPipedProcessUnit
     {
         internal static List<MappedType> RouteTargets = null;
-        public EDSEntry()
+        public EDREntry()
         {
 
         }
@@ -55,7 +55,7 @@ namespace LWMS.EventDrivenSupport
 
                     for (int i = 0; i < requests.Length; i++)
                     {
-                        if (path0.StartsWith(requests[i]))
+                        if (path0.ToUpper().StartsWith(requests[i].ToUpper()))//Ignore case
                         {
                             (Input.SecondaryData as HttpPipelineArguments).isHandled = (RouteTargets[i].TargetObject as IHttpEventHandler).Handle(context);
                             return Input;

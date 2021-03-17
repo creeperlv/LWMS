@@ -99,17 +99,55 @@ namespace LWMS.Core.Configuration
             {
                 var C = int.Parse(c);
                 RawData.AddValue(Key + ".Count", (C + 1).ToString(), true, false);
-                RawData.AddValue(Key + "."+C, value, true, false);
+                RawData.AddValue(Key + "." + C, value, true, false);
                 RawData.RemoveOldDuplicatedItems(false);
                 RawData.Flush();
             }
             //RawData.AddValue(Key + ".Count", values.Length + "", true, false, Handle);
+        }
+        public void RemoveValueFromArray(string Key, int Index)
+        {
+
+            var c = RawData.FindValue(Key + ".Count");
+            if (c == null)
+            {
+            }
+            else
+            {
+                var C = int.Parse(c);
+                var arr = new List<string>(GetValueArray(Key));
+                arr.RemoveAt(Index);
+                for (int i = Index; i < C; i++)
+                {
+                    RawData.DeleteKey(Key + "." + i, false);
+                }
+                RawData.Flush();
+                SetValueArray(Key, arr.ToArray());
+            }
+
         }
         public void SetValueArray(string Key, params string[] values)
         {
             Random r = new Random();
             int Handle = r.Next(0, int.MaxValue);
             RawData.OnHold(Handle);
+            {
+
+                var c = RawData.FindValue(Key + ".Count");
+                if (c != null)
+                {
+                    //Remove old array.
+                    int Count;
+                    if (int.TryParse(c, out Count))
+                    {
+
+                        for (int i = 0; i < Count; i++)
+                        {
+                            RawData.DeleteKey(Key + "." + i, false, Handle);
+                        }
+                    }
+                }
+            }
             RawData.AddValue(Key + ".Count", values.Length + "", true, false, Handle);
             for (int i = 0; i < values.Length; i++)
             {

@@ -1,4 +1,5 @@
-﻿using LWMS.Core.Configuration;
+﻿using LWMS.Core.Authentication;
+using LWMS.Core.Configuration;
 using LWMS.Core.SBSDomain;
 using LWMS.Management;
 using System;
@@ -10,7 +11,14 @@ using System.Threading.Tasks;
 
 namespace LWMS.EventDrivenSupport
 {
-    public class EDSMgr : IManageCommand
+    public static class EDRPermissions
+    {
+        public const string RegisterHandler = "EDR.Handlers.RegisterHandler";
+        public const string HandlerAll = "EDR.Handlers.All";
+        public const string UnregisterHandler = "EDR.Handlers.UnregisterHandler";
+        public const string UpdateDLL = "EDR.Handlers.UpdateDLL";
+    }
+    public class EDRMgr : IManageCommand
     {
         public string CommandName => "edrmgr";
 
@@ -34,25 +42,57 @@ namespace LWMS.EventDrivenSupport
                             var urlPrefix = args[i + 1].PackTotal;
                             var Assembly = args[i + 2].PackTotal;
                             var TargetType = args[i + 3].PackTotal;
-                            ApplicationConfiguration.Current.AddValueToArray("RoutedRequests", urlPrefix);
-                            ApplicationConfiguration.Current.AddValueToArray("RouteTargets",Assembly+","+TargetType);
-                            {
-                                FileInfo fi = new(Assembly);
-                                var asm = DomainManager.LoadFromFile(AuthContext, fi.FullName);
-                                var t = asm.GetType(TargetType);
-                                MappedType mappedType = new MappedType(fi.Name, Activator.CreateInstance(t));
-                                EDSEntry.RouteTargets.Add(mappedType);
-                            }
                             i += 3;
+                            OperatorAuthentication.AuthedAction(AuthContext, () =>
+                            {
+                                ApplicationConfiguration.Current.AddValueToArray("RoutedRequests", urlPrefix);
+                                ApplicationConfiguration.Current.AddValueToArray("RouteTargets", Assembly + "," + TargetType);
+                                {
+                                    FileInfo fi = new(Assembly);
+                                    var asm = DomainManager.LoadFromFile(AuthContext, fi.FullName);
+                                    var t = asm.GetType(TargetType);
+                                    MappedType mappedType = new MappedType(fi.Name, Activator.CreateInstance(t));
+                                    EDREntry.RouteTargets.Add(mappedType);
+                                }
+                            }, false, true, EDRPermissions.RegisterHandler, EDRPermissions.HandlerAll);
+                        }
+                        break;
+                    case "UNREGISTER":
+                    case "REMOVEHANDLER":
+                    case "--UN":
+                    case "--RM":
+                        {
+                            var urlPrefix = args[i + 1].PackTotal;
+                            i++;
+                            OperatorAuthentication.AuthedAction(AuthContext, () =>
+                            {
+                                var requests = ApplicationConfiguration.Current.GetValueArray("RoutedRequests");
+                                if (requests is not null)
+                                {
+                                    for (int _i = 0; _i < requests.Length; _i++)
+                                    {
+                                        if (requests[_i].ToUpper() == urlPrefix.ToUpper())
+                                        {
+                                            ApplicationConfiguration.Current.RemoveValueFromArray("RoutedRequests", _i);
+                                            ApplicationConfiguration.Current.RemoveValueFromArray("RouteTargets", _i);
+                                            EDREntry.RouteTargets = null;// Force reload.
+                                            break;
+                                        }
+                                    }
+                                }
+                            }, false, false, EDRPermissions.UnregisterHandler, EDRPermissions.HandlerAll);
                         }
                         break;
                     case "UPDATEDLL":
                     case "--U":
                         {
-                            foreach (var item in EDSEntry.RouteTargets)
+                            OperatorAuthentication.AuthedAction(AuthContext, () =>
                             {
-                                item.Update(AuthContext);
-                            }
+                                foreach (var item in EDREntry.RouteTargets)
+                                {
+                                    item.Update(AuthContext);
+                                }
+                            }, false, false, EDRPermissions.UpdateDLL, EDRPermissions.HandlerAll);
                         }
                         break;
                 }
