@@ -53,6 +53,7 @@ namespace LWMS.EventDrivenSupport
                                     var t = asm.GetType(TargetType);
                                     MappedType mappedType = new MappedType(fi.Name, Activator.CreateInstance(t));
                                     EDREntry.RouteTargets.Add(mappedType);
+                                    EDREntry.requests = null;
                                 }
                             }, false, true, EDRPermissions.RegisterHandler, EDRPermissions.HandlerAll);
                         }
@@ -75,6 +76,7 @@ namespace LWMS.EventDrivenSupport
                                         {
                                             ApplicationConfiguration.Current.RemoveValueFromArray("RoutedRequests", _i);
                                             ApplicationConfiguration.Current.RemoveValueFromArray("RouteTargets", _i);
+                                            EDREntry.requests = null;
                                             EDREntry.RouteTargets = null;// Force reload.
                                             break;
                                         }

@@ -12,6 +12,7 @@ namespace LWMS.EventDrivenSupport
     public class EDREntry : IPipedProcessUnit
     {
         internal static List<MappedType> RouteTargets = null;
+        internal static string[] requests = null;
         public EDREntry()
         {
 
@@ -20,7 +21,8 @@ namespace LWMS.EventDrivenSupport
         {
             {
                 HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
-                var requests = ApplicationConfiguration.Current.GetValueArray("RoutedRequests");
+                if(requests is null)
+                requests = ApplicationConfiguration.Current.GetValueArray("RoutedRequests");
                 if (RouteTargets == null)
                 {
                     var targets = ApplicationConfiguration.Current.GetValueArray("RouteTargets");
