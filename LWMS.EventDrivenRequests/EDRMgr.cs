@@ -25,7 +25,10 @@ namespace LWMS.EventDrivenSupport
         public List<string> Alias => new() { "edr", "edrmanager", "manage-edr" };
 
         public int Version => 1;
+        void PrintHelp()
+        {
 
+        }
         public void Invoke(string AuthContext, params CommandPack[] args)
         {
             for (int i = 0; i < args.Length; i++)
@@ -96,6 +99,8 @@ namespace LWMS.EventDrivenSupport
                                 }
                             }, false, false, EDRPermissions.UpdateDLL, EDRPermissions.HandlerAll);
                         }
+                        break;
+                    default:
                         break;
                 }
             }

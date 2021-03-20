@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Resources;
 using System.Text;
 
 namespace LWMS.Sample.MarkdownBlog
@@ -27,23 +28,64 @@ namespace LWMS.Sample.MarkdownBlog
                 Trace.WriteLine("Cannot load Markdig.dll, MDBlog may be unable to work correctly.");
             }
             //In case that dependency is not loaded.
+            CheckArticleTemplate();
+            CheckHomepageItemTamplate();
+            CheckHomepageTamplate();
+            CheckArticleFolder();
         }
         StorageFile ArticleTemplate = null;
         StorageFile ArticleListTemplate = null;
         StorageFile ArticleListItemTemplate = null;
         StorageFolder Articles = null;
+        void CheckArticleTemplate()
+        {
+
+            if (ArticleTemplate is null)
+            {
+                if (ApplicationStorage.CurrentModule.GetFile("Template.html", out ArticleTemplate) is false)
+                {
+                    ApplicationStorage.CurrentModule.CreateFile("Template.html", out ArticleTemplate);
+                    File.WriteAllText(ArticleTemplate.ToFileInfo().FullName, DefaultPages.Template_html);
+                }
+            }
+        }
+        void CheckHomepageTamplate()
+        {
+            if (ArticleListTemplate is null)
+            {
+                if (ApplicationStorage.CurrentModule.GetFile("ArticleListTemplate.html", out ArticleTemplate) is false)
+                {
+                    ApplicationStorage.CurrentModule.CreateFile("ArticleListTemplate.html", out ArticleTemplate);
+                    File.WriteAllText(ArticleTemplate.ToFileInfo().FullName, DefaultPages.ArticleListTemplate_html);
+                }
+            }
+        }
+        void CheckHomepageItemTamplate()
+        {
+
+            if (ArticleListItemTemplate is null)
+            {
+                if (ApplicationStorage.CurrentModule.GetFile("ArticleListItemTemplate.html", out ArticleTemplate) is false)
+                {
+                    ApplicationStorage.CurrentModule.CreateFile("ArticleListItemTemplate.html", out ArticleTemplate);
+                    File.WriteAllText(ArticleTemplate.ToFileInfo().FullName, DefaultPages.ArticleListItemTemplate_html);
+                }
+            }
+        }
+        void CheckArticleFolder()
+        {
+
+            if (Articles is null)
+                Articles = ApplicationStorage.CurrentModule.CreateFolder("Articles", true);
+        }
         public PipelineData Process(PipelineData Input)
         {
             if (isMarkdownUnavailable is false)
             {
-                if (ArticleTemplate is null)
-                    ArticleTemplate = ApplicationStorage.CurrentModule.GetFile("Template.html");
-                if (ArticleListTemplate is null)
-                    ArticleListTemplate = ApplicationStorage.CurrentModule.GetFile("ArticleListTemplate.html");
-                if (ArticleListItemTemplate is null)
-                    ArticleListItemTemplate = ApplicationStorage.CurrentModule.GetFile("ArticleListItemTemplate.html");
-                if (Articles is null)
-                    Articles = ApplicationStorage.CurrentModule.CreateFolder("Articles", true);
+                CheckArticleTemplate();
+                CheckHomepageItemTamplate();
+                CheckHomepageTamplate();
+                CheckArticleFolder();
                 HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
                 var path0 = context.Request.Url.LocalPath.Substring(1);
                 if (path0.ToUpper().StartsWith("BLOGS"))

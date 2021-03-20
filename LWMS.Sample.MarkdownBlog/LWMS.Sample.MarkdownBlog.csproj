@@ -12,5 +12,18 @@
     <ProjectReference Include="..\LWMS.Core.Configuration\LWMS.Core.Configuration.csproj" />
     <ProjectReference Include="..\LWMS.Core\LWMS.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="DefaultPages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DefaultPages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="DefaultPages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DefaultPages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 
 </Project>
