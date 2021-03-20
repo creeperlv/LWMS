@@ -59,7 +59,7 @@ namespace LWMS.EventDrivenSupport
                     {
                         if (path0.ToUpper().StartsWith(requests[i].ToUpper()))//Ignore case
                         {
-                            (Input.SecondaryData as HttpPipelineArguments).isHandled = (RouteTargets[i].TargetObject as IHttpEventHandler).Handle(context);
+                            (Input.SecondaryData as HttpPipelineArguments).isHandled = (RouteTargets[i].TargetObject as IHttpEventHandler).Handle(context,path0);
                             return Input;
                         }
                     }
@@ -70,6 +70,6 @@ namespace LWMS.EventDrivenSupport
     }
     public interface IHttpEventHandler
     {
-        bool Handle(HttpListenerRoutedContext context);
+        bool Handle(HttpListenerRoutedContext context,string HttpPrefix);
     }
 }

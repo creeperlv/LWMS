@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LWMS.Core.Configuration\LWMS.Core.Configuration.csproj" />
     <ProjectReference Include="..\LWMS.Core\LWMS.Core.csproj" />
+    <ProjectReference Include="..\LWMS.EventDrivenRequests\LWMS.EventDrivenRequests.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="DefaultPages.Designer.cs">

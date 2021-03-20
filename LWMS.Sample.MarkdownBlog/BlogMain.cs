@@ -33,11 +33,11 @@ namespace LWMS.Sample.MarkdownBlog
             CheckHomepageTamplate();
             CheckArticleFolder();
         }
-        StorageFile ArticleTemplate = null;
-        StorageFile ArticleListTemplate = null;
-        StorageFile ArticleListItemTemplate = null;
-        StorageFolder Articles = null;
-        void CheckArticleTemplate()
+        internal static StorageFile ArticleTemplate = null;
+        internal static StorageFile ArticleListTemplate = null;
+        internal static StorageFile ArticleListItemTemplate = null;
+        internal static StorageFolder Articles = null;
+        internal static void CheckArticleTemplate()
         {
 
             if (ArticleTemplate is null)
@@ -49,7 +49,7 @@ namespace LWMS.Sample.MarkdownBlog
                 }
             }
         }
-        void CheckHomepageTamplate()
+        internal static void CheckHomepageTamplate()
         {
             if (ArticleListTemplate is null)
             {
@@ -60,7 +60,7 @@ namespace LWMS.Sample.MarkdownBlog
                 }
             }
         }
-        void CheckHomepageItemTamplate()
+        internal static void CheckHomepageItemTamplate()
         {
 
             if (ArticleListItemTemplate is null)
@@ -72,7 +72,7 @@ namespace LWMS.Sample.MarkdownBlog
                 }
             }
         }
-        void CheckArticleFolder()
+        internal static void CheckArticleFolder()
         {
 
             if (Articles is null)
