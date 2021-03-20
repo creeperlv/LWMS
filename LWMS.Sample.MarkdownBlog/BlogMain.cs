@@ -53,10 +53,10 @@ namespace LWMS.Sample.MarkdownBlog
         {
             if (ArticleListTemplate is null)
             {
-                if (ApplicationStorage.CurrentModule.GetFile("ArticleListTemplate.html", out ArticleTemplate) is false)
+                if (ApplicationStorage.CurrentModule.GetFile("ArticleListTemplate.html", out ArticleListTemplate) is false)
                 {
-                    ApplicationStorage.CurrentModule.CreateFile("ArticleListTemplate.html", out ArticleTemplate);
-                    File.WriteAllText(ArticleTemplate.ToFileInfo().FullName, DefaultPages.ArticleListTemplate_html);
+                    ApplicationStorage.CurrentModule.CreateFile("ArticleListTemplate.html", out ArticleListTemplate);
+                    File.WriteAllText(ArticleListTemplate.ToFileInfo().FullName, DefaultPages.ArticleListTemplate_html);
                 }
             }
         }
@@ -65,10 +65,10 @@ namespace LWMS.Sample.MarkdownBlog
 
             if (ArticleListItemTemplate is null)
             {
-                if (ApplicationStorage.CurrentModule.GetFile("ArticleListItemTemplate.html", out ArticleTemplate) is false)
+                if (ApplicationStorage.CurrentModule.GetFile("ArticleListItemTemplate.html", out ArticleListItemTemplate) is false)
                 {
-                    ApplicationStorage.CurrentModule.CreateFile("ArticleListItemTemplate.html", out ArticleTemplate);
-                    File.WriteAllText(ArticleTemplate.ToFileInfo().FullName, DefaultPages.ArticleListItemTemplate_html);
+                    ApplicationStorage.CurrentModule.CreateFile("ArticleListItemTemplate.html", out ArticleListItemTemplate);
+                    File.WriteAllText(ArticleListItemTemplate.ToFileInfo().FullName, DefaultPages.ArticleListItemTemplate_html);
                 }
             }
         }

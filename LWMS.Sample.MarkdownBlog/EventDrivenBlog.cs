@@ -44,7 +44,7 @@ namespace LWMS.Sample.MarkdownBlog
                 BlogMain.CheckHomepageTamplate();
                 BlogMain.CheckArticleFolder();
                 var path0 = context.Request.Url.LocalPath.Substring(1);
-                if (path0.ToUpper().StartsWith(HttpPrefix))
+                if (path0.ToUpper().StartsWith(HttpPrefix.ToUpper()))
                 {
                     var path1 = path0.Substring(HttpPrefix.Length).Substring(path0.IndexOf("/") + 1);
                     StorageFile f;
@@ -84,7 +84,7 @@ namespace LWMS.Sample.MarkdownBlog
                         {
                             HttpPrefix += "/";
                         }
-                        if (path0.ToUpper().StartsWith(HttpPrefix)) LinkPrefix = "./";
+                        if (path0.ToUpper().StartsWith(HttpPrefix.ToUpper())) LinkPrefix = "./";
                         foreach (var item in list)
                         {
                             if (item.Name.ToUpper().EndsWith(".INFO"))
