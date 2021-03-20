@@ -1,6 +1,8 @@
 ﻿using LWMS.Core.SBSDomain;
+using LWMS.Localization;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +19,15 @@ namespace LWMS.Core.ScheduledTask
         }
         public static void Schedule(Type type, string TaskName, ScheduleTaskGap gap)
         {
+            SingleTask ST = new SingleTask();
+            ST.gap = gap;
+            ST.RealTask = MappedType.CreateFrom(type);
+            if (!ScheduledTasks.ContainsKey(TaskName))
+            {
+                ScheduledTasks.Add(TaskName, ST);
 
+                Trace.WriteLine(Language.Query("LWMS.ScheduleTask.Schedule", "{0} has been added into scheduled tasks.", TaskName));
+            }
         }
     }
     internal class TaskRunner
@@ -79,6 +89,7 @@ namespace LWMS.Core.ScheduledTask
                             if (willExecute is true)
                             {
                                 (item.Value.RealTask.TargetObject as IScheduleTask).Task();
+                                Trace.WriteLine(Language.Query("LWMS.ScheduleTask.Run", "Task {0} has been invoked on schedule.", item.Key));
                             }
                         }
                         if (step % 17280 == 0) step = 0;

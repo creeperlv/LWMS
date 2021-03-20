@@ -3,6 +3,7 @@ using LWMS.Core.Authentication;
 using LWMS.Core.Configuration;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Core.SBSDomain;
+using LWMS.Core.ScheduledTask;
 using LWMS.Localization;
 using LWMS.Management;
 using System;
@@ -226,6 +227,8 @@ namespace LWMS.Core
             });
             //Load Manage Modules
             LoadCommandsFromManifest();
+            //Start invoke scheduled tasks.
+            TaskRunner.StartRun();
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

@@ -23,3 +23,5 @@ Command.AuthReject=Operation rejected: auth {0} have no permission.
 Config.CreateDefaultCommandManifest=Create default command module manifest.
 Auth.Reject=Operation rejected: auth {0} have no permission of {1}.
 Goodbye=Goodbye.
+ScheduleTask.Schedule={0} has been added into scheduled tasks.
+ScheduleTask.Run=Task {0} has been invoked on schedule.

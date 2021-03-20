@@ -63,6 +63,13 @@ namespace LWMS.Core.SBSDomain
     public class MappedType
     {
         internal static List<MappedType> MappedTypeObjectCollection = new();
+        public static MappedType CreateFrom(Type t)
+        {
+            FileInfo fi = new FileInfo(
+            t.Assembly.Location);
+            MappedType mappedType = new MappedType(fi.Name, Activator.CreateInstance(t));
+            return mappedType;
+        }
         public MappedType(string File, object _object)
         {
             LibFileName = File;
