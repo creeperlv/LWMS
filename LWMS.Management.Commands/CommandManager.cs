@@ -12,7 +12,7 @@ namespace LWMS.Management.Commands
     public class CommandManager : IManageCommand
     {
         public string CommandName => "ManageCommand";
-        public int Version => 3;
+        public int Version => 4;
 
         public List<string> Alias => new List<string>(new string[] { "commands", "cmds" });
 
@@ -56,12 +56,12 @@ namespace LWMS.Management.Commands
                 {
                     foreach (var item in ServerController.ManageCommands)
                     {
-                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Type", "Type: {0}", item.Value.ToString()));
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Type", "Type: {0}", item.Value.TargetObject.ToString()));
                         Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Command", "\t\tCommand: {0} ", item.Key));
-                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Dll", "\t\tDLL: {0} ", item.Value.GetType().Assembly.Location));
-                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Version", "\t\tVersion: {0} ", item.Value.Version.ToString()));
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Dll", "\t\tDLL: {0} ", item.Value.TargetObject.GetType().Assembly.Location));
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Version", "\t\tVersion: {0} ", (item.Value.TargetObject as IManageCommand).Version.ToString()));
                         StringBuilder stringBuilder = new StringBuilder();
-                        foreach (string alias in item.Value.Alias)
+                        foreach (string alias in (item.Value.TargetObject as IManageCommand).Alias)
                         {
                             stringBuilder.Append(" ");
                             stringBuilder.Append(alias);
