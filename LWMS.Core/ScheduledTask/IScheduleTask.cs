@@ -1,4 +1,5 @@
-﻿using LWMS.Core.SBSDomain;
+﻿using LWMS.Core.Authentication;
+using LWMS.Core.SBSDomain;
 using LWMS.Localization;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,16 @@ namespace LWMS.Core.ScheduledTask
         {
             internal ScheduleTaskGap gap;
             internal MappedType RealTask;
+            internal string parent;
         }
         public static void Schedule(Type type, string TaskName, ScheduleTaskGap gap)
         {
+            StackTrace st = new StackTrace(1);
+            var item = st.GetFrame(0);
+            var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
             SingleTask ST = new SingleTask();
             ST.gap = gap;
+            ST.parent = ModuleName;
             ST.RealTask = MappedType.CreateFrom(type);
             if (!ScheduledTasks.ContainsKey(TaskName))
             {
@@ -29,6 +35,43 @@ namespace LWMS.Core.ScheduledTask
                 Trace.WriteLine(Language.Query("LWMS.ScheduleTask.Schedule", "{0} has been added into scheduled tasks.", TaskName));
             }
         }
+        public static void Unschedule(string TaskName)
+        {
+            if (ScheduledTasks.ContainsKey(TaskName))
+            {
+                StackTrace st = new StackTrace(1);
+                var item = st.GetFrame(0);
+                var ModuleName = item.GetMethod().DeclaringType.Assembly.GetName().Name;
+                if (ScheduledTasks[TaskName].parent == ModuleName)
+                {
+                    ScheduledTasks.Remove(TaskName);
+                }
+                else
+                {
+                    throw new OperateNotProcessedScheduleTaskException();
+                }
+            }
+        }
+        internal static void _Unschedule(string TaskName)
+        {
+            if (ScheduledTasks.ContainsKey(TaskName))
+                ScheduledTasks.Remove(TaskName);
+        }
+        public static void Unschedule(string Auth, string TaskName)
+        {
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
+
+                if (ScheduledTasks.ContainsKey(TaskName))
+                    ScheduledTasks.Remove(TaskName);
+            }, false, true, PermissionID.ScheduleTask_Unschedule, PermissionID.ScheduleTask_All);
+        }
+    }
+
+    [Serializable]
+    public class OperateNotProcessedScheduleTaskException : Exception
+    {
+        public OperateNotProcessedScheduleTaskException() : base("Operating task that is not belong to current module.") { }
     }
     internal class TaskRunner
     {

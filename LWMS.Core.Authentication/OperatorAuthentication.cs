@@ -49,6 +49,8 @@ namespace LWMS.Core.Authentication
         public const string Core_SBS_Update = "Core.SBS.Update";
         public const string Core_SBS_All = "Core.SBS.ALL";
         public const string Core_SBS_Read = "Core.SBS.Read";
+        public const string ScheduleTask_Unschedule = "Core.ScheduleTask.Unschedule";
+        public const string ScheduleTask_All = "Core.ScheduleTask.All";
     }
     public static class OperatorAuthentication
     {
