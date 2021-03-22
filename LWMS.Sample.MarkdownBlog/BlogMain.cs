@@ -28,64 +28,12 @@ namespace LWMS.Sample.MarkdownBlog
                 Trace.WriteLine("Cannot load Markdig.dll, MDBlog may be unable to work correctly.");
             }
             //In case that dependency is not loaded.
-            CheckArticleTemplate();
-            CheckHomepageItemTamplate();
-            CheckHomepageTamplate();
-            CheckArticleFolder();
-        }
-        internal static StorageFile ArticleTemplate = null;
-        internal static StorageFile ArticleListTemplate = null;
-        internal static StorageFile ArticleListItemTemplate = null;
-        internal static StorageFolder Articles = null;
-        internal static void CheckArticleTemplate()
-        {
-
-            if (ArticleTemplate is null)
-            {
-                if (ApplicationStorage.CurrentModule.GetFile("Template.html", out ArticleTemplate) is false)
-                {
-                    ApplicationStorage.CurrentModule.CreateFile("Template.html", out ArticleTemplate);
-                    File.WriteAllText(ArticleTemplate.ToFileInfo().FullName, DefaultPages.Template_html);
-                }
-            }
-        }
-        internal static void CheckHomepageTamplate()
-        {
-            if (ArticleListTemplate is null)
-            {
-                if (ApplicationStorage.CurrentModule.GetFile("ArticleListTemplate.html", out ArticleListTemplate) is false)
-                {
-                    ApplicationStorage.CurrentModule.CreateFile("ArticleListTemplate.html", out ArticleListTemplate);
-                    File.WriteAllText(ArticleListTemplate.ToFileInfo().FullName, DefaultPages.ArticleListTemplate_html);
-                }
-            }
-        }
-        internal static void CheckHomepageItemTamplate()
-        {
-
-            if (ArticleListItemTemplate is null)
-            {
-                if (ApplicationStorage.CurrentModule.GetFile("ArticleListItemTemplate.html", out ArticleListItemTemplate) is false)
-                {
-                    ApplicationStorage.CurrentModule.CreateFile("ArticleListItemTemplate.html", out ArticleListItemTemplate);
-                    File.WriteAllText(ArticleListItemTemplate.ToFileInfo().FullName, DefaultPages.ArticleListItemTemplate_html);
-                }
-            }
-        }
-        internal static void CheckArticleFolder()
-        {
-
-            if (Articles is null)
-                Articles = ApplicationStorage.CurrentModule.CreateFolder("Articles", true);
+            SharedResources.Init();
         }
         public PipelineData Process(PipelineData Input)
         {
             if (isMarkdownUnavailable is false)
             {
-                CheckArticleTemplate();
-                CheckHomepageItemTamplate();
-                CheckHomepageTamplate();
-                CheckArticleFolder();
                 HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
                 var path0 = context.Request.Url.LocalPath.Substring(1);
                 if (path0.ToUpper().StartsWith("BLOGS"))
@@ -98,20 +46,20 @@ namespace LWMS.Sample.MarkdownBlog
                     }
                     else
                     {
-                        if (Articles.GetFile(path1, out f, false))
+                        if (SharedResources.Articles.GetFile(path1, out f, false))
                         {
                             Trace.WriteLine("MDBlog>>Article:" + f.Name);
                             var MDContnet = Markdown.ToHtml(File.ReadAllText(f.ItemPath));
                             string Title = f.Name;
                             StorageFile info;
-                            if (Articles.GetFile(path1 + ".info", out info, false))
+                            if (SharedResources.Articles.GetFile(path1 + ".info", out info, false))
                             {
                                 var infos = File.ReadAllLines(info.ItemPath);
                                 if (infos.Length > 0)
                                     Title = infos[0];
                             }
 
-                            var FinalContent = File.ReadAllText(ArticleTemplate.ItemPath).Replace("%Content%", MDContnet).Replace("%Title%", Title);
+                            var FinalContent = SharedResources.ArticleTemplate_.Replace("%Content%", MDContnet).Replace("%Title%", Title);
                             context.Response.OutputStream.Write(Encoding.UTF8.GetBytes(FinalContent));
                             (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
                             return Input;
@@ -119,10 +67,9 @@ namespace LWMS.Sample.MarkdownBlog
                     }
                     {
                         Trace.WriteLine("MDBlog>>MainPage");
-                        var list = Articles.GetFiles();
-
-                        var MainContent = File.ReadAllText(ArticleListTemplate.ItemPath);
-                        var ItemTemplate = File.ReadAllText(ArticleListItemTemplate.ItemPath);
+                        var list = SharedResources.Articles.GetFiles();
+                        var MainContent = SharedResources.ArticleListTemplate_;
+                        var ItemTemplate = SharedResources.ArticleListItemTemplate_;
                         var ItemList = "";
                         string LinkPrefix = "./Blogs/";
                         if (path0.ToUpper().StartsWith("BLOGS/")) LinkPrefix = "./";

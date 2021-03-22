@@ -30,19 +30,12 @@ namespace LWMS.Sample.MarkdownBlog
                 Trace.WriteLine("Cannot load Markdig.dll, MDBlog may be unable to work correctly.");
             }
             //In case that dependency is not loaded.
-            BlogMain.CheckArticleTemplate();
-            BlogMain.CheckHomepageItemTamplate();
-            BlogMain.CheckHomepageTamplate();
-            BlogMain.CheckArticleFolder();
+            SharedResources.Init();
         }
         public bool Handle(HttpListenerRoutedContext context,string HttpPrefix)
         {
             if (isMarkdownUnavailable is false)
             {
-                BlogMain.CheckArticleTemplate();
-                BlogMain.CheckHomepageItemTamplate();
-                BlogMain.CheckHomepageTamplate();
-                BlogMain.CheckArticleFolder();
                 var path0 = context.Request.Url.LocalPath.Substring(1);
                 if (path0.ToUpper().StartsWith(HttpPrefix.ToUpper()))
                 {
@@ -54,30 +47,30 @@ namespace LWMS.Sample.MarkdownBlog
                     }
                     else
                     {
-                        if (BlogMain.Articles.GetFile(path1, out f, false))
+                        if (SharedResources.Articles.GetFile(path1, out f, false))
                         {
                             Trace.WriteLine("MDBlog>>Article:" + f.Name);
                             var MDContnet = Markdown.ToHtml(File.ReadAllText(f.ItemPath));
                             string Title = f.Name;
                             StorageFile info;
-                            if (BlogMain.Articles.GetFile(path1 + ".info", out info, false))
+                            if (SharedResources.Articles.GetFile(path1 + ".info", out info, false))
                             {
                                 var infos = File.ReadAllLines(info.ItemPath);
                                 if (infos.Length > 0)
                                     Title = infos[0];
                             }
 
-                            var FinalContent = File.ReadAllText(BlogMain.ArticleTemplate.ItemPath).Replace("%Content%", MDContnet).Replace("%Title%", Title);
+                            var FinalContent = SharedResources.ArticleTemplate_.Replace("%Content%", MDContnet).Replace("%Title%", Title);
                             context.Response.OutputStream.Write(Encoding.UTF8.GetBytes(FinalContent));
                             return true;
                         }
                     }
                     {
                         Trace.WriteLine("MDBlog>>MainPage");
-                        var list = BlogMain.Articles.GetFiles();
+                        var list = SharedResources.Articles.GetFiles();
 
-                        var MainContent = File.ReadAllText(BlogMain.ArticleListTemplate.ItemPath);
-                        var ItemTemplate = File.ReadAllText(BlogMain.ArticleListItemTemplate.ItemPath);
+                        var MainContent = SharedResources.ArticleListTemplate_;
+                        var ItemTemplate = SharedResources.ArticleListItemTemplate_;
                         var ItemList = "";
                         string LinkPrefix = "./"+(HttpPrefix.Split("/").Last()) +"/";
                         if (!HttpPrefix.EndsWith("/"))
