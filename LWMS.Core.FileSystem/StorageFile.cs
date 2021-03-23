@@ -59,7 +59,7 @@ namespace LWMS.Core.FileSystem
         /// Open the file.
         /// </summary>
         /// <returns></returns>
-        public FileStream OpenFileWR()
+        public virtual Stream OpenFileWR()
         {
             if (BaseWritePermission is not null) throw new UnauthorizedException(null, BaseWritePermission[0]);
             if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
@@ -69,7 +69,7 @@ namespace LWMS.Core.FileSystem
         /// Open the file.
         /// </summary>
         /// <returns></returns>
-        public FileStream OpenFileW()
+        public virtual Stream OpenFileW()
         {
             if (BaseWritePermission is not null) throw new UnauthorizedException(null, BaseWritePermission[0]);
             return RealFile.Open(FileMode.Open, FileAccess.Write);
@@ -78,7 +78,7 @@ namespace LWMS.Core.FileSystem
         /// Open the file.
         /// </summary>
         /// <returns></returns>
-        public FileStream OpenFileR()
+        public virtual Stream OpenFileR()
         {
             if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
             return RealFile.Open(FileMode.Open, FileAccess.Read);
@@ -87,7 +87,7 @@ namespace LWMS.Core.FileSystem
         /// Open the file.
         /// </summary>
         /// <returns></returns>
-        public FileStream OpenFileWR(string Auth)
+        public virtual Stream OpenFileWR(string Auth)
         {
             if (BaseWritePermission is null) if (BaseReadPermission is null) return OpenFileWR();
             FileStream fs = null;
@@ -100,7 +100,7 @@ namespace LWMS.Core.FileSystem
         /// Open the file.
         /// </summary>
         /// <returns></returns>
-        public FileStream OpenFileW(string Auth)
+        public virtual Stream OpenFileW(string Auth)
         {
             if (BaseWritePermission is null) return OpenFileWR();
             FileStream fs = null;
@@ -111,7 +111,7 @@ namespace LWMS.Core.FileSystem
         /// Open the file.
         /// </summary>
         /// <returns></returns>
-        public FileStream OpenFileR(string Auth)
+        public virtual Stream OpenFileR(string Auth)
         {
             if (BaseReadPermission is null) return OpenFileWR();
             FileStream fs = null;
