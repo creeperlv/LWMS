@@ -2,8 +2,10 @@
 using LWMS.Core.ScheduledTask;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,12 +20,50 @@ namespace LWMS.Sample.MarkdownBlog
         internal static bool isInited = false;
         internal static string ArticleTemplate_ = "";
         internal static string ArticleListTemplate_ = "";
+        internal static bool isMarkdownUnavailable = true;
         internal static string ArticleListItemTemplate_ = "";
         internal static void Init()
         {
             if (isInited is false)
             {
                 isInited = true;
+
+                try
+                {
+                    Assembly.LoadFrom("Markdig.dll");
+                }
+                catch (Exception)
+                {
+                    Trace.WriteLine("Cannot load Markdig.dll, MDBlog may be unable to work correctly.");
+                }
+                bool Found = false;
+                //Determine if Markdig is loaded.
+                foreach (var item in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    try
+                    {
+                        foreach (var t in item.GetTypes())
+                        {
+                            if (t.Namespace is not null)
+                                if (
+                                t.Namespace.StartsWith("Markdig"))
+                                {
+                                    isMarkdownUnavailable = false;
+                                    Found = true;
+                                    break;
+                                }
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    if (Found == true) break;
+                }
+                if (isMarkdownUnavailable == true)
+                {
+                    Trace.WriteLine("Markdig is unavailable, MDBlog may be unable to work correctly.");
+                }
                 CheckArticleTemplate();
                 CheckHomepageItemTamplate();
                 CheckHomepageTamplate();

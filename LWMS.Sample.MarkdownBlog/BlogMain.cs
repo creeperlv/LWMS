@@ -15,24 +15,12 @@ namespace LWMS.Sample.MarkdownBlog
 {
     public class BlogMain : IPipedProcessUnit
     {
-        bool isMarkdownUnavailable = false;
         public BlogMain()
         {
-            try
-            {
-                Assembly.LoadFrom("Markdig.dll");
-            }
-            catch (Exception)
-            {
-                isMarkdownUnavailable = true;
-                Trace.WriteLine("Cannot load Markdig.dll, MDBlog may be unable to work correctly.");
-            }
-            //In case that dependency is not loaded.
             SharedResources.Init();
         }
         public PipelineData Process(PipelineData Input)
         {
-            if (isMarkdownUnavailable is false)
             {
                 HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
                 var path0 = context.Request.Url.LocalPath.Substring(1);
@@ -49,7 +37,12 @@ namespace LWMS.Sample.MarkdownBlog
                         if (SharedResources.Articles.GetFile(path1, out f, false))
                         {
                             Trace.WriteLine("MDBlog>>Article:" + f.Name);
-                            var MDContnet = Markdown.ToHtml(File.ReadAllText(f.ItemPath));
+                            var MDContnet = File.ReadAllText(f.ItemPath);
+                            if (SharedResources.isMarkdownUnavailable is false)
+                            {
+                                MDContnet = Markdown.ToHtml(MDContnet);
+                                Trace.WriteLine("MDBlog>>Article>>MD");
+                            }
                             string Title = f.Name;
                             StorageFile info;
                             if (SharedResources.Articles.GetFile(path1 + ".info", out info, false))
@@ -91,11 +84,6 @@ namespace LWMS.Sample.MarkdownBlog
                 (Input.SecondaryData as HttpPipelineArguments).isHandled = false;
                 return Input;
 
-            }
-            else
-            {
-                (Input.SecondaryData as HttpPipelineArguments).isHandled = false;
-                return Input;
             }
         }
     }

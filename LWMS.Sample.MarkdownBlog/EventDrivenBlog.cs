@@ -16,25 +16,12 @@ namespace LWMS.Sample.MarkdownBlog
 {
     public class EventDrivenBlog : IHttpEventHandler
     {
-        bool isMarkdownUnavailable = false;
         public EventDrivenBlog()
         {
-
-            try
-            {
-                Assembly.LoadFrom("Markdig.dll");
-            }
-            catch (Exception)
-            {
-                isMarkdownUnavailable = true;
-                Trace.WriteLine("Cannot load Markdig.dll, MDBlog may be unable to work correctly.");
-            }
-            //In case that dependency is not loaded.
             SharedResources.Init();
         }
-        public bool Handle(HttpListenerRoutedContext context,string HttpPrefix)
+        public bool Handle(HttpListenerRoutedContext context, string HttpPrefix)
         {
-            if (isMarkdownUnavailable is false)
             {
                 var path0 = context.Request.Url.LocalPath.Substring(1);
                 if (path0.ToUpper().StartsWith(HttpPrefix.ToUpper()))
@@ -50,7 +37,11 @@ namespace LWMS.Sample.MarkdownBlog
                         if (SharedResources.Articles.GetFile(path1, out f, false))
                         {
                             Trace.WriteLine("MDBlog>>Article:" + f.Name);
-                            var MDContnet = Markdown.ToHtml(File.ReadAllText(f.ItemPath));
+                            var MDContnet = File.ReadAllText(f.ItemPath);
+                            if (SharedResources.isMarkdownUnavailable is false)
+                            {
+                                MDContnet = Markdown.ToHtml(MDContnet);
+                            }
                             string Title = f.Name;
                             StorageFile info;
                             if (SharedResources.Articles.GetFile(path1 + ".info", out info, false))
@@ -72,7 +63,7 @@ namespace LWMS.Sample.MarkdownBlog
                         var MainContent = SharedResources.ArticleListTemplate_;
                         var ItemTemplate = SharedResources.ArticleListItemTemplate_;
                         var ItemList = "";
-                        string LinkPrefix = "./"+(HttpPrefix.Split("/").Last()) +"/";
+                        string LinkPrefix = "./" + (HttpPrefix.Split("/").Last()) + "/";
                         if (!HttpPrefix.EndsWith("/"))
                         {
                             HttpPrefix += "/";
@@ -95,10 +86,6 @@ namespace LWMS.Sample.MarkdownBlog
                 }
                 return false;
 
-            }
-            else
-            {
-                return false;
             }
         }
     }

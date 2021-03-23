@@ -81,10 +81,9 @@ namespace LWMS.Core.ScheduledTask
         {
             Task.Run(async () =>
             {
-                int step = 1;
-                while (Stop is true)
+                int step = 0;
+                while (Stop is false)
                 {
-                    await Task.Delay(5000);
                     if (Pause is false)
                     {
 
@@ -138,6 +137,7 @@ namespace LWMS.Core.ScheduledTask
                         if (step % 17280 == 0) step = 0;
                         step++;
                     }
+                    await Task.Delay(5000);
                 }
             });
         }
