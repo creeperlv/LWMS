@@ -60,7 +60,7 @@ namespace LWMS.Core.SBSDomain
             return v;
         }
     }
-    public class MappedType
+    public class MappedType:IDisposable
     {
         internal static List<MappedType> MappedTypeObjectCollection = new();
         public static MappedType CreateFrom(Type t)
@@ -69,6 +69,13 @@ namespace LWMS.Core.SBSDomain
             t.Assembly.Location);
             MappedType mappedType = new MappedType(fi.Name, Activator.CreateInstance(t));
             return mappedType;
+        }
+        public static void UpdateAll(string AuthContext)
+        {
+            foreach (var item in MappedTypeObjectCollection)
+            {
+                item.Update(AuthContext);
+            }
         }
         public MappedType(string File, object _object)
         {
@@ -89,6 +96,12 @@ namespace LWMS.Core.SBSDomain
             var asm = DomainManager.GetAssembly(AuthContext, LibFileName);
             var t = asm.GetType(TargetObject.GetType().FullName);
             TargetObject = (object)Activator.CreateInstance(t);
+
+        }
+
+        public void Dispose()
+        {
+            TargetObject = null;
 
         }
     }

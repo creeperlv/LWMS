@@ -14,7 +14,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <returns></returns>
         /// <exception cref="ItemAlreadyExistException"></exception>
-        public StorageFile CreateFile(string Name)
+        public virtual StorageFile CreateFile(string Name)
         {
             if (BaseWritePermission is not null) throw new UnauthorizedException(null, BaseWritePermission[0]);
             if (isReadOnly)
@@ -28,7 +28,7 @@ namespace LWMS.Core.FileSystem
             }
             return storageFile;
         }
-        public StorageFile CreateFile(string Auth, string Name)
+        public virtual StorageFile CreateFile(string Auth, string Name)
         {
             if (BaseWritePermission is null) CreateFile(Name);
             StorageFile f = null;
@@ -53,7 +53,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <param name="OutItem"></param>
         /// <returns></returns>
-        public bool CreateFile(string Name, out StorageFile OutItem)
+        public virtual bool CreateFile(string Name, out StorageFile OutItem)
         {
             if (BaseWritePermission is not null)
             {
@@ -89,7 +89,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <param name="OutItem"></param>
         /// <returns></returns>
-        public bool CreateFile(string Auth, string Name, out StorageFile OutItem)
+        public virtual bool CreateFile(string Auth, string Name, out StorageFile OutItem)
         {
             if (BaseWritePermission is null)
             {
@@ -129,7 +129,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <param name="OutItem"></param>
         /// <returns></returns>
-        public bool CreateFolder(string Name, out StorageFolder OutItem)
+        public virtual bool CreateFolder(string Name, out StorageFolder OutItem)
         {
             if (BaseWritePermission is not null)
             {
@@ -159,7 +159,7 @@ namespace LWMS.Core.FileSystem
 
             return result;
         }
-        internal bool _CreateFolder(string Name, out StorageFolder OutItem)
+        internal virtual bool _CreateFolder(string Name, out StorageFolder OutItem)
         {
             if (isReadOnly)
             {
@@ -190,7 +190,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <param name="OutItem"></param>
         /// <returns></returns>
-        public bool CreateFolder(string Auth, string Name, out StorageFolder OutItem)
+        public virtual bool CreateFolder(string Auth, string Name, out StorageFolder OutItem)
         {
             if (BaseWritePermission is null)
             {
@@ -229,7 +229,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <returns></returns>
         /// <exception cref="ItemAlreadyExistException"></exception>
-        public StorageFolder CreateFolder(string Name)
+        public virtual StorageFolder CreateFolder(string Name)
         {
             if (BaseWritePermission is not null) throw new UnauthorizedException(null, BaseWritePermission[0]);
             if (isReadOnly)
@@ -249,7 +249,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <returns></returns>
         /// <exception cref="ItemAlreadyExistException"></exception>
-        public StorageFolder CreateFolder(string Auth, string Name)
+        public virtual StorageFolder CreateFolder(string Auth, string Name)
         {
             if (BaseWritePermission is null) CreateFolder(Name);
             StorageFolder storageFolder = null;
@@ -273,7 +273,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="isIgnoreExistence"></param>
         /// <returns></returns>
         /// <exception cref="ItemAlreadyExistException"></exception>
-        public StorageFolder CreateFolder(string Name, bool isIgnoreExistence)
+        public virtual StorageFolder CreateFolder(string Name, bool isIgnoreExistence)
         {
             if (BaseWritePermission is not null) throw new UnauthorizedException(null, BaseWritePermission[0]);
             if (isReadOnly)
@@ -298,7 +298,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="isIgnoreExistence"></param>
         /// <returns></returns>
         /// <exception cref="ItemAlreadyExistException"></exception>
-        public StorageFolder CreateFolder(string Auth, string Name, bool isIgnoreExistence)
+        public virtual StorageFolder CreateFolder(string Auth, string Name, bool isIgnoreExistence)
         {
             if (BaseWritePermission is null) CreateFolder(Name, isIgnoreExistence);
             if (isReadOnly)

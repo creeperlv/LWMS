@@ -38,7 +38,7 @@ namespace LWMS.Core.FileSystem
         /// <summary>
         /// Delete all items including files and folders.
         /// </summary>
-        public void DeleteAllItems(bool IgnoreDeletionError = false)
+        public virtual void DeleteAllItems(bool IgnoreDeletionError = false)
         {
             if (DeletePermissionID == null)
             {
@@ -87,7 +87,7 @@ namespace LWMS.Core.FileSystem
         /// Delete all items including files and folders.
         /// </summary>
         /// <param name="Auth">In case this operation requires permission</param>
-        public void DeleteAllItems(string Auth, bool IgnoreDeletionError = false)
+        public virtual void DeleteAllItems(string Auth, bool IgnoreDeletionError = false)
         {
             if (DeletePermissionID == null)
             {
@@ -141,7 +141,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <param name="CaseSensitivity">Whether case sensitive</param>
         /// <returns></returns>
-        public StorageFile GetFile(string Name, bool CaseSensitivity = false)
+        public virtual StorageFile GetFile(string Name, bool CaseSensitivity = false)
         {
             if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
             StorageFile storageItem = new StorageFile();
@@ -183,7 +183,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <param name="CaseSensitivity">Whether case sensitive</param>
         /// <returns></returns>
-        public StorageFile GetFile(string Auth, string Name, bool CaseSensitivity = false)
+        public virtual StorageFile GetFile(string Auth, string Name, bool CaseSensitivity = false)
         {
             if (BaseReadPermission is null) return GetFile(Name, CaseSensitivity);
             StorageFile storageItem = new StorageFile();
@@ -232,7 +232,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="OutItem"></param>
         /// <param name="CaseSensitivity"></param>
         /// <returns></returns>
-        public bool GetFile(string Name, out StorageFile OutItem, bool CaseSensitivity = false)
+        public virtual bool GetFile(string Name, out StorageFile OutItem, bool CaseSensitivity = false)
         {
             if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
             StorageFile storageItem = new StorageFile();
@@ -277,7 +277,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="OutItem"></param>
         /// <param name="CaseSensitivity"></param>
         /// <returns></returns>
-        public bool GetFile(string Auth, string Name, out StorageFile OutItem, bool CaseSensitivity = false)
+        public virtual bool GetFile(string Auth, string Name, out StorageFile OutItem, bool CaseSensitivity = false)
         {
             if (BaseReadPermission is null)
             {
@@ -330,7 +330,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <param name="CaseSensitivity">Whether case sensitive</param>
         /// <returns></returns>
-        public StorageFolder GetFolder(string Name, bool CaseSensitivity = false)
+        public virtual StorageFolder GetFolder(string Name, bool CaseSensitivity = false)
         {
 
             if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
@@ -352,7 +352,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <param name="CaseSensitivity">Whether case sensitive</param>
         /// <returns></returns>
-        public StorageFolder GetFolder(string Auth, string Name, bool CaseSensitivity = false)
+        public virtual StorageFolder GetFolder(string Auth, string Name, bool CaseSensitivity = false)
         {
 
             if (BaseReadPermission is null) return GetFolder(Name, CaseSensitivity);
@@ -377,7 +377,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="CaseSensitivity"></param>
         /// <param name="OutFolder"></param>
         /// <returns></returns>
-        public bool GetFolder(string Name, out StorageFolder OutFolder, bool CaseSensitivity = false)
+        public virtual bool GetFolder(string Name, out StorageFolder OutFolder, bool CaseSensitivity = false)
         {
             if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
             if (isSystemRoot)
@@ -441,7 +441,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="CaseSensitivity"></param>
         /// <param name="OutFolder"></param>
         /// <returns></returns>
-        public bool GetFolder(string Auth, string Name, out StorageFolder OutFolder, bool CaseSensitivity = false)
+        public virtual bool GetFolder(string Auth, string Name, out StorageFolder OutFolder, bool CaseSensitivity = false)
         {
             if (BaseReadPermission is null) return GetFolder(Name, out OutFolder, CaseSensitivity);
             StorageFolder storageItem = new StorageFolder();
@@ -510,7 +510,7 @@ namespace LWMS.Core.FileSystem
         /// Get all contained files in current folder.
         /// </summary>
         /// <returns></returns>
-        public List<StorageFile> GetFiles()
+        public virtual List<StorageFile> GetFiles()
         {
             string[] FileNames = Directory.EnumerateFiles(realPath).ToArray();
             List<StorageFile> storageFiles = new List<StorageFile>(FileNames.Length);
@@ -524,7 +524,7 @@ namespace LWMS.Core.FileSystem
         /// Get all contained files in current folder.
         /// </summary>
         /// <returns></returns>
-        public List<StorageFile> GetFiles(string Auth)
+        public virtual List<StorageFile> GetFiles(string Auth)
         {
             string[] FileNames = Directory.EnumerateFiles(realPath).ToArray();
             List<StorageFile> storageFiles = new List<StorageFile>(FileNames.Length);
@@ -538,7 +538,7 @@ namespace LWMS.Core.FileSystem
         /// Get all contained folders in current folder.
         /// </summary>
         /// <returns></returns>
-        public List<StorageFolder> GetFolders()
+        public virtual List<StorageFolder> GetFolders()
         {
             string[] FileNames = Directory.EnumerateDirectories(realPath).ToArray();
             List<StorageFolder> storageFolders = new List<StorageFolder>(FileNames.Length);
@@ -552,7 +552,7 @@ namespace LWMS.Core.FileSystem
         /// Get all contained items in current folder.
         /// </summary>
         /// <returns></returns>
-        public List<StorageItem> GetItems()
+        public virtual List<StorageItem> GetItems()
         {
             string[] ItemNames = Directory.EnumerateFileSystemEntries(realPath).ToArray();
             List<StorageItem> storageItems = new List<StorageItem>(ItemNames.Length);
@@ -568,7 +568,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="Name"></param>
         /// <param name="CaseSensitivity">Whether case sensitive</param>
         /// <returns></returns>
-        public StorageItem GetItem(string Name, bool CaseSensitivity = false)
+        public virtual StorageItem GetItem(string Name, bool CaseSensitivity = false)
         {
             if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
             StorageItem storageItem = new StorageItem();
@@ -625,7 +625,7 @@ namespace LWMS.Core.FileSystem
         /// <param name="OutItem"></param>
         /// <param name="CaseSensitivity"></param>
         /// <returns></returns>
-        public bool GetItem(string Name, out StorageItem OutItem, bool CaseSensitivity = false)
+        public virtual bool GetItem(string Name, out StorageItem OutItem, bool CaseSensitivity = false)
         {
             StorageItem storageItem = new StorageItem();
             if (isSystemRoot)

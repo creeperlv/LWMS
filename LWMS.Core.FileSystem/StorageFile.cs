@@ -119,18 +119,41 @@ namespace LWMS.Core.FileSystem
             return fs;
         }
         /// <summary>
-        /// Write a content to target file.
+        /// Write content to target file.
         /// </summary>
         /// <param name="content"></param>
-        public void WriteAllText(string content)
+        public virtual void WriteAllText(string content)
+        {
+            if (BaseWritePermission is not null) throw new UnauthorizedException(null, BaseWritePermission[0]);
+            _WriteAllText(content);
+        }
+        internal void _WriteAllText(string content)
         {
             File.WriteAllText(realPath, content);
+
+        }
+        /// <summary>
+        /// Write content to target file.
+        /// </summary>
+        /// <param name="AuthContext"></param>
+        /// <param name="content"></param>
+        public virtual void WriteAllText(string AuthContext, string content)
+        {
+            if (BaseWritePermission is not null)
+                OperatorAuthentication.AuthedAction(AuthContext, () =>
+                {
+                    _WriteAllText(content);
+                }, false, false, BaseWritePermission);
+            else
+            {
+                _WriteAllText(content);
+            }
         }
         /// <summary>
         /// Convert to FileInfo.
         /// </summary>
         /// <returns></returns>
-        public FileInfo ToFileInfo()
+        public virtual FileInfo ToFileInfo()
         {
             if (BaseWritePermission is not null) throw new UnauthorizedException(null, BaseWritePermission[0]);
             if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
@@ -140,7 +163,7 @@ namespace LWMS.Core.FileSystem
         /// Convert to FileInfo.
         /// </summary>
         /// <returns></returns>
-        public FileInfo ToFileInfo(string AuthContext)
+        public virtual FileInfo ToFileInfo(string AuthContext)
         {
             if (BaseWritePermission is null) if (BaseReadPermission is null) return ToFileInfo();
             FileInfo fi = null;
@@ -170,11 +193,12 @@ namespace LWMS.Core.FileSystem
         /// If destination is a file, will overwrite it.
         /// </summary>
         /// <param name="Destination"></param>
-        public void CopyTo(StorageItem Destination, string Auth)
+        public virtual void CopyTo(StorageItem Destination, string Auth)
         {
 
-            if (BaseReadPermission is null) {
-                CopyTo(Destination); 
+            if (BaseReadPermission is null)
+            {
+                CopyTo(Destination);
                 return;
             }
             OperatorAuthentication.AuthedAction(Auth, () =>
