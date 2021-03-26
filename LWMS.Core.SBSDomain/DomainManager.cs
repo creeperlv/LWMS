@@ -60,7 +60,7 @@ namespace LWMS.Core.SBSDomain
             return v;
         }
     }
-    public class MappedType:IDisposable
+    public class MappedType : IDisposable
     {
         internal static List<MappedType> MappedTypeObjectCollection = new();
         public static MappedType CreateFrom(Type t)
@@ -101,6 +101,7 @@ namespace LWMS.Core.SBSDomain
 
         public void Dispose()
         {
+            if (TargetObject is IDisposable) (TargetObject as IDisposable).Dispose();
             TargetObject = null;
 
         }

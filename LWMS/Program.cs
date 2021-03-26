@@ -64,7 +64,7 @@ namespace LWMS
             LWMSCoreServer coreServer = new LWMSCoreServer();
             //coreServer.Bind("http://+:8080/");
             //string p = Configuration.BasePath;
-            coreServer.Start(100);
+            coreServer.Start(8);
             Console.WriteLine("The server is now running good.");
             Login();
             if (ignore_Arg == false)
