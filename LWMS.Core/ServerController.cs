@@ -39,11 +39,11 @@ namespace LWMS.Core
                             {
                                 var MC = (IManageCommand)Activator.CreateInstance(TP);
                                 Trace.WriteLine(Language.Query("LWMS.Commands.Found", "Found Manage Command:{0},{1}", MC.CommandName, TP.ToString()));
-                                ManageCommands.Add(MC.CommandName, new MappedType(fi.Name, MC));
+                                ManageCommands.Add(MC.CommandName, MappedType.CreateFrom(MC));
                                 var alias = MC.Alias;
                                 foreach (var MCA in alias)
                                 {
-                                    ManageCommandAliases.Add(MCA, new MappedType(fi.Name, MC));
+                                    ManageCommandAliases.Add(MCA, MappedType.CreateFrom(MC));
                                 }
                             }
                         }

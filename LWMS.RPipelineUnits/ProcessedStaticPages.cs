@@ -21,10 +21,10 @@ namespace LWMS.RPipelineUnits
 
             HttpListenerRoutedContext context = Input.PrimaryData as HttpListenerRoutedContext;
             var path0 = context.Request.Url.LocalPath.Substring(1);
-            var path1 = Path.Combine(GlobalConfiguration.WebSiteContentRoot, path0);
+            var path1 = Path.Combine(GlobalConfiguration.GetWebSiteContentRoot(context.PipelineAuth), path0);
             if (Directory.Exists(path1))
             {
-                var DefaultPage = Path.Combine(path1, GlobalConfiguration.DefaultPage);
+                var DefaultPage = Path.Combine(path1, GlobalConfiguration.GetDefaultPage(context.PipelineAuth));
                 if (File.Exists(DefaultPage))
                 {
                     if (path1.EndsWith("htm") || path1.EndsWith("html"))

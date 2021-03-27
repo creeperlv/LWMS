@@ -70,6 +70,13 @@ namespace LWMS.Core.SBSDomain
             MappedType mappedType = new MappedType(fi.Name, Activator.CreateInstance(t));
             return mappedType;
         }
+        public static MappedType CreateFrom(object obj)
+        {
+            FileInfo fi = new FileInfo(
+            (obj.GetType()).Assembly.Location);
+            MappedType mappedType = new MappedType(fi.Name, obj);
+            return mappedType;
+        }
         public static void UpdateAll(string AuthContext)
         {
             foreach (var item in MappedTypeObjectCollection)
@@ -77,7 +84,7 @@ namespace LWMS.Core.SBSDomain
                 item.Update(AuthContext);
             }
         }
-        public MappedType(string File, object _object)
+        internal MappedType(string File, object _object)
         {
             LibFileName = File;
             TargetObject = _object;
@@ -101,6 +108,8 @@ namespace LWMS.Core.SBSDomain
 
         public void Dispose()
         {
+            if (MappedTypeObjectCollection.Contains(this))
+                MappedTypeObjectCollection.Remove(this);
             if (TargetObject is IDisposable) (TargetObject as IDisposable).Dispose();
             TargetObject = null;
 

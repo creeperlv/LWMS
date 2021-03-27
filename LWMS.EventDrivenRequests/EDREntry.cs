@@ -34,7 +34,7 @@ namespace LWMS.EventDrivenSupport
                         FileInfo fi = new(parted[0]);
                         var asm = DomainManager.LoadFromFile(context.PipelineAuth, fi.FullName);
                         var t = asm.GetType(parted[1]);
-                        MappedType mappedType = new MappedType(fi.Name, Activator.CreateInstance(t));
+                        MappedType mappedType = MappedType.CreateFrom(t);
                         RouteTargets.Add(mappedType);
                     }
                 }
@@ -47,7 +47,7 @@ namespace LWMS.EventDrivenSupport
                         FileInfo fi = new(parted[0]);
                         var asm = DomainManager.LoadFromFile(context.PipelineAuth, fi.FullName);
                         var t = asm.GetType(parted[1]);
-                        MappedType mappedType = new MappedType(fi.Name, Activator.CreateInstance(t));
+                        MappedType mappedType = MappedType.CreateFrom(t);
                         RouteTargets.Add(mappedType);
                     }
                 }

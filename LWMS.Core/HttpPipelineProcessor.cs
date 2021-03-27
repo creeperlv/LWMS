@@ -28,7 +28,7 @@ namespace LWMS.Core
             if (units.Length == 0)
             {
                 FileInfo fi = new FileInfo(Assembly.GetAssembly(typeof(DefaultProcessUnit)).FullName);
-                _processUnits.Add(new MappedType(fi.Name,new DefaultProcessUnit()));
+                _processUnits.Add(MappedType.CreateFrom(new DefaultProcessUnit()));
             }
             else
             {

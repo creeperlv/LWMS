@@ -166,6 +166,8 @@ namespace LWMS.Core.Utilities
             { ".sln", "text/plain" },
             { ".csproj", "text/plain" },
             { ".h", "text/plain" },
+            { ".rs", "text/plain" },//Rust Source File.
+            { ".vala", "text/plain" },//Vala Source File.
             { ".html", "text/html" },
             { ".rtf", "text/rtf" },
             { ".xml", "text/xml" } ,

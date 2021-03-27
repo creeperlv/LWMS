@@ -278,7 +278,7 @@ namespace LWMS.Core
             {
 
                 FileInfo fi = new FileInfo(Assembly.GetAssembly(unit.GetType()).FullName);
-                processUnits.Add(new (fi.Name,unit));
+                processUnits.Add(MappedType.CreateFrom(unit));
                 Trace.WriteLine(Language.Query("LWMS.Pipeline.Register.R", "Registered R Unit: {0}", unit.GetType().ToString()));
             }, false, true, PermissionID.RTRegisterRProcessUnit, PermissionID.RuntimeAll);
         }
