@@ -54,7 +54,7 @@ namespace LWMS.EventDrivenSupport
                                     FileInfo fi = new(Assembly);
                                     var asm = DomainManager.LoadFromFile(AuthContext, fi.FullName);
                                     var t = asm.GetType(TargetType);
-                                    MappedType mappedType = new MappedType(fi.Name, Activator.CreateInstance(t));
+                                    MappedType mappedType = MappedType.CreateFrom(t);
                                     EDREntry.RouteTargets.Add(mappedType);
                                     EDREntry.requests = null;
                                 }

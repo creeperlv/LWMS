@@ -63,11 +63,19 @@ namespace LWMS.Core.SBSDomain
     public class MappedType : IDisposable
     {
         internal static List<MappedType> MappedTypeObjectCollection = new();
-        public static MappedType CreateFrom(Type t)
+        internal List<object> InitParameters = new List<object>();
+        public static MappedType CreateFrom(Type t, params object[] parameters)
         {
             FileInfo fi = new FileInfo(
             t.Assembly.Location);
-            MappedType mappedType = new MappedType(fi.Name, Activator.CreateInstance(t));
+            MappedType mappedType = new MappedType(fi.Name, Activator.CreateInstance(t, parameters));
+            if (parameters is not null)
+            {
+                if (parameters.Length > 0)
+                {
+                    mappedType.InitParameters = new List<object>(parameters);
+                }
+            }
             return mappedType;
         }
         public static MappedType CreateFrom(object obj)
@@ -96,13 +104,13 @@ namespace LWMS.Core.SBSDomain
         {
             var asm = DomainManager.GetAssembly(DomainManager.TrustedInstaller, LibFileName);
             var t = asm.GetType(TargetObject.GetType().FullName);
-            TargetObject = (object)Activator.CreateInstance(t);
+            TargetObject = (object)Activator.CreateInstance(t,InitParameters.ToArray());
         }
         public void Update(string AuthContext)
         {
             var asm = DomainManager.GetAssembly(AuthContext, LibFileName);
             var t = asm.GetType(TargetObject.GetType().FullName);
-            TargetObject = (object)Activator.CreateInstance(t);
+            TargetObject = (object)Activator.CreateInstance(t, InitParameters.ToArray());
 
         }
 
