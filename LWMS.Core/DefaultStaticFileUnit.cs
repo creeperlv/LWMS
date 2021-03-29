@@ -24,6 +24,7 @@ namespace LWMS.Core
             var path0 = context.Request.Url.LocalPath.Substring(1);
             StorageItem Result;
             if (context.Request.HttpMethod == HttpMethod.Get.Method)
+            {
                 if (ApplicationStorage.ObtainItemFromRelativeURL(path0, out Result, false))
                 {
                     if (Result.StorageItemType == StorageItemType.Folder)
@@ -32,18 +33,19 @@ namespace LWMS.Core
                         if (((StorageFolder)Result).GetFile(GlobalConfiguration.GetDefaultPage(LWMSCoreServer.TrustedInstallerAuth), out DefaultPage, false))
                         {
 
-                            Tools00.SendFile(context, DefaultPage.ToFileInfo());
+                            Tools00.SendFile(context, DefaultPage);
                             (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
                             return Input;
                         }
                     }
                     else
                     {
-                        Tools00.SendFile(context, Result.ToStorageFile().ToFileInfo());
+                        Tools00.SendFile(context, Result.ToStorageFile());
                         (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
                         return Input;
                     }
                 }
+            }
             return Input;
         }
 

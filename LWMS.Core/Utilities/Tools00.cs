@@ -1,4 +1,5 @@
 ﻿using LWMS.Core.Configuration;
+using LWMS.Core.FileSystem;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Localization;
 using LWMS.Management;
@@ -16,6 +17,10 @@ namespace LWMS.Core.Utilities
     public class Tools00
     {
         public static string Boundary = "sierra117";
+        public static void SendFile(HttpListenerRoutedContext context, StorageFile f, HttpStatusCode StatusCode = HttpStatusCode.OK, string ContentType = null)
+        {
+            SendFile(context, f.ToFileInfo(LWMSCoreServer.TrustedInstallerAuth), StatusCode, ContentType);
+        }
         /// <summary>
         /// Send a file to specific http listener context with given status code.
         /// </summary>
