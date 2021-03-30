@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LWMS.Core\LWMS.Core.csproj" />
+    <ProjectReference Include="..\LWMS.EventDrivenRequests\LWMS.EventDrivenRequests.csproj" />
+  </ItemGroup>
+
+</Project>

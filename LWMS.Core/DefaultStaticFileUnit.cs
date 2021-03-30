@@ -3,9 +3,6 @@ using LWMS.Core.Configuration;
 using LWMS.Core.FileSystem;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Core.Utilities;
-using System;
-using System.Diagnostics;
-using System.IO;
 using System.Net.Http;
 
 namespace LWMS.Core
