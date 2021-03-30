@@ -19,6 +19,15 @@ namespace LWMS.Core.ScheduledTask
             internal MappedType RealTask;
             internal string parent;
         }
+        public static void UpdateTasks(string AuthContext)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () => {
+                foreach (var item in ScheduledTasks)
+                {
+                    item.Value.RealTask.Update(AuthContext);
+                }
+            }, false, false, PermissionID.Core_SBS_Update, PermissionID.Core_SBS_All);
+        }
         public static void Schedule(Type type, string TaskName, ScheduleTaskGap gap)
         {
             StackTrace st = new StackTrace(1);
