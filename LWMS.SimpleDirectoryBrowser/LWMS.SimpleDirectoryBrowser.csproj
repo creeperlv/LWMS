@@ -9,4 +9,19 @@
     <ProjectReference Include="..\LWMS.EventDrivenRequests\LWMS.EventDrivenRequests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="DefaultTemplates.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DefaultTemplates.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="DefaultTemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DefaultTemplates.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

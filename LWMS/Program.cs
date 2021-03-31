@@ -17,6 +17,8 @@ namespace LWMS
         static string Auth;
         static void Main(string[] args)
         {
+            Environment.CurrentDirectory = (new FileInfo(typeof(Program).Assembly.Location)).FullName;
+            //Force working directory to where the program exists.
             {
                 var Auth0 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
                 var Auth1 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
