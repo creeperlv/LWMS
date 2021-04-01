@@ -61,7 +61,7 @@ namespace LWMS.SimpleDirectoryBrowser {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;a&gt;
+        ///   Looks up a localized string similar to &lt;a href=&quot;%Link%&quot;&gt;
         ///	&lt;li&gt;
         ///		&lt;table style=&quot;width: 100%&quot;&gt;
         ///			&lt;td style=&quot;width: 50%&quot;&gt;
@@ -84,7 +84,7 @@ namespace LWMS.SimpleDirectoryBrowser {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;a&gt;
+        ///   Looks up a localized string similar to &lt;a href=&quot;%Link%&quot;&gt;
         ///	&lt;li&gt;
         ///		&lt;table style=&quot;width: 100%&quot;&gt;
         ///			&lt;td style=&quot;width: 45%&quot;&gt;

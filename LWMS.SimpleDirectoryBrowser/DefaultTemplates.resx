@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DirectoryItemFileTemplate" xml:space="preserve">
-    <value>&lt;a&gt;
+    <value>&lt;a href="%Link%"&gt;
 	&lt;li&gt;
 		&lt;table style="width: 100%"&gt;
 			&lt;td style="width: 50%"&gt;
@@ -135,7 +135,7 @@
 &lt;/a&gt;</value>
   </data>
   <data name="DirectoryItemFolderTemplate" xml:space="preserve">
-    <value>&lt;a&gt;
+    <value>&lt;a href="%Link%"&gt;
 	&lt;li&gt;
 		&lt;table style="width: 100%"&gt;
 			&lt;td style="width: 45%"&gt;
@@ -207,7 +207,7 @@
 			&lt;/div&gt;
             &lt;div class="cardDiv"&gt;
                 &lt;div&gt;
-                    %Content%
+                   &lt;p&gt; %Content%&lt;/p&gt;
                 &lt;/div&gt;
 			&lt;/div&gt;
         &lt;/div&gt;

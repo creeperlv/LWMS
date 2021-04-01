@@ -5,6 +5,7 @@ using LWMS.Core.HttpRoutedLayer;
 using LWMS.Core.SBSDomain;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace LWMS.EventDrivenSupport
@@ -54,12 +55,11 @@ namespace LWMS.EventDrivenSupport
                 var path0 = context.Request.Url.LocalPath.Substring(1);//Dispose the first '/'
                 if (path0 is not "")//Ignore when the path is empty to prevent potential problems when performing matching.
                 {
-
                     for (int i = 0; i < requests.Length; i++)
                     {
                         if (path0.ToUpper().StartsWith(requests[i].ToUpper()))//Ignore case
                         {
-                            (Input.SecondaryData as HttpPipelineArguments).isHandled = (RouteTargets[i].TargetObject as IHttpEventHandler).Handle(context,path0);
+                            (Input.SecondaryData as HttpPipelineArguments).isHandled = (RouteTargets[i].TargetObject as IHttpEventHandler).Handle(context,requests[i]);
                             return Input;
                         }
                     }
