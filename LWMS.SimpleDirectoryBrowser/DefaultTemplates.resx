@@ -118,15 +118,101 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DirectoryItemFileTemplate" xml:space="preserve">
-    <value />
+    <value>&lt;a&gt;
+	&lt;li&gt;
+		&lt;table style="width: 100%"&gt;
+			&lt;td style="width: 50%"&gt;
+			%Name%
+			&lt;/td&gt;
+			&lt;td style="width: 22%"&gt;
+			%Size%
+			&lt;/td&gt;
+			&lt;td style="width: 22%"&gt;
+			%Date%
+			&lt;/td&gt;
+		&lt;/table&gt;
+	&lt;/li&gt;
+&lt;/a&gt;</value>
   </data>
   <data name="DirectoryItemFolderTemplate" xml:space="preserve">
-    <value />
+    <value>&lt;a&gt;
+	&lt;li&gt;
+		&lt;table style="width: 100%"&gt;
+			&lt;td style="width: 45%"&gt;
+			%Name%
+			&lt;/td&gt;
+			&lt;td style="width: 45%"&gt;
+			%Date%
+			&lt;/td&gt;
+		&lt;/table&gt;
+	&lt;/li&gt;
+&lt;/a&gt;</value>
   </data>
   <data name="DirectoryTemplate" xml:space="preserve">
-    <value />
+    <value>&lt;html&gt;
+&lt;head&gt;
+    &lt;link rel=stylesheet href="https://creeperlv.github.io/Styles/cldesignv2/cldesignv2.css" /&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;meta http-equiv="X-UA-Compatible" content="ie=edge"&gt;
+    &lt;title&gt;Server Content Browser&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div&gt;
+        &lt;div class="titleDiv"&gt;
+            &lt;!--Title Div always on the top of the page--&gt;
+            &lt;p class="pageTitle" style="text-align: center;"&gt;Server Content Browser&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div style="margin-top:130px" class="bodyDiv"&gt;
+            
+            &lt;div class="AccentCardDiv"&gt;
+                &lt;p&gt;
+                    %Address%
+                &lt;/p&gt;
+			&lt;/div&gt;
+            &lt;div class="cardDiv"&gt;
+                &lt;div&gt;
+                    %Folders%
+                &lt;/div&gt;
+			&lt;/div&gt;
+            &lt;div class="cardDiv"&gt;
+                &lt;div&gt;
+                    %Files%
+                &lt;/div&gt;
+			&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</value>
   </data>
   <data name="TextViewerTemplate" xml:space="preserve">
-    <value />
+    <value>&lt;html&gt;
+&lt;head&gt;
+    &lt;link rel=stylesheet href="https://creeperlv.github.io/Styles/cldesignv2/cldesignv2.css" /&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;meta http-equiv="X-UA-Compatible" content="ie=edge"&gt;
+    &lt;title&gt;Server Content Browser&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div&gt;
+        &lt;div class="titleDiv"&gt;
+            &lt;!--Title Div always on the top of the page--&gt;
+            &lt;p class="pageTitle" style="text-align: center;"&gt;Server Content Browser&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div style="margin-top:130px" class="bodyDiv"&gt;
+            
+            &lt;div class="AccentCardDiv"&gt;
+                &lt;p&gt;
+                    %Address%
+                &lt;/p&gt;
+			&lt;/div&gt;
+            &lt;div class="cardDiv"&gt;
+                &lt;div&gt;
+                    %Content%
+                &lt;/div&gt;
+			&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</value>
   </data>
 </root>

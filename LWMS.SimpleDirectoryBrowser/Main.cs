@@ -4,6 +4,7 @@ using LWMS.Core.Configuration;
 using LWMS.Core.FileSystem;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Core.ScheduledTask;
+using LWMS.Core.Utilities;
 using LWMS.EventDrivenSupport;
 
 namespace LWMS.SimpleDirectoryBrowser
@@ -30,8 +31,23 @@ namespace LWMS.SimpleDirectoryBrowser
             else
             {
                 //Visit File
+                if (File.Exists(path))
+                {
+                    FileInfo fi = new FileInfo(path);
+                    if (Tools00.ObtainMimeType(fi.Extension).StartsWith("text"){
+
+                    }
+                    else
+                    {
+                        Tools00.SendFile(context, fi);
+                    }
+                }
             }
             return false;
+        }
+        public static string ToHTMLString(string content)
+        {
+            return content.Replace(" ", "&nbsp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\t", "&#09;").Replace("\"", "&quot;").Replace("&", "&amp;").Replace("\r", "&#13;").Replace("\n", "&#10;");
         }
     }
     internal static class SharedResources
@@ -48,20 +64,55 @@ namespace LWMS.SimpleDirectoryBrowser
         internal static StorageFile DirectoryItemFolderTemplateFile;
         internal static StorageFile DirectoryItemFileTemplateFile;
         internal static StorageFile TextViewerTemplateFile;
+
         internal static void Update()
         {
             bool ExtractedDefaultTemplate = false;
-            if (DirectoryItemFileTemplateFile is null)
+            if (DirectoryTemplateFile is null)
             {
-                if(ApplicationStorage.CurrentModule.GetFile("DirectoryTemplateFile.html", out DirectoryTemplateFile) is false)
+                if (ApplicationStorage.CurrentModule.CreateFile("DirectoryTemplateFile.html", out DirectoryTemplateFile) is true)
                 {
+                    DirectoryTemplateFile.WriteAllText(DefaultTemplates.DirectoryTemplate);
                     ExtractedDefaultTemplate = true;
                 }
             }
-            if(ExtractedDefaultTemplate is true)
+            if (DirectoryItemFileTemplateFile is null)
+            {
+                if (ApplicationStorage.CurrentModule.CreateFile("DirectoryItemFileTemplateFile.html", out DirectoryItemFileTemplateFile) is true)
+                {
+                    DirectoryItemFileTemplateFile.WriteAllText(DefaultTemplates.DirectoryItemFileTemplate);
+                    ExtractedDefaultTemplate = true;
+                }
+            }
+            if (DirectoryItemFolderTemplateFile is null)
+            {
+                if (ApplicationStorage.CurrentModule.CreateFile("DirectoryItemFolderTemplateFile.html", out DirectoryItemFolderTemplateFile) is true)
+                {
+                    DirectoryItemFolderTemplateFile.WriteAllText(DefaultTemplates.DirectoryItemFolderTemplate);
+                    ExtractedDefaultTemplate = true;
+                }
+            }
+            if (TextViewerTemplateFile is null)
+            {
+                if (ApplicationStorage.CurrentModule.CreateFile("TextViewerTemplateFile.html", out TextViewerTemplateFile) is true)
+                {
+                    TextViewerTemplateFile.WriteAllText(DefaultTemplates.TextViewerTemplate);
+                    ExtractedDefaultTemplate = true;
+                }
+            }
+
+            if (ExtractedDefaultTemplate is true)
             {
                 Update();
                 return;
+            }
+            {
+                //Real Load
+
+                TextViewerTemplate = File.ReadAllText(TextViewerTemplateFile.ItemPath);
+                DirectoryItemFolderTemplate = File.ReadAllText(DirectoryItemFolderTemplateFile.ItemPath);
+                DirectoryItemFileTemplate = File.ReadAllText(DirectoryItemFileTemplateFile.ItemPath);
+                DirectoryTemplate = File.ReadAllText(DirectoryTemplateFile.ItemPath);
             }
         }
     }

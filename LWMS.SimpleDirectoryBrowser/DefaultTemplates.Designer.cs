@@ -61,7 +61,21 @@ namespace LWMS.SimpleDirectoryBrowser {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to &lt;a&gt;
+        ///	&lt;li&gt;
+        ///		&lt;table style=&quot;width: 100%&quot;&gt;
+        ///			&lt;td style=&quot;width: 50%&quot;&gt;
+        ///			%Name%
+        ///			&lt;/td&gt;
+        ///			&lt;td style=&quot;width: 22%&quot;&gt;
+        ///			%Size%
+        ///			&lt;/td&gt;
+        ///			&lt;td style=&quot;width: 22%&quot;&gt;
+        ///			%Date%
+        ///			&lt;/td&gt;
+        ///		&lt;/table&gt;
+        ///	&lt;/li&gt;
+        ///&lt;/a&gt;.
         /// </summary>
         internal static string DirectoryItemFileTemplate {
             get {
@@ -70,7 +84,18 @@ namespace LWMS.SimpleDirectoryBrowser {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to &lt;a&gt;
+        ///	&lt;li&gt;
+        ///		&lt;table style=&quot;width: 100%&quot;&gt;
+        ///			&lt;td style=&quot;width: 45%&quot;&gt;
+        ///			%Name%
+        ///			&lt;/td&gt;
+        ///			&lt;td style=&quot;width: 45%&quot;&gt;
+        ///			%Date%
+        ///			&lt;/td&gt;
+        ///		&lt;/table&gt;
+        ///	&lt;/li&gt;
+        ///&lt;/a&gt;.
         /// </summary>
         internal static string DirectoryItemFolderTemplate {
             get {
@@ -79,7 +104,20 @@ namespace LWMS.SimpleDirectoryBrowser {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to &lt;html&gt;
+        ///&lt;head&gt;
+        ///    &lt;link rel=stylesheet href=&quot;https://creeperlv.github.io/Styles/cldesignv2/cldesignv2.css&quot; /&gt;
+        ///    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+        ///    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
+        ///    &lt;title&gt;Server Content Browser&lt;/title&gt;
+        ///&lt;/head&gt;
+        ///&lt;body&gt;
+        ///    &lt;div&gt;
+        ///        &lt;div class=&quot;titleDiv&quot;&gt;
+        ///            &lt;!--Title Div always on the top of the page--&gt;
+        ///            &lt;p class=&quot;pageTitle&quot; style=&quot;text-align: center;&quot;&gt;Server Content Browser&lt;/p&gt;
+        ///        &lt;/div&gt;
+        ///        &lt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string DirectoryTemplate {
             get {
@@ -88,7 +126,20 @@ namespace LWMS.SimpleDirectoryBrowser {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to &lt;html&gt;
+        ///&lt;head&gt;
+        ///    &lt;link rel=stylesheet href=&quot;https://creeperlv.github.io/Styles/cldesignv2/cldesignv2.css&quot; /&gt;
+        ///    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+        ///    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
+        ///    &lt;title&gt;Server Content Browser&lt;/title&gt;
+        ///&lt;/head&gt;
+        ///&lt;body&gt;
+        ///    &lt;div&gt;
+        ///        &lt;div class=&quot;titleDiv&quot;&gt;
+        ///            &lt;!--Title Div always on the top of the page--&gt;
+        ///            &lt;p class=&quot;pageTitle&quot; style=&quot;text-align: center;&quot;&gt;Server Content Browser&lt;/p&gt;
+        ///        &lt;/div&gt;
+        ///        &lt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string TextViewerTemplate {
             get {
