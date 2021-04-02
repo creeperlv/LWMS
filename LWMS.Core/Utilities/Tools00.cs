@@ -152,6 +152,8 @@ namespace LWMS.Core.Utilities
         public static void SendMessage(HttpListenerRoutedContext context, string Message, HttpStatusCode StatusCode = HttpStatusCode.OK)
         {
             var bytes = Encoding.UTF8.GetBytes(Message);
+            context.Response.Headers.Remove(HttpResponseHeader.Server);
+            context.Response.Headers.Set(HttpResponseHeader.Server, "LWMS/" + LWMSCoreServer.ServerVersion);
             context.Response.ContentType = "text/html";
             context.Response.ContentLength64 = bytes.Length;
             context.Response.StatusCode = (int)StatusCode;

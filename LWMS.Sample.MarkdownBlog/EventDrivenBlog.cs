@@ -39,6 +39,11 @@ namespace LWMS.Sample.MarkdownBlog
                         if (SharedResources.Articles.GetFile(path1, out f, false))
                         {
                             Trace.WriteLine("MDBlog>>Article:" + f.Name);
+                            if (!f.ItemPath.ToUpper().EndsWith(".MD"))
+                            {
+                                Tools00.SendFile(context, f);
+                                return true;
+                            }
                             var MDContnet = File.ReadAllText(f.ItemPath);
                             if (SharedResources.isMarkdownUnavailable is false)
                             {

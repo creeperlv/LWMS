@@ -3,6 +3,7 @@ using LWMS.Core;
 using LWMS.Core.Configuration;
 using LWMS.Core.FileSystem;
 using LWMS.Core.HttpRoutedLayer;
+using LWMS.Core.Utilities;
 using Markdig;
 using System;
 using System.Diagnostics;
@@ -36,7 +37,12 @@ namespace LWMS.Sample.MarkdownBlog
                     {
                         if (SharedResources.Articles.GetFile(path1, out f, false))
                         {
-                            Trace.WriteLine("MDBlog>>Article:" + f.Name);
+                            Trace.WriteLine("MDBlog>>Article:" + f.Name); if (!f.ItemPath.ToUpper().EndsWith(".MD"))
+                            {
+                                Tools00.SendFile(context, f);
+                                (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
+                                return Input;
+                            }
                             var MDContnet = File.ReadAllText(f.ItemPath);
                             if (SharedResources.isMarkdownUnavailable is false)
                             {
@@ -76,7 +82,7 @@ namespace LWMS.Sample.MarkdownBlog
                             }
                         }
                         var FinalContent = MainContent.Replace("%Content%", ItemList).Replace("%Title%", ApplicationConfiguration.Current.GetValue("BlogTitle", "LWMS Blog"));
-                        context.Response.OutputStream.Write(Encoding.UTF8.GetBytes(FinalContent));
+                        Tools00.SendMessage(context,FinalContent);
                         (Input.SecondaryData as HttpPipelineArguments).isHandled = true;
                         return Input;
                     }
