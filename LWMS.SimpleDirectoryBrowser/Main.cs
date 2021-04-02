@@ -34,19 +34,25 @@ namespace LWMS.SimpleDirectoryBrowser
                 DirectoryInfo directoryInfo = new DirectoryInfo(path);
                 StringBuilder folders = new StringBuilder();
                 StringBuilder files = new StringBuilder();
+                string Readme = "";
                 {
-                    folders.Append(SharedResources.DirectoryItemFolderTemplate.Replace("%Name%", "..").Replace("%Date%", "")).Replace("%Link%", "./../");
+                    if (CutPath != "")
+                        folders.Append(SharedResources.DirectoryItemFolderTemplate.Replace("%Name%", "..").Replace("%Date%", "")).Replace("%Link%", "./../");
                     foreach (var item in directoryInfo.EnumerateDirectories())
                     {
                         folders.Append(SharedResources.DirectoryItemFolderTemplate.Replace("%Name%", item.Name).Replace("%Date%", item.LastWriteTimeUtc + "")).Replace("%Link%", "./" + item.Name + "/");
                     }
                     foreach (var item in directoryInfo.EnumerateFiles())
                     {
+                        if (item.Name.ToUpper() == "README")
+                        {
+                            Readme = File.ReadAllText(item.FullName);
+                        }
                         files.Append(SharedResources.DirectoryItemFileTemplate.Replace("%Name%", item.Name).Replace("%Date%", item.LastWriteTimeUtc + "").Replace("%Size%", Math.Round(((double)item.Length) / 1024.0) + " KB")).Replace("%Link%", "./" + item.Name);
                     }
 
                 }
-                var content = SharedResources.DirectoryTemplate.Replace("%Folders%", folders.ToString()).Replace("%Files%", files.ToString()).Replace("%Address%", ToHTMLString(context.Request.Url.LocalPath));
+                var content = SharedResources.DirectoryTemplate.Replace("%Folders%", folders.ToString()).Replace("%Files%", files.ToString()).Replace("%Address%", ToHTMLString(context.Request.Url.LocalPath)).Replace("%Readme%", Readme);
                 Tools00.SendMessage(context, content);
                 return true;
             }
@@ -58,7 +64,7 @@ namespace LWMS.SimpleDirectoryBrowser
                     FileInfo fi = new FileInfo(path);
                     if (Tools00.ObtainMimeType(fi.Extension).StartsWith("text"))
                     {
-                        var content = SharedResources.TextViewerTemplate.Replace("%Content%",ToHTMLString( File.ReadAllText(fi.FullName))).Replace("%Address%", ToHTMLString(context.Request.Url.LocalPath));
+                        var content = SharedResources.TextViewerTemplate.Replace("%Content%", ToHTMLString(File.ReadAllText(fi.FullName))).Replace("%Address%", ToHTMLString(context.Request.Url.LocalPath));
                         Tools00.SendMessage(context, content);
                         return true;
                     }
@@ -86,7 +92,7 @@ namespace LWMS.SimpleDirectoryBrowser
         internal static string DirectoryItemFolderTemplate;
         internal static string DirectoryItemFileTemplate;
         internal static string TextViewerTemplate;
-        internal static StorageFile DirectoryTemplateFile=null;
+        internal static StorageFile DirectoryTemplateFile = null;
         internal static StorageFile DirectoryItemFolderTemplateFile = null;
         internal static StorageFile DirectoryItemFileTemplateFile = null;
         internal static StorageFile TextViewerTemplateFile = null;

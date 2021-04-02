@@ -130,7 +130,7 @@ namespace LWMS.Sample.MarkdownBlog
             try
             {
 
-                ArticleListItemTemplate_ = File.ReadAllText(ArticleListTemplate.ItemPath);
+                ArticleListTemplate_ = File.ReadAllText(ArticleListTemplate.ItemPath);
                 ArticleTemplate_ = File.ReadAllText(ArticleTemplate.ItemPath);
                 ArticleListItemTemplate_ = File.ReadAllText(ArticleListItemTemplate.ItemPath);
 

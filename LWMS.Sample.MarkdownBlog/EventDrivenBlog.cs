@@ -1,6 +1,7 @@
 ﻿using LWMS.Core.Configuration;
 using LWMS.Core.FileSystem;
 using LWMS.Core.HttpRoutedLayer;
+using LWMS.Core.Utilities;
 using LWMS.EventDrivenSupport;
 using Markdig;
 using System;
@@ -26,7 +27,8 @@ namespace LWMS.Sample.MarkdownBlog
                 var path0 = context.Request.Url.LocalPath.Substring(1);
                 if (path0.ToUpper().StartsWith(HttpPrefix.ToUpper()))
                 {
-                    var path1 = path0.Substring(HttpPrefix.Length).Substring(path0.IndexOf("/") + 1);
+                    var path1 = path0.Substring(HttpPrefix.Length);
+                    //path1 = path1.Substring(path1.IndexOf("/") + 1);
                     StorageFile f;
                     if (path1.ToUpper().EndsWith(".INFO"))
                     {
@@ -58,30 +60,37 @@ namespace LWMS.Sample.MarkdownBlog
                     }
                     {
                         Trace.WriteLine("MDBlog>>MainPage");
-                        var list = SharedResources.Articles.GetFiles();
+                        try
+                        {
 
-                        var MainContent = SharedResources.ArticleListTemplate_;
-                        var ItemTemplate = SharedResources.ArticleListItemTemplate_;
-                        var ItemList = "";
-                        string LinkPrefix = "./" + (HttpPrefix.Split("/").Last()) + "/";
-                        if (!HttpPrefix.EndsWith("/"))
-                        {
-                            HttpPrefix += "/";
-                        }
-                        if (path0.ToUpper().StartsWith(HttpPrefix.ToUpper())) LinkPrefix = "./";
-                        foreach (var item in list)
-                        {
-                            if (item.Name.ToUpper().EndsWith(".INFO"))
+                            var list = SharedResources.Articles.GetFiles();
+
+                            var MainContent = SharedResources.ArticleListTemplate_;
+                            var ItemTemplate = SharedResources.ArticleListItemTemplate_;
+                            var ItemList = "";
+                            //string LinkPrefix = "./" + (HttpPrefix.Split("/").Last()) + "/";
+                            
+                            //if (path0.ToUpper().StartsWith(HttpPrefix.ToUpper())) 
+                                var LinkPrefix = "./";
+                            foreach (var item in list)
                             {
-                                var infos = File.ReadAllLines(item.ItemPath);
-                                if (infos.Length > 0)
-                                    ItemList += ItemTemplate.Replace("%Title%", infos[0]).Replace("%Link%", LinkPrefix + item.Name.Substring(0, item.Name.Length - 5));
+                                if (item.Name.ToUpper().EndsWith(".INFO"))
+                                {
+                                    var infos = File.ReadAllLines(item.ItemPath);
+                                    if (infos.Length > 0)
+                                        ItemList += ItemTemplate.Replace("%Title%", infos[0]).Replace("%Link%", LinkPrefix + item.Name.Substring(0, item.Name.Length - 5));
+                                }
                             }
-                        }
-                        var FinalContent = MainContent.Replace("%Content%", ItemList).Replace("%Title%", ApplicationConfiguration.Current.GetValue("BlogTitle", "LWMS Blog"));
-                        context.Response.OutputStream.Write(Encoding.UTF8.GetBytes(FinalContent));
+                            var FinalContent = MainContent.Replace("%Content%", ItemList).Replace("%Title%", ApplicationConfiguration.Current.GetValue("BlogTitle", "LWMS Blog"));
+                            Tools00.SendMessage(context, FinalContent);
+                            //context.Response.OutputStream.Write(Encoding.UTF8.GetBytes(FinalContent));
 
-                        return true;
+                            return true;
+                        }
+                        catch (Exception e)
+                        {
+                            Trace.WriteLine(e);
+                        }
                     }
                 }
                 return false;

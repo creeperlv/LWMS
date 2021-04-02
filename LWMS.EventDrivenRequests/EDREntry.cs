@@ -12,7 +12,7 @@ namespace LWMS.EventDrivenSupport
 {
     public class EDREntry : IPipedProcessUnit
     {
-        internal static List<MappedType> RouteTargets = null;
+        internal static List<MappedType> RouteTargets = new List<MappedType>();
         internal static string[] requests = null;
         public EDREntry()
         {

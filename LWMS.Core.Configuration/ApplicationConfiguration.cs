@@ -98,9 +98,8 @@ namespace LWMS.Core.Configuration
             else
             {
                 var C = int.Parse(c);
-                RawData.AddValue(Key + ".Count", (C + 1).ToString(), true, false);
-                RawData.AddValue(Key + "." + C, value, true, false);
-                RawData.RemoveOldDuplicatedItems(false);
+                RawData.AddValue(Key + ".Count", (C + 1).ToString(), false, false);
+                RawData.AddValue(Key + "." + C, value, false, false);
                 RawData.Flush();
             }
             //RawData.AddValue(Key + ".Count", values.Length + "", true, false, Handle);
@@ -148,12 +147,11 @@ namespace LWMS.Core.Configuration
                     }
                 }
             }
-            RawData.AddValue(Key + ".Count", values.Length + "", true, false, Handle);
+            RawData.AddValue(Key + ".Count", values.Length + "", false, false, Handle);
             for (int i = 0; i < values.Length; i++)
             {
-                RawData.AddValue(Key + "." + i, values[i], true, false, Handle);
+                RawData.AddValue(Key + "." + i, values[i], false, false, Handle);
             }
-            RawData.RemoveOldDuplicatedItems(false, Handle);
             RawData.Flush(Handle);
             RawData.Release(Handle);
         }

@@ -170,6 +170,7 @@ namespace LWMS.Core.Utilities
             { ".bb", "text/plain" },
             { ".sln", "text/plain" },
             { ".csproj", "text/plain" },
+            { ".gitignore", "text/plain" },
             { ".h", "text/plain" },
             { ".rs", "text/plain" },//Rust Source File.
             { ".vala", "text/plain" },//Vala Source File.

@@ -48,6 +48,7 @@ namespace LWMS.EventDrivenSupport
                             i += 3;
                             OperatorAuthentication.AuthedAction(AuthContext, () =>
                             {
+                                if (!urlPrefix.EndsWith("/")) urlPrefix += "/";
                                 ApplicationConfiguration.Current.AddValueToArray("RoutedRequests", urlPrefix);
                                 ApplicationConfiguration.Current.AddValueToArray("RouteTargets", Assembly + "," + TargetType);
                                 {
