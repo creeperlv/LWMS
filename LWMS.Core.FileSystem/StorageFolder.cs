@@ -99,7 +99,7 @@ namespace LWMS.Core.FileSystem
                 {
                     if (IgnoreDeletionError)
                     {
-                        foreach (var item in GetFolders())
+                        foreach (var item in GetFolders(Auth))
                         {
                             try
                             {
@@ -109,7 +109,7 @@ namespace LWMS.Core.FileSystem
                             {
                             }
                         }
-                        foreach (var item in GetFiles())
+                        foreach (var item in GetFiles(Auth))
                         {
                             try
                             {
@@ -123,11 +123,11 @@ namespace LWMS.Core.FileSystem
                     }
                     else
                     {
-                        foreach (var item in GetFolders())
+                        foreach (var item in GetFolders(Auth))
                         {
                             item.Delete(Auth);
                         }
-                        foreach (var item in GetFiles())
+                        foreach (var item in GetFiles(Auth))
                         {
                             item.Delete(Auth);
                         }
@@ -545,6 +545,20 @@ namespace LWMS.Core.FileSystem
             foreach (var item in FileNames)
             {
                 storageFolders.Add(GetFolder(item, true));
+            }
+            return storageFolders;
+        }
+        /// <summary>
+        /// Get all contained folders in current folder.
+        /// </summary>
+        /// <returns></returns>
+        public virtual List<StorageFolder> GetFolders(string Auth)
+        {
+            string[] FileNames = Directory.EnumerateDirectories(realPath).ToArray();
+            List<StorageFolder> storageFolders = new List<StorageFolder>(FileNames.Length);
+            foreach (var item in FileNames)
+            {
+                storageFolders.Add(GetFolder(Auth,item, true));
             }
             return storageFolders;
         }
