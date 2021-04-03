@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CLUNL.Pipeline" Version="0.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LWMS.Core.Authentication\LWMS.Core.Authentication.csproj" />
+    <ProjectReference Include="..\LWMS.Core.WR\LWMS.Core.WR.csproj" />
+    <ProjectReference Include="..\LWMS.Core\LWMS.Core.csproj" />
+  </ItemGroup>
+
+</Project>

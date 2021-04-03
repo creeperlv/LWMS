@@ -163,7 +163,7 @@ namespace LWMS
             }
             if (OperatorAuthentication.HasAdmin() is not true)
             {
-                Console.WriteLine("Create an administrator::");
+                Console.WriteLine("Create an administrator:");
                 Console.WriteLine("User Name:");
                 string Name = Console.ReadLine();
                 bool isSucceed = false;

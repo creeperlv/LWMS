@@ -68,6 +68,9 @@ namespace LWMS.EventDrivenSupport
             return Input;
         }
     }
+    /// <summary>
+    /// Interface that a handler should implement. Please note that the constructor will only be called when the route request is requestes by client.
+    /// </summary>
     public interface IHttpEventHandler
     {
         bool Handle(HttpListenerRoutedContext context,string HttpPrefix);

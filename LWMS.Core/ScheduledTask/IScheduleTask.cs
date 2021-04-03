@@ -19,6 +19,10 @@ namespace LWMS.Core.ScheduledTask
             internal MappedType RealTask;
             internal string parent;
         }
+        /// <summary>
+        /// Update tasks with the newest dll files.
+        /// </summary>
+        /// <param name="AuthContext">Auth who has `Core.SBS.Update` permission</param>
         public static void UpdateTasks(string AuthContext)
         {
             OperatorAuthentication.AuthedAction(AuthContext, () => {
@@ -28,6 +32,12 @@ namespace LWMS.Core.ScheduledTask
                 }
             }, false, false, PermissionID.Core_SBS_Update, PermissionID.Core_SBS_All);
         }
+        /// <summary>
+        /// Register a task.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="TaskName">Identifiable Name, should be unique.</param>
+        /// <param name="gap"></param>
         public static void Schedule(Type type, string TaskName, ScheduleTaskGap gap)
         {
             StackTrace st = new StackTrace(1);
@@ -44,6 +54,10 @@ namespace LWMS.Core.ScheduledTask
                 Trace.WriteLine(Language.Query("LWMS.ScheduleTask.Schedule", "{0} has been added into scheduled tasks.", TaskName));
             }
         }
+        /// <summary>
+        /// Unregister a task. Only tasks that belongs to the assembly that caller existed in can be unregisterd.
+        /// </summary>
+        /// <param name="TaskName"></param>
         public static void Unschedule(string TaskName)
         {
             if (ScheduledTasks.ContainsKey(TaskName))
@@ -66,6 +80,11 @@ namespace LWMS.Core.ScheduledTask
             if (ScheduledTasks.ContainsKey(TaskName))
                 ScheduledTasks.Remove(TaskName);
         }
+        /// <summary>
+        /// Unregister a task with auth. If the auth processes `Core.ScheduleTask.Unschedule` permission, all tasks can be removed.
+        /// </summary>
+        /// <param name="Auth"></param>
+        /// <param name="TaskName"></param>
         public static void Unschedule(string Auth, string TaskName)
         {
             OperatorAuthentication.AuthedAction(Auth, () =>

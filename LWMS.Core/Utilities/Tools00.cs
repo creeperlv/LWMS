@@ -17,6 +17,13 @@ namespace LWMS.Core.Utilities
     public class Tools00
     {
         public static string Boundary = "sierra117";
+        /// <summary>
+        /// Send a file to specific http listener context with given status code.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="f"></param>
+        /// <param name="StatusCode"></param>
+        /// <param name="ContentType"></param>
         public static void SendFile(HttpListenerRoutedContext context, StorageFile f, HttpStatusCode StatusCode = HttpStatusCode.OK, string ContentType = null)
         {
             SendFile(context, f.ToFileInfo(LWMSCoreServer.TrustedInstallerAuth), StatusCode, ContentType);
