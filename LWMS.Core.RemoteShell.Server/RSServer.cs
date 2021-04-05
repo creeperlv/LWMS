@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CLUNL.Pipeline;
 using LWMS.Core.Authentication;
-using LWMS.Core.Utilities;
 using LWMS.Core.WR;
 using LWMS.Management;
 
@@ -116,6 +114,7 @@ namespace LWMS.Core.RemoteShell.Server
         }
         internal (bool, AESLayer) ValidAndLogin(Socket client)
         {
+            client.Send(BitConverter.GetBytes(RSAPublicKey.Length));
             client.Send(RSAPublicKey);
             byte[] Key;
             byte[] IV;

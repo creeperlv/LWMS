@@ -44,7 +44,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.EventDrivenRequests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.SimpleDirectoryBrowser", "LWMS.SimpleDirectoryBrowser\LWMS.SimpleDirectoryBrowser.csproj", "{06B38872-F80D-49E2-B764-98183F9D408E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWMS.Core.RemoteShell.Server", "LWMS.Core.RemoteShell.Server\LWMS.Core.RemoteShell.Server.csproj", "{2D38C3E8-6220-4640-B77F-8D3C95AA45D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Core.RemoteShell.Server", "LWMS.Core.RemoteShell.Server\LWMS.Core.RemoteShell.Server.csproj", "{2D38C3E8-6220-4640-B77F-8D3C95AA45D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWMS.Core.RemoteShell.ClientCore", "LWMS.Core.RemoteShell.ClientCore\LWMS.Core.RemoteShell.ClientCore.csproj", "{6123C2E4-0E6F-42CC-9813-EF709A1FF1DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -120,6 +122,10 @@ Global
 		{2D38C3E8-6220-4640-B77F-8D3C95AA45D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D38C3E8-6220-4640-B77F-8D3C95AA45D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D38C3E8-6220-4640-B77F-8D3C95AA45D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6123C2E4-0E6F-42CC-9813-EF709A1FF1DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6123C2E4-0E6F-42CC-9813-EF709A1FF1DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6123C2E4-0E6F-42CC-9813-EF709A1FF1DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6123C2E4-0E6F-42CC-9813-EF709A1FF1DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
