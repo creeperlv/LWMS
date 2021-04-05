@@ -15,33 +15,33 @@ namespace LWMS.Management.Commands
         public string CommandName => "ManageLog";
 
         List<string> alias = new List<string>();
-        public int Version => 4;
+        public int Version => 5;
         public Log()
         {
             alias.Add("log");
         }
         public List<string> Alias => alias;
-        public void PrintHelp()
+        public void PrintHelp(string AuthContext)
         {
 
             {
-                Output.WriteLine(Language.Query("ManageCmd.Log.Name", "Log Manage Unit"));
-                Output.WriteLine("");
-                Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"));
-                Output.WriteLine("");
-                Output.WriteLine("LOG <OPERATION>");
-                Output.WriteLine("");
-                Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"));
-                Output.WriteLine("");
-                Output.WriteLine("\tList/LS");
-                Output.WriteLine(Language.Query("ManageCmd.Help.Log.List", "\t\tList all log files."));
-                Output.WriteLine("\tClear");
-                Output.WriteLine(Language.Query("ManageCmd.Help.Log.Clear", "\t\tDelete all old logs.(Except current using log file)"));
-                Output.WriteLine("\tNEW");
-                Output.WriteLine(Language.Query("ManageCmd.Help.Log.New", "\t\tCreate a new log file and log contents to the new log file."));
-                Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Experimental", "\t\t*This operation is experimental."));
-                Output.WriteLine("\tStopwatch");
-                Output.WriteLine(Language.Query("ManageCmd.Help.Log.Stopwatch", "\t\tStop watching log cache, new logs will now be writtern to file."));
+                Output.WriteLine(Language.Query("ManageCmd.Log.Name", "Log Manage Unit"), AuthContext);
+                Output.WriteLine("", AuthContext);
+                Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"), AuthContext);
+                Output.WriteLine("", AuthContext);
+                Output.WriteLine("LOG <OPERATION>", AuthContext);
+                Output.WriteLine("", AuthContext);
+                Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"), AuthContext);
+                Output.WriteLine("", AuthContext);
+                Output.WriteLine("\tList/LS", AuthContext);
+                Output.WriteLine(Language.Query("ManageCmd.Help.Log.List", "\t\tList all log files."), AuthContext);
+                Output.WriteLine("\tClear", AuthContext);
+                Output.WriteLine(Language.Query("ManageCmd.Help.Log.Clear", "\t\tDelete all old logs.(Except current using log file)"), AuthContext);
+                Output.WriteLine("\tNEW", AuthContext);
+                Output.WriteLine(Language.Query("ManageCmd.Help.Log.New", "\t\tCreate a new log file and log contents to the new log file."), AuthContext);
+                Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Experimental", "\t\t*This operation is experimental."), AuthContext);
+                Output.WriteLine("\tStopwatch", AuthContext);
+                Output.WriteLine(Language.Query("ManageCmd.Help.Log.Stopwatch", "\t\tStop watching log cache, new logs will now be writtern to file."), AuthContext);
             }
         }
         public void Invoke(string AuthContext, params CommandPack[] args)
@@ -55,7 +55,7 @@ namespace LWMS.Management.Commands
                         {
                             foreach (var item in ApplicationStorage.Logs.GetFiles(AuthContext))
                             {
-                                Output.WriteLine(item.Name);
+                                Output.WriteLine(item.Name, AuthContext);
                             }
                         }
                         break;
@@ -80,14 +80,14 @@ namespace LWMS.Management.Commands
                     case "--?":
                     case "--H":
                     case "-H":
-                        PrintHelp();
+                        PrintHelp(AuthContext);
                         break;
                     default:
                         break;
                 }
             }
             else
-                PrintHelp();
+                PrintHelp(AuthContext);
         }
     }
 }

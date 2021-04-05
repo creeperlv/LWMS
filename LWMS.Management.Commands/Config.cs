@@ -15,28 +15,28 @@ namespace LWMS.Management.Commands
 
         public List<string> Alias => new List<string>();
 
-        public int Version => 3;
+        public int Version => 4;
 
-        public static void OutputHelp()
+        public static void OutputHelp(string AuthContext)
         {
-            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"));
-            Output.WriteLine("");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Usage", "\tConfig <Operation> [<Key> <Value>]"));
-            Output.WriteLine("");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"));
-            Output.WriteLine("");
-            Output.WriteLine("\tRelease");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Release", "\t\tStop writing changes to settings file, and settings file will be released in the same tim. It means settings file will be editable from other application."));
-            Output.WriteLine("\tResume");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Resume", "\t\tContinue writing changes to settings file, changes during the release will not be saved."));
-            Output.WriteLine("\tReload");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Reload", "\t\tReload settings."));
-            Output.WriteLine("\tSet");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Set", "\t\tSet a value to target key."));
-            Output.WriteLine("\tAdd");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Add", "\t\tAdd a value to target collection whose name is given Key."));
-            Output.WriteLine("\tRemove,Rm");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Remove", "\t\tRemove a value to target collection whose name is given Key."));
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Usage", "\tConfig <Operation> [<Key> <Value>]"), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine("\tRelease", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Release", "\t\tStop writing changes to settings file, and settings file will be released in the same tim. It means settings file will be editable from other application."), AuthContext);
+            Output.WriteLine("\tResume", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Resume", "\t\tContinue writing changes to settings file, changes during the release will not be saved."), AuthContext);
+            Output.WriteLine("\tReload", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Reload", "\t\tReload settings."), AuthContext);
+            Output.WriteLine("\tSet", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Set", "\t\tSet a value to target key."), AuthContext);
+            Output.WriteLine("\tAdd", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Add", "\t\tAdd a value to target collection whose name is given Key."), AuthContext);
+            Output.WriteLine("\tRemove,Rm", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Config.Operations.Remove", "\t\tRemove a value to target collection whose name is given Key."), AuthContext);
         }
 
         public void Invoke(string AuthContext, params CommandPack[] args)
@@ -50,22 +50,22 @@ namespace LWMS.Management.Commands
                     {
                         if (GlobalConfiguration.Release(AuthContext) == true)
                         {
-                            Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip0", "GlobalConfiguration file is released and changes will not be saved."));
+                            Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip0", "GlobalConfiguration file is released and changes will not be saved."), AuthContext);
 
                         }
                         else
                         {
-                            Output.SetForegroundColor(ConsoleColor.Yellow);
-                            Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip1", "GlobalConfiguration file is already released."));
-                            Output.ResetColor();
+                            Output.SetForegroundColor(ConsoleColor.Yellow, AuthContext);
+                            Output.WriteLine(Language.Query("ManageCmd.Config.Release.Tip1", "GlobalConfiguration file is already released."), AuthContext);
+                            Output.ResetColor(AuthContext);
                         }
                     }
                     else if (operation.ToUpper() == "RESUME")
                     {
                         GlobalConfiguration.LoadConfiguation();
                         GlobalConfiguration.ClearLoadedSettings();
-                        Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip0", "Resumed."));
-                        Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip1", "GlobalConfiguration changes will be automatically saved now."));
+                        Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip0", "Resumed."), AuthContext);
+                        Output.WriteLine(Language.Query("ManageCmd.Config.Resume.Tip1", "GlobalConfiguration changes will be automatically saved now."), AuthContext);
                     }
                     else if (operation.ToUpper() == "RELOAD")
                     {
@@ -106,9 +106,9 @@ namespace LWMS.Management.Commands
                                 var a = args[2].ToString().Replace("\"", null);
                                 a = args[2].ToString().Replace("\'", null);
                                 GlobalConfiguration.Language = args[2];
-                                Output.SetForegroundColor(ConsoleColor.Yellow);
-                                Output.WriteLine("Language is set to:" + GlobalConfiguration.Language);
-                                Output.ResetColor();
+                                Output.SetForegroundColor(ConsoleColor.Yellow, AuthContext);
+                                Output.WriteLine("Language is set to:" + GlobalConfiguration.Language, AuthContext);
+                                Output.ResetColor(AuthContext);
                                 Language.Initialize(args[2]);
                             }
                             else if (setitem == "ENABLERANGE")
@@ -120,9 +120,9 @@ namespace LWMS.Management.Commands
                                 }
                                 catch (Exception)
                                 {
-                                    Output.SetForegroundColor(ConsoleColor.Red);
-                                    Output.WriteLine("Key \"EnableRange\" only accepts bool type(true and false)!");
-                                    Output.ResetColor();
+                                    Output.SetForegroundColor(ConsoleColor.Red, AuthContext);
+                                    Output.WriteLine("Key \"EnableRange\" only accepts bool type(true and false)!", AuthContext);
+                                    Output.ResetColor(AuthContext);
                                 }
                             }
                             else if (setitem == "LOGUA")
@@ -134,21 +134,21 @@ namespace LWMS.Management.Commands
                                 }
                                 catch (Exception)
                                 {
-                                    Output.SetForegroundColor(ConsoleColor.Red);
-                                    Output.WriteLine("Key \"LogUA\" only accepts bool type(true and false)!");
-                                    Output.ResetColor();
+                                    Output.SetForegroundColor(ConsoleColor.Red, AuthContext);
+                                    Output.WriteLine("Key \"LogUA\" only accepts bool type(true and false)!", AuthContext);
+                                    Output.ResetColor(AuthContext);
                                 }
                             }
                             else
                             {
-                                Output.WriteLine(Language.Query("ManageCmd.Config.UnidentifiedKey", "Unidentified Key: {0}", setitem));
+                                Output.WriteLine(Language.Query("ManageCmd.Config.UnidentifiedKey", "Unidentified Key: {0}", setitem), AuthContext);
                             }
                         }
                         else
                         {
-                            Output.SetForegroundColor(ConsoleColor.Red);
-                            Output.WriteLine(Language.Query("ManageCmd.Config.Set.ParameterMismatch", "Arguments does not match: Config set <key> <value>"));
-                            Output.ResetColor();
+                            Output.SetForegroundColor(ConsoleColor.Red, AuthContext);
+                            Output.WriteLine(Language.Query("ManageCmd.Config.Set.ParameterMismatch", "Arguments does not match: Config set <key> <value>"), AuthContext);
+                            Output.ResetColor(AuthContext);
                         }
                     }
                     else if (operation.ToUpper() == "ADD")
@@ -163,9 +163,9 @@ namespace LWMS.Management.Commands
                         }
                         else
                         {
-                            Output.SetForegroundColor(ConsoleColor.Red);
-                            Output.WriteLine(Language.Query("ManageCmd.Config.Add.ParameterMismatch", "Arguments does not match: Config add <key> <value>"));
-                            Output.ResetColor();
+                            Output.SetForegroundColor(ConsoleColor.Red, AuthContext);
+                            Output.WriteLine(Language.Query("ManageCmd.Config.Add.ParameterMismatch", "Arguments does not match: Config add <key> <value>"), AuthContext);
+                            Output.ResetColor(AuthContext);
                         }
                     }
                     else if (operation.ToUpper() == "RM" || operation.ToUpper() == "REMOVE")
@@ -187,20 +187,20 @@ namespace LWMS.Management.Commands
                         }
                         else
                         {
-                            Output.WriteLine(Language.Query("ManageCmd.Config.Remove.ParameterMismatch", "Arguments does not match: Config remove <key>"));
+                            Output.WriteLine(Language.Query("ManageCmd.Config.Remove.ParameterMismatch", "Arguments does not match: Config remove <key>"), AuthContext);
                         }
                     }
                     else if (operation.ToUpper() == "H" || operation.ToUpper() == "-H" || operation.ToUpper() == "--H" || operation.ToUpper() == "HELP" || operation.ToUpper() == "?" || operation.ToUpper() == "-?" || operation.ToUpper() == "--?")
                     {
-                        OutputHelp();
+                        OutputHelp(AuthContext);
                     }
                 }
                 else
                 {
-                    Output.SetForegroundColor(ConsoleColor.Yellow);
-                    Output.WriteLine(Language.Query("ManageCmd.Help.Config.Error.NoOperation", "Please specify an operation."));
-                    Output.ResetColor();
-                    OutputHelp();
+                    Output.SetForegroundColor(ConsoleColor.Yellow, AuthContext);
+                    Output.WriteLine(Language.Query("ManageCmd.Help.Config.Error.NoOperation", "Please specify an operation."), AuthContext);
+                    Output.ResetColor(AuthContext);
+                    OutputHelp(AuthContext);
                 }
             }, false, true, "Core.BasicConfig");
 

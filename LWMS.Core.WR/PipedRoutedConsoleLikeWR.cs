@@ -62,8 +62,12 @@ namespace LWMS.Core.WR
 
         public void Write(string Str)
         {
+            Write(Str, null);
+        }
+        public void Write(string Str, string AuthContext)
+        {
             Processor.Process(new PipelineData(Str, null,
-                  new PipedRoutedWROption(PipedRoutedWROperation.WRITE, AutoFlush)));
+                  new PipedRoutedWROption(PipedRoutedWROperation.WRITE, AutoFlush, AuthContext)));
         }
 
         public void Write(char c)
@@ -81,23 +85,23 @@ namespace LWMS.Core.WR
         {
             throw new NotSupportedException();
         }
-        public void SetForegroundColor(ConsoleColor consoleColor)
+        public void SetForegroundColor(ConsoleColor consoleColor, string AuthContext)
         {
 
             Processor.Process(new PipelineData(consoleColor, null,
-                  new PipedRoutedWROption(PipedRoutedWROperation.FGCOLOR, AutoFlush)));
+                  new PipedRoutedWROption(PipedRoutedWROperation.FGCOLOR, AutoFlush, AuthContext)));
         }
-        public void SetBackgroundColor(ConsoleColor consoleColor)
+        public void SetBackgroundColor(ConsoleColor consoleColor, string AuthContext)
         {
 
             Processor.Process(new PipelineData(consoleColor, null,
-                  new PipedRoutedWROption(PipedRoutedWROperation.BGCOLOR, AutoFlush)));
+                  new PipedRoutedWROption(PipedRoutedWROperation.BGCOLOR, AutoFlush, AuthContext)));
         }
-        public void ResetColor()
+        public void ResetColor(string AuthContext)
         {
 
             Processor.Process(new PipelineData(null, null,
-                  new PipedRoutedWROption(PipedRoutedWROperation.RESETCOLOR, AutoFlush)));
+                  new PipedRoutedWROption(PipedRoutedWROperation.RESETCOLOR, AutoFlush, AuthContext)));
         }
         public void WriteBytes(byte[] b, int length, int offset)
         {
@@ -109,8 +113,12 @@ namespace LWMS.Core.WR
         {
             throw new NotSupportedException();
         }
-
         public void WriteLine(string Str)
+        {
+            WriteLine(Str, null);
+        }
+
+        public void WriteLine(string Str, string AuthContext)
         {
             Processor.Process(new PipelineData(Str, null,
                   new PipedRoutedWROption(PipedRoutedWROperation.WRITELINE, AutoFlush)));
@@ -125,10 +133,17 @@ namespace LWMS.Core.WR
     {
         public PipedRoutedWROperation PipedRoutedWROperation;
         public bool isAutoFlush;
+        public string AuthContext=null;
         public PipedRoutedWROption(PipedRoutedWROperation operation, bool AutoFlush)
         {
             isAutoFlush = AutoFlush;
             PipedRoutedWROperation = operation;
+        }
+        public PipedRoutedWROption(PipedRoutedWROperation operation, bool AutoFlush,string AuthContext)
+        {
+            isAutoFlush = AutoFlush;
+            PipedRoutedWROperation = operation;
+            this.AuthContext = AuthContext;
         }
     }
     public enum PipedRoutedWROperation

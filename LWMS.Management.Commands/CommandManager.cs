@@ -24,12 +24,12 @@ namespace LWMS.Management.Commands
                 {
                     if (args.Length == 1)
                     {
-                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Register.Error.0", "You must specify module to register."));
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Register.Error.0", "You must specify module to register."), AuthContext);
                     }
                     FileInfo target = new FileInfo(args[1].PackTotal);
                     if (target.Exists == false)
                     {
-                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Register.Error.1", "Target Module not found:{0}", target.FullName));
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Register.Error.1", "Target Module not found:{0}", target.FullName), AuthContext);
                     }
                     else
                     {
@@ -39,7 +39,7 @@ namespace LWMS.Management.Commands
                         }
                         else
                         {
-                            Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Register.Error.2", "Cannot register target module: Not a validate module."));
+                            Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Register.Error.2", "Cannot register target module: Not a validate module."), AuthContext);
                         }
                     }
                 }
@@ -48,7 +48,7 @@ namespace LWMS.Management.Commands
 
                     if (args.Length == 1)
                     {
-                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Unregister.Error.0", "You must specify module to unregister."));
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.Unregister.Error.0", "You must specify module to unregister."), AuthContext);
                     }
                     GlobalConfiguration.UnregisterCommandModule(AuthContext, args[1]);
                 }
@@ -56,39 +56,39 @@ namespace LWMS.Management.Commands
                 {
                     foreach (var item in ServerController.ManageCommands)
                     {
-                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Type", "Type: {0}", item.Value.TargetObject.ToString()));
-                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Command", "\t\tCommand: {0} ", item.Key));
-                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Dll", "\t\tDLL: {0} ", item.Value.TargetObject.GetType().Assembly.Location));
-                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Version", "\t\tVersion: {0} ", (item.Value.TargetObject as IManageCommand).Version.ToString()));
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Type", "Type: {0}", item.Value.TargetObject.ToString()), AuthContext);
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Command", "\t\tCommand: {0} ", item.Key), AuthContext);
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Dll", "\t\tDLL: {0} ", item.Value.TargetObject.GetType().Assembly.Location), AuthContext);
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Version", "\t\tVersion: {0} ", (item.Value.TargetObject as IManageCommand).Version.ToString()), AuthContext);
                         StringBuilder stringBuilder = new StringBuilder();
                         foreach (string alias in (item.Value.TargetObject as IManageCommand).Alias)
                         {
                             stringBuilder.Append(" ");
                             stringBuilder.Append(alias);
                         }
-                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Aliases", "\t\tAliases: {0} ", stringBuilder.ToString()));
+                        Output.WriteLine(Language.Query("ManageCmd.CmdMgr.List.Aliases", "\t\tAliases: {0} ", stringBuilder.ToString()), AuthContext);
                     }
                 }
             }
             else
             {
-                OutputHelp();
+                OutputHelp(AuthContext);
             }
         }
-        public void OutputHelp()
+        public void OutputHelp(string AuthContext)
         {
-            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"));
-            Output.WriteLine(Language.Query("ManageCmd.Help.CmdMgr.Usage", "ManageCommand <Operations> [Option1] [Option2] ..."));
-            Output.WriteLine("");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"));
-            Output.WriteLine("\tRegister <Path-to-DLL>");
-            Output.WriteLine(Language.Query("ManageCmd.Help.CmdMgr.Register", "\t\tRegister a dll to find all availiable commands."));
-            Output.WriteLine("");
-            Output.WriteLine("\tUnregister <Path-to-DLL>");
-            Output.WriteLine(Language.Query("ManageCmd.Help.CmdMgr.Unregister", "\t\tUnregister a dll, need restart to effect."));
-            Output.WriteLine("");
-            Output.WriteLine("\tLs/List");
-            Output.WriteLine(Language.Query("ManageCmd.Help.CmdMgr.List", "\t\tList all commands, their assembly files and aliases."));
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"), AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.CmdMgr.Usage", "ManageCommand <Operations> [Option1] [Option2] ..."), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"), AuthContext);
+            Output.WriteLine("\tRegister <Path-to-DLL>", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.CmdMgr.Register", "\t\tRegister a dll to find all availiable commands."), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine("\tUnregister <Path-to-DLL>", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.CmdMgr.Unregister", "\t\tUnregister a dll, need restart to effect."), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine("\tLs/List", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.CmdMgr.List", "\t\tList all commands, their assembly files and aliases."), AuthContext);
         }
     }
 }

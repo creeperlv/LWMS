@@ -8,27 +8,35 @@ using System.Threading;
 using System.Threading.Tasks;
 using CLUNL.Pipeline;
 using LWMS.Core.Authentication;
+using LWMS.Core.Utilities;
 using LWMS.Core.WR;
 
 namespace LWMS.Core.RemoteShell.Server
 {
     public class RSServer
     {
-        int MaxConnections;
-        int BufferSize;
+        public int MaxConnections { get => _MaxConnections; }
+        int _MaxConnections;
         //BufferManager
         //SocketAsyncEventArgsPool eventArgsPool;
-        public static byte[] RSAPublicKey;
-        public static byte[] RSAPrivateKey;
+        internal static byte[] RSAPublicKey;
+        internal static byte[] RSAPrivateKey;
         public Socket Listener;
         Semaphore ThreadLimitation;
         RSA rsa = RSA.Create();
+        public static void SetPublicKey(byte[] key, string auth)
+        {
+            OperatorAuthentication.AuthedAction(auth, () => { RSAPublicKey = key; }, false, false, PermissionID.RS_SetPubKey, PermissionID.RS_All);
+        }
+        public static void SetPrivateKey(byte[] key, string auth)
+        {
+            OperatorAuthentication.AuthedAction(auth, () => { RSAPrivateKey = key; }, false, false, PermissionID.RS_SetPriKey, PermissionID.RS_All);
+        }
         public RSServer(IPEndPoint point, int MaxConnections, int BufferSize)
         {
             Listener = new Socket(point.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             Listener.Bind(point);
-            this.MaxConnections = MaxConnections;
-            this.BufferSize = BufferSize;
+            this._MaxConnections = MaxConnections;
             ThreadLimitation = new Semaphore(MaxConnections, MaxConnections);
         }
         bool Stop = false;
@@ -49,27 +57,64 @@ namespace LWMS.Core.RemoteShell.Server
                         ThreadLimitation.WaitOne();
                         AESLayer _s = v.Item2;
                         RSCMDReciver.AddSocket(_s);
+                        Watch(_s);
                     }
                     else s.Close();
                 }
             });
         }
-        internal void Watch((string, Socket) s)
+        internal void Watch(AESLayer s)
         {
-            s.Item2.ReceiveTimeout = 0;
+            s.client.ReceiveTimeout = 0;
+            _ = Task.Run(() =>
+              {
+                  while (s.isDisposed is false)
+                  {
+                      try
+                      {
+                          s.Read(out byte[] d);
+                          int Operatation = BitConverter.ToInt32(d);
+                          switch (Operatation)
+                          {
+                              case 1:
+                                  {
+                                      // Receieve Command.
+                                      s.Read(out byte[] c);
+                                      s.Read(out byte[] a);
+                                      string command = Encoding.UTF8.GetString(c);
+                                      string auth = Encoding.UTF8.GetString(a);
+                                      var cmdList = Tools00.ResolveCommand(command);
+                                      ServerController.Control(auth, cmdList.ToArray());
+                                  }
+                                  break;
+                              default:
+                                  {
+
+                                      byte[] Refuse = new byte[] { (byte)'?', (byte)'?', (byte)'?' };
+                                      s.Write(Refuse);
+                                  }
+                                  break;
+                          }
+                      }
+                      catch (Exception)
+                      {
+                          s.Dispose();
+                      }
+                  }
+              });
         }
         internal (bool, AESLayer) ValidAndLogin(Socket client)
         {
             client.Send(RSAPublicKey);
-            byte[] Key = null;
-            byte[] IV = null;
+            byte[] Key;
+            byte[] IV;
             AESLayer layer;
             {
                 byte[] d0 = new byte[256];
                 client.Receive(d0, 256, SocketFlags.None);
                 var D0 = rsa.Decrypt(d0, RSAEncryptionPadding.OaepSHA256);
                 d0 = new byte[256];
-                client.Receive(Key, 256, SocketFlags.None);
+                client.Receive(d0, 256, SocketFlags.None);
                 var D1 = rsa.Decrypt(d0, RSAEncryptionPadding.OaepSHA256);
                 d0 = new byte[256];
                 client.Receive(d0, 256, SocketFlags.None);
@@ -85,22 +130,29 @@ namespace LWMS.Core.RemoteShell.Server
                     layer.Read(out KeyD);
                     string UName = Encoding.UTF8.GetString(NameD);
                     string UKey = Encoding.UTF8.GetString(KeyD);
-                    var auth=OperatorAuthentication.ObtainRTAuth(UName, UKey);
+                    var auth = OperatorAuthentication.ObtainRTAuth(UName, UKey);
                     if (OperatorAuthentication.IsAuthPresent(auth))
                     {
                         layer.Write(Encoding.UTF8.GetBytes(auth));
+                        layer.Auth = auth;
                         return (true, layer);
                     }
-                    else {return (false, null); }
+                    else
+                    {
+                        byte[] Refuse = new byte[] { (byte)'N', (byte)'O' };
+                        client.Send(Refuse);
+                        return (false, null);
+                    }
                 }
             }
-            return (false, null);
         }
     }
-    class AESLayer:IDisposable
+    class AESLayer : IDisposable
     {
+        internal bool isDisposed = false;
         Aes aes = Aes.Create();
-        Socket client;
+        internal Socket client;
+        internal string Auth;
         ICryptoTransform Decryptor;
         ICryptoTransform Encryptor;
         internal AESLayer(byte[] AESKey, byte[] AESIV, Socket client)
@@ -113,6 +165,10 @@ namespace LWMS.Core.RemoteShell.Server
         }
         public void Write(byte[] data)
         {
+            if (client.Connected == false)
+            {
+                Dispose();
+            }
             {
                 byte[] length = BitConverter.GetBytes(data.Length);
                 var _data = PaddingByte(length, 16);
@@ -165,15 +221,17 @@ namespace LWMS.Core.RemoteShell.Server
 
         public void Dispose()
         {
+            isDisposed = true;
             aes.Dispose();
             client.Dispose();
         }
     }
     public class RSCMDReciver : IPipedProcessUnit
     {
+        static List<AESLayer> layers = new List<AESLayer>();
         internal static void AddSocket(AESLayer s)
         {
-
+            layers.Add(s);
         }
         public PipelineData Process(PipelineData Input)
         {
@@ -181,29 +239,119 @@ namespace LWMS.Core.RemoteShell.Server
                 PipedRoutedWROption option = (PipedRoutedWROption)Input.Options;
                 if (option.PipedRoutedWROperation == PipedRoutedWROperation.WRITE)
                 {
-                    Console.Out.Write((string)Input.PrimaryData);
+                    for (int i = 0; i < layers.Count; i++)
+                    {
+                        var item = layers[i];
+                        if (item.isDisposed == true)
+                        {
+                            layers.Remove(item);
+                        }
+                        else
+                        {
+                            if (item.Auth == option.AuthContext)
+                            {
+                                item.Write(BitConverter.GetBytes(0));
+                                item.Write(Encoding.UTF8.GetBytes((string)Input.PrimaryData));
+                            }
+                        }
+                    }
                 }
                 else if (option.PipedRoutedWROperation == PipedRoutedWROperation.WRITELINE)
                 {
-                    Console.Out.WriteLine((string)Input.PrimaryData);
+                    for (int i = 0; i < layers.Count; i++)
+                    {
+                        var item = layers[i];
+                        if (item.isDisposed == true)
+                        {
+                            layers.Remove(item);
+                        }
+                        else
+                        {
+                            if (item.Auth == option.AuthContext)
+                            {
+                                item.Write(BitConverter.GetBytes(1));
+                                item.Write(Encoding.UTF8.GetBytes((string)Input.PrimaryData));
+                            }
+                        }
+                    }
                 }
                 else if (option.PipedRoutedWROperation == PipedRoutedWROperation.FLUSH)
                 {
-                    Console.Out.Flush();
+                    for (int i = 0; i < layers.Count; i++)
+                    {
+                        var item = layers[i];
+                        if (item.isDisposed == true)
+                        {
+                            layers.Remove(item);
+                        }
+                        else
+                        {
+                            if (item.Auth == option.AuthContext)
+                            {
+                                item.Write(BitConverter.GetBytes(2));
+                                item.Write(BitConverter.GetBytes(-1));
+                            }
+                        }
+                    }
                 }
                 else
                 {
                     if (option.PipedRoutedWROperation == PipedRoutedWROperation.FGCOLOR)
                     {
-                        Console.ForegroundColor = (ConsoleColor)Input.PrimaryData;
+                        for (int i = 0; i < layers.Count; i++)
+                        {
+                            var item = layers[i];
+                            if (item.isDisposed == true)
+                            {
+                                layers.Remove(item);
+                            }
+                            else
+                            {
+                                if (item.Auth == option.AuthContext)
+                                {
+                                    item.Write(BitConverter.GetBytes(3));
+                                    item.Write(Encoding.UTF8.GetBytes(((ConsoleColor)Input.PrimaryData).ToString()));
+                                }
+                            }
+                        }
                     }
                     else if (option.PipedRoutedWROperation == PipedRoutedWROperation.BGCOLOR)
                     {
-                        Console.BackgroundColor = (ConsoleColor)Input.PrimaryData;
+                        for (int i = 0; i < layers.Count; i++)
+                        {
+                            var item = layers[i];
+                            if (item.isDisposed == true)
+                            {
+                                layers.Remove(item);
+                            }
+                            else
+                            {
+                                if (item.Auth == option.AuthContext)
+                                {
+                                    item.Write(BitConverter.GetBytes(4));
+                                    item.Write(Encoding.UTF8.GetBytes(((ConsoleColor)Input.PrimaryData).ToString()));
+                                }
+                            }
+                        }
                     }
                     else if (option.PipedRoutedWROperation == PipedRoutedWROperation.RESETCOLOR)
                     {
-                        Console.ResetColor();
+                        for (int i = 0; i < layers.Count; i++)
+                        {
+                            var item = layers[i];
+                            if (item.isDisposed == true)
+                            {
+                                layers.Remove(item);
+                            }
+                            else
+                            {
+                                if (item.Auth == option.AuthContext)
+                                {
+                                    item.Write(BitConverter.GetBytes(5));
+                                    item.Write(BitConverter.GetBytes(-1));
+                                }
+                            }
+                        }
                     }
                 }
             }

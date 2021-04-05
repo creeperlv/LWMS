@@ -235,16 +235,16 @@ namespace LWMS.Core
         {
             try
             {
-                Output.SetForegroundColor(ConsoleColor.Red);
-                Output.WriteLine("Unhandled Exception in:");
-                Output.SetForegroundColor(ConsoleColor.Yellow);
-                Output.WriteLine(e.ExceptionObject.ToString());
+                Output.SetForegroundColor(ConsoleColor.Red,TrustedInstallerAuth);
+                Output.WriteLine("Unhandled Exception in:", TrustedInstallerAuth);
+                Output.SetForegroundColor(ConsoleColor.Yellow, TrustedInstallerAuth);
+                Output.WriteLine(e.ExceptionObject.ToString(), TrustedInstallerAuth);
                 if (e.IsTerminating)
                 {
-                    Output.SetForegroundColor(ConsoleColor.Red);
-                    Output.WriteLine("LWMS will terminate.");
+                    Output.SetForegroundColor(ConsoleColor.Red, TrustedInstallerAuth);
+                    Output.WriteLine("LWMS will terminate.", TrustedInstallerAuth);
                 }
-                Output.ResetColor();
+                Output.ResetColor(TrustedInstallerAuth);
             }
             catch (Exception)
             {

@@ -83,7 +83,7 @@ namespace LWMS.Core
 
                     OperatorAuthentication.AuthedAction(Auth, () =>
                     {
-                        Output.WriteLine(Language.Query("LWMS.Goodbye","Goodbye."));
+                        Output.WriteLine(Language.Query("LWMS.Goodbye","Goodbye."),Auth);
                         if (LWMSTraceListener.WriteToFile)
                             LWMSTraceListener.FlushImmediately();
                         Environment.Exit(0);
@@ -96,10 +96,10 @@ namespace LWMS.Core
             }
             else if (args[0].ToUpper() == "VER" || args[0].ToUpper() == "VERSION")
             {
-                Output.WriteLine("");
-                Output.WriteLine(Language.Query("LWMS.Commands.Ver.Shell", "Shell: {0}", Assembly.GetEntryAssembly().GetName().Version.ToString()));
-                Output.WriteLine(Language.Query("LWMS.Commands.Ver.Core", "Core: {0}", Assembly.GetExecutingAssembly().GetName().Version.ToString()));
-                Output.WriteLine("");
+                Output.WriteLine("", Auth);
+                Output.WriteLine(Language.Query("LWMS.Commands.Ver.Shell", "Shell: {0}", Assembly.GetEntryAssembly().GetName().Version.ToString()), Auth);
+                Output.WriteLine(Language.Query("LWMS.Commands.Ver.Core", "Core: {0}", Assembly.GetExecutingAssembly().GetName().Version.ToString()), Auth);
+                Output.WriteLine("", Auth);
             }
             else if (args[0].ToUpper() == "CLS" || args[0].ToUpper() == "CLEAR")
             {
@@ -120,7 +120,7 @@ namespace LWMS.Core
                             LWMSCoreServer.Listener.Close();
                             LWMSCoreServer.Listener = null;
                             LWMSCoreServer.isSuspend = true;
-                            Output.WriteLine(Language.Query("Server.Suspended", "Listener is now suspended."));
+                            Output.WriteLine(Language.Query("Server.Suspended", "Listener is now suspended."), Auth);
                         }
                     }, false, false, "ServerControl.Suspend", "ServerControl.ListenerControl", "ServerControl.All");
                 }
@@ -152,7 +152,7 @@ namespace LWMS.Core
                             }
                             LWMSCoreServer.Listener.Start();
                             LWMSCoreServer.isSuspend = false;
-                            Output.WriteLine(Language.Query("Server.Resumed", "Listener is now resumed."));
+                            Output.WriteLine(Language.Query("Server.Resumed", "Listener is now resumed."), Auth);
                         }
                     }, false, false, "ServerControl.Resume", "ServerControl.ListenerControl", "ServerControl.All");
                 }
@@ -201,9 +201,9 @@ namespace LWMS.Core
                             }
                             catch (Exception e)
                             {
-                                Output.SetForegroundColor(ConsoleColor.Red);
-                                Output.Write($"Error in {item.Value}: {e}");
-                                Output.ResetColor();
+                                Output.SetForegroundColor(ConsoleColor.Red, Auth);
+                                Output.Write($"Error in {item.Value}: {e}", Auth);
+                                Output.ResetColor(Auth);
                             }
                         }
                         catch (Exception)
@@ -212,7 +212,7 @@ namespace LWMS.Core
                         return;
                     }
                 }
-                Output.WriteLine(Language.Query("LWMS.Commands.Error.NotFound", "Command Not Found."));
+                Output.WriteLine(Language.Query("LWMS.Commands.Error.NotFound", "Command Not Found."), Auth);
             }
         }
     }

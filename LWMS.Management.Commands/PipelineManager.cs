@@ -22,7 +22,7 @@ namespace LWMS.Management.Commands
         }
         public List<string> Alias { get => vs; }
 
-        public int Version => 3;
+        public int Version => 4;
 
 //        static string HelpString = @"Usage:
 //ManagePipeline <Operation> <PipelineType> [<DllFile> <EnrtyPoint>]
@@ -51,44 +51,44 @@ namespace LWMS.Management.Commands
 //    ppl rm r LWMS.RPipelineUnits.dll
 //";
 
-        public static void PrintHelp()
+        public static void PrintHelp(string AuthContext)
         {
-            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"));
-            Output.WriteLine("");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Usage", "ManagePipeline <Operation> <PipelineType> [<DllFile> <EnrtyPoint>]"));
-            Output.WriteLine("");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Aliases", "Aliasese:Pipeline,ppl"));
-            Output.WriteLine("");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"));
-            Output.WriteLine("");
-            Output.WriteLine("\tREG|REGISTER");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Register", "\t\tRegister a pipeline unit."));
-            Output.WriteLine("");
-            Output.WriteLine("\tUNREG|UNREGISTER");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Register", "\t\tUnregister a pipeline unit."));
-            Output.WriteLine("");
-            Output.WriteLine("\tRM|REMOVE");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Remove", "\t\tRemove a registered dll file."));
-            Output.WriteLine("");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.PipelineTypes", "Pipeline Types:"));
-            Output.WriteLine("");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.PipelineTypes.R",      "\tR,/R,Request     Request process pipeline"));
-            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.PipelineTypes.W",      "\tW,/W,Write       Write process pipeline"));
-            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.PipelineTypes.CmdOut", "\tC,/C,CmdOut      Command Out pipeline"));
-            Output.WriteLine("");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Example", "Example:"));
-            Output.WriteLine("");
-            Output.WriteLine("\tppl reg r LWMS.RPipelineUnits.dll LWMS.RPipelineUnits.ProcessedStaticPages");
-            Output.WriteLine("\tppl rm r LWMS.RPipelineUnits.dll");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Usage", "ManagePipeline <Operation> <PipelineType> [<DllFile> <EnrtyPoint>]"), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Aliases", "Aliasese:Pipeline,ppl"), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine("\tREG|REGISTER", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Register", "\t\tRegister a pipeline unit."), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine("\tUNREG|UNREGISTER", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Register", "\t\tUnregister a pipeline unit."), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine("\tRM|REMOVE", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.Remove", "\t\tRemove a registered dll file."), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.PipelineTypes", "Pipeline Types:"), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.PipelineTypes.R",      "\tR,/R,Request     Request process pipeline"), AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.PipelineTypes.W",      "\tW,/W,Write       Write process pipeline"), AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Pipeline.PipelineTypes.CmdOut", "\tC,/C,CmdOut      Command Out pipeline"), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Example", "Example:"), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine("\tppl reg r LWMS.RPipelineUnits.dll LWMS.RPipelineUnits.ProcessedStaticPages", AuthContext);
+            Output.WriteLine("\tppl rm r LWMS.RPipelineUnits.dll", AuthContext);
         }
         public void Invoke(string AuthContext, params CommandPack[] args)
         {
             if (args.Length == 0)
             {
-                Output.SetForegroundColor(ConsoleColor.Yellow);
-                Output.WriteLine(Language.Query("ManageCmd.Help.Config.Error.NoOperation", "Please specify an operation."));
-                Output.ResetColor();
-                PrintHelp();
+                Output.SetForegroundColor(ConsoleColor.Yellow, AuthContext);
+                Output.WriteLine(Language.Query("ManageCmd.Help.Config.Error.NoOperation", "Please specify an operation."), AuthContext);
+                Output.ResetColor(AuthContext);
+                PrintHelp(AuthContext);
             }
             for (int i = 0; i < args.Length; i++)
             {
@@ -116,14 +116,14 @@ namespace LWMS.Management.Commands
                 }
                 else if (args[i].ToUpper() == "H" || args[i].ToUpper() == "HELP" || args[i].ToUpper() == "--H" || args[i].ToUpper() == "-H" || args[i].ToUpper() == "?" || args[i].ToUpper() == "-?" || args[i].ToUpper() == "--?")
                 {
-                    PrintHelp();
+                    PrintHelp(AuthContext);
                 }
                 else
                 {
-                    Output.SetForegroundColor(ConsoleColor.Yellow);
-                    Output.WriteLine(Language.Query("ManageCmd.Universal.UnknownOperation","Unknown operation:{0}" , args[i]));
-                    Output.ResetColor();
-                    PrintHelp();
+                    Output.SetForegroundColor(ConsoleColor.Yellow, AuthContext);
+                    Output.WriteLine(Language.Query("ManageCmd.Universal.UnknownOperation","Unknown operation:{0}" , args[i]), AuthContext);
+                    Output.ResetColor(AuthContext);
+                    PrintHelp(AuthContext);
                 }
             }
         }

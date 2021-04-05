@@ -14,38 +14,38 @@ namespace LWMS.Management.Commands
 
         public List<string> Alias => new();
 
-        public int Version => 1;
-        public void PrintHelp()
+        public int Version => 2;
+        public void PrintHelp(string AuthContext)
         {
-            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"));
-            Output.WriteLine("");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Usage", "Auth <Operation 0> [parameter 0], [parameter 1]...,<Operation 1> [parameter 0], [parameter 1]...,..."));
-            Output.WriteLine("");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Warning", "\tThis command requires execute context has \"Core.SetPermission\" permission."));
-            Output.WriteLine("");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"));
-            Output.WriteLine("");
-            Output.WriteLine("\tCreate [Username] [Password]");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Create", "\t\tCreate an auth."));
-            Output.WriteLine("");
-            Output.WriteLine("\tRemove [AuthID]");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Remove", "\t\tRemove an auth."));
-            Output.WriteLine("");
-            Output.WriteLine("\tSet [AuthID] [PermissionID] [Value]");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Set", "\t\tSet a permission to given auth. \"Class1Admin\" is tier 1 administrator except \"Core.SetPermission\" permission."));
-            Output.WriteLine("");
-            Output.WriteLine("\tList|Ls");
-            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.List", "\t\tList all auth IDs with username."));
-            Output.WriteLine("");
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Usage", "Usage:"), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Usage", "Auth <Operation 0> [parameter 0], [parameter 1]...,<Operation 1> [parameter 0], [parameter 1]...,..."), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Warning", "\tThis command requires execute context has \"Core.SetPermission\" permission."), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Universal.Operations", "Operations:"), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine("\tCreate [Username] [Password]", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Create", "\t\tCreate an auth."), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine("\tRemove [AuthID]", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Remove", "\t\tRemove an auth."), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine("\tSet [AuthID] [PermissionID] [Value]", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.Set", "\t\tSet a permission to given auth. \"Class1Admin\" is tier 1 administrator except \"Core.SetPermission\" permission."), AuthContext);
+            Output.WriteLine("", AuthContext);
+            Output.WriteLine("\tList|Ls", AuthContext);
+            Output.WriteLine(Language.Query("ManageCmd.Help.Auth.List", "\t\tList all auth IDs with username."), AuthContext);
+            Output.WriteLine("", AuthContext);
         }
         public void Invoke(string AuthContext, params CommandPack[] args)
         {
             if (args.Length == 0)
             {
-                Output.SetForegroundColor(ConsoleColor.Yellow);
-                Output.WriteLine(Language.Query("ManageCmd.Help.Config.Error.NoOperation", "Please specify an operation."));
-                Output.ResetColor();
-                PrintHelp();
+                Output.SetForegroundColor(ConsoleColor.Yellow, AuthContext);
+                Output.WriteLine(Language.Query("ManageCmd.Help.Config.Error.NoOperation", "Please specify an operation."), AuthContext);
+                Output.ResetColor(AuthContext);
+                PrintHelp(AuthContext);
                 return;
             }
 
@@ -64,7 +64,7 @@ namespace LWMS.Management.Commands
                                 i++;
                                 var PW = args[i].PackTotal;
                                 OperatorAuthentication.CreateAuth(AuthContext,UN,PW);
-                                Output.WriteLine(Language.Query("ManageCmd.Universal.Succeed", "Succeed."));
+                                Output.WriteLine(Language.Query("ManageCmd.Universal.Succeed", "Succeed."), AuthContext);
                             }
                             break;
                         case "REMOVE":
@@ -73,7 +73,7 @@ namespace LWMS.Management.Commands
                                 i++;
                                 var Auth = args[i].PackTotal;
                                 OperatorAuthentication.RemoveAuth(AuthContext, Auth);
-                                Output.WriteLine(Language.Query("ManageCmd.Universal.Succeed", "Succeed."));
+                                Output.WriteLine(Language.Query("ManageCmd.Universal.Succeed", "Succeed."), AuthContext);
                             }
                             break;
                         case "SET":
@@ -87,7 +87,7 @@ namespace LWMS.Management.Commands
                                 var P = args[i].PackTotal;
                                 bool P_ = bool.Parse(P);
                                 OperatorAuthentication.SetPermission(AuthContext, Auth, PID, P_);
-                                Output.WriteLine(Language.Query("ManageCmd.Universal.Succeed", "Succeed."));
+                                Output.WriteLine(Language.Query("ManageCmd.Universal.Succeed", "Succeed."), AuthContext);
                             }
                             break;
                         case "LIST":
@@ -106,8 +106,8 @@ namespace LWMS.Management.Commands
                 }
                 catch (Exception e)
                 {
-                    Output.WriteLine(Language.Query("ManageCmd.Universal.Failed", "Failed."));
-                    Output.WriteLine(e.Message);
+                    Output.WriteLine(Language.Query("ManageCmd.Universal.Failed", "Failed."), AuthContext);
+                    Output.WriteLine(e.Message, AuthContext);
                 }
             }
         }

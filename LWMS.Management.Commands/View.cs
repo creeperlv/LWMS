@@ -17,26 +17,26 @@ namespace LWMS.Management.Commands
 
         public List<string> Alias => new List<string>();
 
-        public int Version => 1;
+        public int Version => 2;
 
-        public static void PrintHelp()
+        public static void PrintHelp(string AuthContext)
         {
-            Output.WriteLine("Usage:");
-            Output.WriteLine("\tView <Info-To-View>");
-            Output.WriteLine("Info that can view:");
-            Output.WriteLine("\tWebroot");
-            Output.WriteLine("\t\tAbsolute Path of webroot (Using 'DirectoryInfo.FullName')");
-            Output.WriteLine("\tWebrootDir");
-            Output.WriteLine("\t\tEnumerate all folders and files in webroot (will not show the entire folder tree).");
-            Output.WriteLine("\tUsingMem");
-            Output.WriteLine("\t\tAllocated Memory to LWMS (Using 'Process.WorkingSet64')");
+            Output.WriteLine("Usage:", AuthContext);
+            Output.WriteLine("\tView <Info-To-View>", AuthContext);
+            Output.WriteLine("Info that can view:", AuthContext);
+            Output.WriteLine("\tWebroot", AuthContext);
+            Output.WriteLine("\t\tAbsolute Path of webroot (Using 'DirectoryInfo.FullName')", AuthContext);
+            Output.WriteLine("\tWebrootDir", AuthContext);
+            Output.WriteLine("\t\tEnumerate all folders and files in webroot (will not show the entire folder tree).", AuthContext);
+            Output.WriteLine("\tUsingMem", AuthContext);
+            Output.WriteLine("\t\tAllocated Memory to LWMS (Using 'Process.WorkingSet64')", AuthContext);
         }
 
         public void Invoke(string AuthContext,params CommandPack[] args)
         {
             if (args.Length == 0)
             {
-                PrintHelp();
+                PrintHelp(AuthContext);
                 return;
             }
             OperatorAuthentication.AuthedAction(AuthContext, () => {
@@ -45,7 +45,7 @@ namespace LWMS.Management.Commands
                     if (item.PackTotal.ToUpper() == "WEBROOT")
                     {
                         DirectoryInfo directoryInfo = new DirectoryInfo(GlobalConfiguration.GetWebSiteContentRoot(AuthContext));
-                        Output.WriteLine(directoryInfo.FullName);
+                        Output.WriteLine(directoryInfo.FullName, AuthContext);
                     }
                     else
                     if (item.PackTotal.ToUpper() == "WEBROOTDIR")
@@ -53,17 +53,17 @@ namespace LWMS.Management.Commands
                         DirectoryInfo directoryInfo = new DirectoryInfo(GlobalConfiguration.GetWebSiteContentRoot(AuthContext));
                         foreach (var dir in directoryInfo.EnumerateDirectories())
                         {
-                            Output.WriteLine("D:" + dir.FullName);
+                            Output.WriteLine("D:" + dir.FullName, AuthContext);
                         }
                         foreach (var file in directoryInfo.EnumerateFiles())
                         {
-                            Output.WriteLine("F:" + file.FullName);
+                            Output.WriteLine("F:" + file.FullName, AuthContext);
                         }
                     }
                     else if (item.ToUpper() == "USINGMEM")
                     {
                         var prop = Process.GetCurrentProcess();
-                        Output.WriteLine("Using Memory(KB):" + prop.WorkingSet64 / 1024.0);
+                        Output.WriteLine("Using Memory(KB):" + prop.WorkingSet64 / 1024.0, AuthContext);
                     }
                 }
             }, false, true, "Basic.ViewRuntimeInfo");
