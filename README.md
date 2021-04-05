@@ -2,7 +2,7 @@
 LWMS is shot for **L**ight**W**eight **M**anaged **S**erver
 
 ## How lightweight LWMS is?
-Including `conhost.exe`, it occupies only 12 MB memory on Windows 10 when there's no burden.
+Including `conhost.exe`, it occupies only 17 MB memory on Windows 10 when there's no burden (with LWMS.SimpleDirectoryBrowser module loaded).
 
 ## Compatibility
 
@@ -38,7 +38,7 @@ public class Sample : LWMS.Management.IManageCommand
 
         public void Invoke(string AuthContext, params LWMS.Management.CommandPack[] args)
         {
-            LWMS.Management.Output.WriteLine("Hello, LWMS!");
+            LWMS.Management.Output.WriteLine("Hello, LWMS!",AuthContext);
         }
     }
 ```
@@ -78,6 +78,12 @@ You can directly edit configuration file to register your pipeline manually. `RP
 ##### Method 2 : Register through manage commands
 
 `ppl reg -w/r/c <dll-file> <type-fullname>`
+
+### Extend HttpEventHandler
+
+Since `v0.5.0.0`, LWMS now support event-like http handler (EventDrivenSupport) through `LWMS.EventDrivenRequests.dll` which is **not** enabled by default.
+
+To build up your own handler, please look into `LWMS.SimpleDirectoryBrowser` and `LWMS.Sample.MarkdownBlogs`, these modules showed usage of the event driven support of LWMS.
 
 ## Improve Performance
 
