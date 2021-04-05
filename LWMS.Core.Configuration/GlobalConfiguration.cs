@@ -46,10 +46,11 @@ namespace LWMS.Core.Configuration
                 LWMSTraceListener.SetTrustedInstaller(auth);
             }
         }
-        public static  bool Release(string Auth)
+        public static bool Release(string Auth)
         {
             bool v = false;
-            OperatorAuthentication.AuthedAction(Auth, () => {
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
                 if (ConfigurationData != null)
                 {
 
@@ -68,7 +69,7 @@ namespace LWMS.Core.Configuration
             LoadConfiguation();
             {
                 StorageFile ManageModuleFile;
-                if (ApplicationStorage.Configuration.CreateFile(TrustedInstaller,"ManageModules.ini", out ManageModuleFile))
+                if (ApplicationStorage.Configuration.CreateFile(TrustedInstaller, "ManageModules.ini", out ManageModuleFile))
                 {
                     Trace.WriteLine(Localization.Language.Query("LWMS.Config.CreateDefaultCommandManifest", "Create default command module manifest."));
                     ManageCommandModules = ListData<string>.LoadFromStream(ManageModuleFile.OpenFileWR());
@@ -82,7 +83,7 @@ namespace LWMS.Core.Configuration
             }
             {
                 StorageFile RPipelineUnitDefinitionFile;
-                if (ApplicationStorage.Configuration.CreateFile(TrustedInstaller,"RPipelineUnit.tsd", out RPipelineUnitDefinitionFile))
+                if (ApplicationStorage.Configuration.CreateFile(TrustedInstaller, "RPipelineUnit.tsd", out RPipelineUnitDefinitionFile))
                 {
                     RProcessUnits = TreeStructureData.CreateToFile(RPipelineUnitDefinitionFile.ToFileInfo(TrustedInstaller));
                     {
@@ -155,6 +156,19 @@ namespace LWMS.Core.Configuration
                         }
                         CMDOUTProcessUnits.RootNode.AddChildren(treeNode);
                     }
+                    {
+                        //LWMS.Core.RemoteShell.Server.dll
+                        TreeNode treeNode = new TreeNode();
+                        treeNode.Name = "DLL";
+                        treeNode.Value = "LWMS.Core.RemoteShell.Server.dll";
+                        {
+                            TreeNode unit = new TreeNode();
+                            unit.Name = "RSCMDReciver";
+                            unit.Value = "LWMS.Core.RemoteShell.Server.RSCMDReciver";
+                            treeNode.AddChildren(unit);
+                        }
+                        CMDOUTProcessUnits.RootNode.AddChildren(treeNode);
+                    }
                     CMDOUTProcessUnits.Serialize();
                 }
                 else
@@ -177,7 +191,7 @@ namespace LWMS.Core.Configuration
         public static void LoadConfiguation()
         {
             StorageFile storageFile;
-            _ = ApplicationStorage.Configuration.CreateFile(TrustedInstaller,"Server.ini", out storageFile);
+            _ = ApplicationStorage.Configuration.CreateFile(TrustedInstaller, "Server.ini", out storageFile);
             ConfigurationData = INILikeData.LoadFromStream(storageFile.OpenFileWR(TrustedInstaller));
         }
 
@@ -1122,9 +1136,9 @@ namespace LWMS.Core.Configuration
             OperatorAuthentication.AuthedAction(Auth, () => { r = DefaultPage; }, false, true, PermissionID.ReadConfig, PermissionID.ModifyConfig);
             return r;
         }
-        public static void SetDefaultPage(string Auth,string Value)
+        public static void SetDefaultPage(string Auth, string Value)
         {
-            OperatorAuthentication.AuthedAction(Auth, () => {DefaultPage=Value; }, false, true, PermissionID.ModifyConfig);
+            OperatorAuthentication.AuthedAction(Auth, () => { DefaultPage = Value; }, false, true, PermissionID.ModifyConfig);
         }
     }
 }

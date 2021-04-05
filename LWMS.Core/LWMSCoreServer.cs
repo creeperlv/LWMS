@@ -2,8 +2,10 @@
 using LWMS.Core.Authentication;
 using LWMS.Core.Configuration;
 using LWMS.Core.HttpRoutedLayer;
+using LWMS.Core.RemoteShell.Server;
 using LWMS.Core.SBSDomain;
 using LWMS.Core.ScheduledTask;
+using LWMS.Core.Utilities;
 using LWMS.Localization;
 using LWMS.Management;
 using System;
@@ -40,6 +42,7 @@ namespace LWMS.Core
                 OperatorAuthentication.SetPipelineAuth(PipelineAuth,TrustedInstallerAuth);
                 GlobalConfiguration.SetTrustedInstallerAuth(TrustedInstallerAuth);
                 DomainManager.SetTrustedInstaller(TrustedInstallerAuth);
+                RSServer.SetFunctions(Tools00.ResolveCommand, ServerController.Control, TrustedInstallerAuth);
             }
             ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString() + "-Preview";
             Inited = true;
@@ -141,6 +144,15 @@ namespace LWMS.Core
                         if (item.Value == "LWMS.Management.dll")
                         {
                             var asm = Assembly.GetAssembly(typeof(Output));
+                            foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 2, item.Value))
+                            {
+
+                                var t = asm.GetType(UnitTypeName.Value);
+                                RegisterCmdOutProcessUnit(TrustedInstallerAuth, (IPipedProcessUnit)Activator.CreateInstance(t));
+                            }
+                        }else if(item.Value== "LWMS.Core.RemoteShell.Server.dll")
+                        {
+                            var asm = Assembly.GetAssembly(typeof(RSServer));
                             foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 2, item.Value))
                             {
 

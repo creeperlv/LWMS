@@ -51,9 +51,10 @@ namespace LWMS.Core.Authentication
         public const string Core_SBS_Read = "Core.SBS.Read";
         public const string ScheduleTask_Unschedule = "Core.ScheduleTask.Unschedule";
         public const string ScheduleTask_All = "Core.ScheduleTask.All";
-        public const string RS_All = "RemoteShell.All";
-        public const string RS_SetPubKey = "RemoteShell.SetPublicKey";
-        public const string RS_SetPriKey = "RemoteShell.SetPrivateKey";
+        public const string RS_All = "Core.RemoteShell.All";
+        public const string RS_SetPubKey = "Core.RemoteShell.SetPublicKey";
+        public const string RS_SetPriKey = "Core.RemoteShell.SetPrivateKey";
+        public const string RS_SetFunctions = "Core.RemoteShell.SetFunctions";
     }
     public static class OperatorAuthentication
     {

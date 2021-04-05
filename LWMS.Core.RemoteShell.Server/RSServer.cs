@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -10,6 +11,7 @@ using CLUNL.Pipeline;
 using LWMS.Core.Authentication;
 using LWMS.Core.Utilities;
 using LWMS.Core.WR;
+using LWMS.Management;
 
 namespace LWMS.Core.RemoteShell.Server
 {
@@ -39,6 +41,13 @@ namespace LWMS.Core.RemoteShell.Server
             this._MaxConnections = MaxConnections;
             ThreadLimitation = new Semaphore(MaxConnections, MaxConnections);
         }
+        public static void SetFunctions(Func<string, List<CommandPack>> ResolveCommand, Action<string, CommandPack[]> Control,string Auth)
+        {
+            OperatorAuthentication.AuthedAction(Auth, () => {
+                RSServer.ResolveCommand = ResolveCommand;
+                RSServer.Control = Control;
+            }, false, false, PermissionID.RS_SetFunctions, PermissionID.RS_All);
+        }
         bool Stop = false;
         public void Start()
         {
@@ -63,6 +72,8 @@ namespace LWMS.Core.RemoteShell.Server
                 }
             });
         }
+        static Func<string, List<CommandPack>> ResolveCommand;
+        static Action<string, CommandPack[]> Control;
         internal void Watch(AESLayer s)
         {
             s.client.ReceiveTimeout = 0;
@@ -83,8 +94,8 @@ namespace LWMS.Core.RemoteShell.Server
                                       s.Read(out byte[] a);
                                       string command = Encoding.UTF8.GetString(c);
                                       string auth = Encoding.UTF8.GetString(a);
-                                      var cmdList = Tools00.ResolveCommand(command);
-                                      ServerController.Control(auth, cmdList.ToArray());
+                                      var cmdList = ResolveCommand(command);
+                                      Control(auth, cmdList.ToArray());
                                   }
                                   break;
                               default:

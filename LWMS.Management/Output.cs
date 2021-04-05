@@ -24,40 +24,89 @@ namespace LWMS.Management
         /// Ask all process units to set their foreground color.
         /// </summary>
         /// <param name="color"></param>
+        /// <param name="AuthContext">Context that indicates where should the content go.</param>
         public static void SetForegroundColor(ConsoleColor color,string AuthContext)
         {
             CoreStream.SetForegroundColor(color, AuthContext);
         }
         /// <summary>
+        /// Ask all process units to set their foreground color. (Obsolete) Kept for compatibility.
+        /// </summary>
+        /// <param name="color"></param>
+        [Obsolete]
+        public static void SetForegroundColor(ConsoleColor color)
+        {
+            CoreStream.SetForegroundColor(color, null);
+        }
+        /// <summary>
         /// Ask all process units to set their background color.
         /// </summary>
         /// <param name="color"></param>
+        /// <param name="AuthContext">Context that indicates where should the content go.</param>
         public static void SetBackgroundColor(ConsoleColor color, string AuthContext)
         {
             CoreStream.SetBackgroundColor(color, AuthContext);
         }
         /// <summary>
+        /// Ask all process units to set their background color. (Obsolete) Kept for compatibility.
+        /// </summary>
+        /// <param name="color"></param>
+        [Obsolete]
+        public static void SetBackgroundColor(ConsoleColor color)
+        {
+            CoreStream.SetBackgroundColor(color, null);
+        }
+        /// <summary>
         /// Send a signal 'RESETCOLOR' to all process unit.
         /// </summary>
+        /// <param name="AuthContext">Context that indicates where should the content go.</param>
         public static void ResetColor(string AuthContext)
         {
             CoreStream.ResetColor(AuthContext);
         }
         /// <summary>
+        /// Send a signal 'RESETCOLOR' to all process unit. (Obsolete) Kept for compatibility.
+        /// </summary>
+        [Obsolete]
+        public static void ResetColor()
+        {
+            CoreStream.ResetColor(null);
+        }
+        /// <summary>
         /// Write message to PipedRoutedWR with a new line.
         /// </summary>
         /// <param name="str"></param>
+        /// <param name="AuthContext">Context that indicates where should the content go.</param>
         public static void WriteLine(string str, string AuthContext)
         {
             CoreStream.WriteLine(str, AuthContext);
         }
         /// <summary>
+        /// Write message to PipedRoutedWR with a new line. (Obsolete) Kept for compatibility.
+        /// </summary>
+        /// <param name="str"></param>
+        [Obsolete]
+        public static void WriteLine(string str)
+        {
+            CoreStream.WriteLine(str, null);
+        }
+        /// <summary>
         /// Write message to PipedRoutedWR.
         /// </summary>
         /// <param name="str"></param>
+        /// <param name="AuthContext">Context that indicates where should the content go.</param>
         public static void Write(string str, string AuthContext)
         {
-            CoreStream.Write(str,AuthContext);
+            CoreStream.Write(str, AuthContext);
+        }
+        /// <summary>
+        /// Write message to PipedRoutedWR. (Obsolete) Kept for compatibility.
+        /// </summary>
+        /// <param name="str"></param>
+        [Obsolete]
+        public static void Write(string str)
+        {
+            CoreStream.Write(str, null);
         }
     }
 }
