@@ -194,7 +194,48 @@ namespace LWMS.Core.Configuration
             _ = ApplicationStorage.Configuration.CreateFile(TrustedInstaller, "Server.ini", out storageFile);
             ConfigurationData = INILikeData.LoadFromStream(storageFile.OpenFileWR(TrustedInstaller));
         }
-
+        /// <summary>
+        /// Generic Values.
+        /// </summary>
+        /// <param name="Key"></param>
+        /// <param name="Auth"></param>
+        /// <param name="fallback"></param>
+        /// <returns></returns>
+        public static string GetValue(string Key, string Auth, string fallback = null)
+        {
+            string value = fallback;
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
+                if (ConfigurationData != null)
+                {
+                    var v = ConfigurationData.FindValue(Key.ToUpper());
+                    if (v is not null) value = v;
+                }
+            }, false, false, PermissionID.ReadConfig);
+            return value;
+        }
+        public static void SetValue(string Key, string Value, string AuthContext)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () =>
+            {
+                if (ConfigurationData != null)
+                {
+                    ConfigurationData.AddValue(Key.ToUpper(), Value, false, true);
+                    ConfigurationData.Flush();
+                }
+            }, false, false, PermissionID.ModifyConfig);
+        }
+        public static void DelValue(string Key, string AuthContext)
+        {
+            OperatorAuthentication.AuthedAction(AuthContext, () =>
+            {
+                if (ConfigurationData != null)
+                {
+                    ConfigurationData.DeleteKey(Key.ToUpper(), true);
+                    ConfigurationData.Flush();
+                }
+            }, false, false, PermissionID.Config_Delete);
+        }
         internal static TreeStructureData RProcessUnits { get; set; }
         internal static TreeStructureData WProcessUnits { get; set; }
         internal static TreeStructureData CMDOUTProcessUnits { get; set; }

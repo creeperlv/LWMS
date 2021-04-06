@@ -1,19 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LWMS.Core.RemoteShell.ClientCore
 {
-    public class RSClient
+    public class RSClient : IDisposable
     {
         IPEndPoint target;
         public RSClient(IPEndPoint target)
         {
             this.target = target;
         }
-        Socket s; byte[] RSAPubKey;
+        Socket s = null; byte[] RSAPubKey;
+        List<IOutput> Outputs = new List<IOutput>();
+        public void RegisterOutput(IOutput output)
+        {
+            Outputs.Add(output);
+        }
+        public void UnregisterOutput(IOutput output)
+        {
+            if (Outputs.Contains(output))
+            {
+                Outputs.Remove(output);
+            }
+        }
         public byte[] Handshake00()
         {
             s = new Socket(target.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -28,6 +42,103 @@ namespace LWMS.Core.RemoteShell.ClientCore
         }
         AESLayer layer;
         internal string Auth;
+        bool Stop = false;
+        void Listen()
+        {
+            try
+            {
+                while (Stop is not true)
+                {
+                    int Operation = -1;
+                    {
+                        layer.Read(out byte[] d);
+                        Operation = BitConverter.ToInt32(d);
+                    }
+                    {
+                        switch (Operation)
+                        {
+                            case 0:
+                                {
+                                    layer.Read(out byte[] d);
+                                    string msg = Encoding.UTF8.GetString(d);
+                                    foreach (var item in Outputs)
+                                    {
+                                        item.Write(msg);
+                                    }
+                                }
+                                break;
+                            case 1:
+                                {
+                                    layer.Read(out byte[] d);
+                                    string msg = Encoding.UTF8.GetString(d);
+                                    foreach (var item in Outputs)
+                                    {
+                                        item.WriteLine(msg);
+                                    }
+                                }
+                                break;
+                            case 2:
+                                {
+                                    layer.Read(out _);
+                                    foreach (var item in Outputs)
+                                    {
+                                        item.Flush();
+                                    }
+                                }
+                                break;
+                            case 3:
+                                {
+                                    try
+                                    {
+                                        layer.Read(out byte[] d);
+                                        string msg = Encoding.UTF8.GetString(d);
+                                        var color = Enum.Parse<ConsoleColor>(msg);
+                                        foreach (var item in Outputs)
+                                        {
+                                            item.SetForeground(color);
+                                        }
+                                    }
+                                    catch
+                                    {
+                                    }
+                                }
+                                break;
+                            case 4:
+                                {
+                                    try
+                                    {
+                                        layer.Read(out byte[] d);
+                                        string msg = Encoding.UTF8.GetString(d);
+                                        var color = Enum.Parse<ConsoleColor>(msg);
+                                        foreach (var item in Outputs)
+                                        {
+                                            item.SetBackground(color);
+                                        }
+                                    }
+                                    catch
+                                    {
+                                    }
+                                }
+                                break;
+                            case 5:
+                                {
+                                    layer.Read(out _);
+                                    foreach (var item in Outputs)
+                                    {
+                                        item.ResetColor();
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
         public bool Handshake01(string UserName, string Password)
         {
             var aes = Aes.Create(); aes.GenerateKey(); aes.GenerateIV();
@@ -65,7 +176,7 @@ namespace LWMS.Core.RemoteShell.ClientCore
                 layer.Write(Encoding.UTF8.GetBytes(Password));
             }
             {
-                byte []receieved=null;
+                byte[] receieved = null;
                 layer.Read(out receieved);
                 if (receieved.Length >= 2)
                 {
@@ -76,6 +187,7 @@ namespace LWMS.Core.RemoteShell.ClientCore
                     else
                     {
                         Auth = Encoding.UTF8.GetString(receieved);
+                        Task.Run(Listen);
                         return true;
                     }
                 }
@@ -87,6 +199,22 @@ namespace LWMS.Core.RemoteShell.ClientCore
             layer.Write(Encoding.UTF8.GetBytes(cmd));
         }
 
+        public void Dispose()
+        {
+            Stop = true;
+            if (s is not null) s.Dispose();
+            Outputs.Clear();
+            Outputs = null;
+        }
+    }
+    public interface IOutput
+    {
+        void WriteLine(string msg);
+        void Write(string msg);
+        void SetForeground(ConsoleColor color);
+        void SetBackground(ConsoleColor color);
+        void ResetColor();
+        void Flush();
     }
     class AESLayer : IDisposable
     {
