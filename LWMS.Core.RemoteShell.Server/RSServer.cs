@@ -114,6 +114,7 @@ namespace LWMS.Core.RemoteShell.Server
         }
         internal (bool, AESLayer) ValidAndLogin(Socket client)
         {
+            client.ReceiveTimeout = 30*1000;//Set time-out to 30 seconds.
             client.Send(BitConverter.GetBytes(RSAPublicKey.Length));
             client.Send(RSAPublicKey);
             byte[] Key;
@@ -150,7 +151,7 @@ namespace LWMS.Core.RemoteShell.Server
                     else
                     {
                         byte[] Refuse = new byte[] { (byte)'N', (byte)'O' };
-                        client.Send(Refuse);
+                        layer.Write(Refuse);
                         return (false, null);
                     }
                 }

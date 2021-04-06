@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace LWMS.Core.RemoteShell.ClientCore
 {
@@ -12,25 +13,80 @@ namespace LWMS.Core.RemoteShell.ClientCore
         {
             this.target = target;
         }
-        Socket s;
+        Socket s; byte[] RSAPubKey;
         public byte[] Handshake00()
         {
             s = new Socket(target.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             s.Connect(target);
             int length = 1024;
-            byte[]KeyLength=new byte[4];
+            byte[] KeyLength = new byte[4];
             s.Receive(KeyLength, 4, SocketFlags.None);
             length = BitConverter.ToInt32(KeyLength);
-            byte[] RSAPubKey = new byte[length];
-            s.Receive(RSAPubKey,length,SocketFlags.None);
+            RSAPubKey = new byte[length];
+            s.Receive(RSAPubKey, length, SocketFlags.None);
             return RSAPubKey;
         }
         AESLayer layer;
-        public void Handshake01(string UserName,string Password)
+        internal string Auth;
+        public bool Handshake01(string UserName, string Password)
         {
-            var aes=Aes.Create(); aes.GenerateKey(); aes.GenerateIV();
+            var aes = Aes.Create(); aes.GenerateKey(); aes.GenerateIV();
             layer = new AESLayer(aes.Key, aes.IV, s);
+            var rsa = RSA.Create();
+            rsa.ImportRSAPublicKey(RSAPubKey, out _);
+            {
+                //Send AES Key
+                byte[] Part1 = new byte[190];
+                for (int i = 0; i < 190; i++)
+                {
+                    Part1[i] = aes.Key[i];
+                }
+                var FData0 = rsa.Encrypt(Part1, RSAEncryptionPadding.OaepSHA256);
+                s.Send(FData0, 256, SocketFlags.None);
+            }
+            {
+                //Send AES Key
+                byte[] Part2 = new byte[66];
+                for (int i = 0; i < 66; i++)
+                {
+                    Part2[i] = aes.Key[i + 190];
+                }
+                var FData1 = rsa.Encrypt(Part2, RSAEncryptionPadding.OaepSHA256);
+                s.Send(FData1, 256, SocketFlags.None);
+            }
+            {
+                //Send AES IV
+                var FinalEncIV = rsa.Encrypt(aes.IV, RSAEncryptionPadding.OaepSHA256);
+                s.Send(FinalEncIV, 256, SocketFlags.None);
+            }
+            {
+                //Send U/N
+                layer.Write(Encoding.UTF8.GetBytes(UserName));
+                layer.Write(Encoding.UTF8.GetBytes(Password));
+            }
+            {
+                byte []receieved=null;
+                layer.Read(out receieved);
+                if (receieved.Length >= 2)
+                {
+                    if (receieved.Length is 2 && receieved[0] == 'N' && receieved[1] == 'O')
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        Auth = Encoding.UTF8.GetString(receieved);
+                        return true;
+                    }
+                }
+                else return false;
+            }
         }
+        public void SendOut(string cmd)
+        {
+            layer.Write(Encoding.UTF8.GetBytes(cmd));
+        }
+
     }
     class AESLayer : IDisposable
     {
