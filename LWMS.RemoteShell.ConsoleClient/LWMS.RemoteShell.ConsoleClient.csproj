@@ -5,4 +5,8 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LWMS.Core.RemoteShell.ClientCore\LWMS.Core.RemoteShell.ClientCore.csproj" />
+  </ItemGroup>
+
 </Project>
