@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,10 +40,57 @@ namespace LWMS.Core
                 Auth1 = CLUNL.Utilities.RandomTool.GetRandomString(32, CLUNL.Utilities.RandomStringRange.R3);
                 PipelineAuth = OperatorAuthentication.ObtainRTAuth(Auth0, Auth1);
                 OperatorAuthentication.SetTrustedInstaller(TrustedInstallerAuth);
-                OperatorAuthentication.SetPipelineAuth(PipelineAuth,TrustedInstallerAuth);
+                OperatorAuthentication.SetPipelineAuth(PipelineAuth, TrustedInstallerAuth);
                 GlobalConfiguration.SetTrustedInstallerAuth(TrustedInstallerAuth);
                 DomainManager.SetTrustedInstaller(TrustedInstallerAuth);
                 RSServer.SetFunctions(Tools00.ResolveCommand, ServerController.Control, TrustedInstallerAuth);
+            }
+            try
+            {
+                //RemoteShell
+                bool isRemoteShellEnabled = false;
+                bool.TryParse(GlobalConfiguration.GetValue("isRemoteShellEnabled", TrustedInstallerAuth, false.ToString()), out isRemoteShellEnabled);
+                if (isRemoteShellEnabled)
+                {
+                    var PubKey64 = GlobalConfiguration.GetValue("RemoteShellPublicKey", TrustedInstallerAuth);
+                    if (PubKey64 is not null)
+                    {
+                        try
+                        {
+                            var PubKey = Convert.FromBase64String(PubKey64);
+                            RSServer.SetPublicKey(PubKey, TrustedInstallerAuth);
+                        }
+                        catch (Exception)
+                        {
+                        }
+
+                    }
+                    var PriKey64 = GlobalConfiguration.GetValue("RemoteShellPrivateKey", TrustedInstallerAuth);
+                    if (PriKey64 is not null)
+                    {
+                        try
+                        {
+                            var PriKey = Convert.FromBase64String(PubKey64);
+                            RSServer.SetPublicKey(PriKey, TrustedInstallerAuth);
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+                    var ListenIP = "127.0.0.1";
+                    var ListenPort = 22;
+                    ListenIP = GlobalConfiguration.GetValue("RemoteShellIP", TrustedInstallerAuth, ListenIP);
+                    if(!int.TryParse(GlobalConfiguration.GetValue("RemoteShellPort",TrustedInstallerAuth,"22"),out ListenPort))
+                    {
+                        ListenPort = 22;
+                    }
+                    IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse(ListenIP), ListenPort);
+                    RSServer rs = new RSServer(iPEndPoint,100);
+                    rs.Start();
+                }
+            }
+            catch (Exception)
+            {
             }
             ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString() + "-Preview";
             Inited = true;
@@ -150,7 +198,8 @@ namespace LWMS.Core
                                 var t = asm.GetType(UnitTypeName.Value);
                                 RegisterCmdOutProcessUnit(TrustedInstallerAuth, (IPipedProcessUnit)Activator.CreateInstance(t));
                             }
-                        }else if(item.Value== "LWMS.Core.RemoteShell.Server.dll")
+                        }
+                        else if (item.Value == "LWMS.Core.RemoteShell.Server.dll")
                         {
                             var asm = Assembly.GetAssembly(typeof(RSServer));
                             foreach (var UnitTypeName in GlobalConfiguration.ListTSDChild(TrustedInstallerAuth, 2, item.Value))
@@ -247,7 +296,7 @@ namespace LWMS.Core
         {
             try
             {
-                Output.SetForegroundColor(ConsoleColor.Red,TrustedInstallerAuth);
+                Output.SetForegroundColor(ConsoleColor.Red, TrustedInstallerAuth);
                 Output.WriteLine("Unhandled Exception in:", TrustedInstallerAuth);
                 Output.SetForegroundColor(ConsoleColor.Yellow, TrustedInstallerAuth);
                 Output.WriteLine(e.ExceptionObject.ToString(), TrustedInstallerAuth);
@@ -301,13 +350,13 @@ namespace LWMS.Core
             {
                 for (int i = 0; i < processUnits.Count; i++)
                 {
-                    if(processUnits[i].TargetObject == unit)
+                    if (processUnits[i].TargetObject == unit)
                     {
                         processUnits.RemoveAt(i);
                         break;
                     }
                 }
-                
+
             }, false, true, PermissionID.RTUnregisterRProcessUnit, PermissionID.RuntimeAll);
 
         }
@@ -375,7 +424,7 @@ namespace LWMS.Core
         }
         internal void ProcessContext_Internal(HttpListenerContext context)
         {
-            var a = new HttpListenerRoutedContext(context,PipelineAuth);
+            var a = new HttpListenerRoutedContext(context, PipelineAuth);
             var output = HttpPipelineProcessor.Process(new PipelineData(a, new HttpPipelineArguments(), null, context.GetHashCode()));
             (output.PrimaryData as HttpListenerRoutedContext).Response.OutputStream.Close();
         }

@@ -32,7 +32,7 @@ namespace LWMS.Core.RemoteShell.Server
         {
             OperatorAuthentication.AuthedAction(auth, () => { RSAPrivateKey = key; }, false, false, PermissionID.RS_SetPriKey, PermissionID.RS_All);
         }
-        public RSServer(IPEndPoint point, int MaxConnections, int BufferSize)
+        public RSServer(IPEndPoint point, int MaxConnections)
         {
             Listener = new Socket(point.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             Listener.Bind(point);
