@@ -6,9 +6,9 @@ Including `conhost.exe`, it occupies only 17 MB memory on Windows 10 when there'
 
 ## Compatibility
 
-It runs on .Net Core, it should be a cross-platform server. :P
+It runs on .Net 5, it should be a cross-platform server. :P
 
-**NOTE:** LWMS uses HttpListener as its backend, if you configured LWMS and your OS correctly, LWMS should be able to handle HTTPS.
+**NOTE:** LWMS uses HttpListener as its backend, if you configured LWMS and your OS/.NET correctly, LWMS should be able to handle HTTPS.
 
 ## Difference Between LWMS and LWSwnS
 LWMS uses pipeline by design while LWSwnS uses event model only. 
@@ -89,7 +89,12 @@ To build up your own handler, please look into `LWMS.SimpleDirectoryBrowser` and
 
 **Note:** Following steps requires `LWMS.Management.Commands.dll` registered in `ManageModules.ini`.
 
+### Disable Remote Shell
+
+`RemoteShell` is a SSH-Like shell and LWMS uses at least one thread to deal with it, it may effect the performance of your server. This feature is set to off by default. The Key `ISREMOTESHELLENABLED` controls it.
+
 ### Adjust Console Output
+
 You can improve performance by disabling console beautification or console output. To do this you can use `LWMS.exe /preboot runtimeconfig /disablebeautifyconsole` or `LWMS.exe /preboot runtimeconfig /disableconsole`.
 
 ### Disable writing to log file

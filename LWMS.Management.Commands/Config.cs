@@ -15,7 +15,7 @@ namespace LWMS.Management.Commands
 
         public List<string> Alias => new List<string>();
 
-        public int Version => 4;
+        public int Version => 5;
 
         public static void OutputHelp(string AuthContext)
         {
@@ -141,7 +141,8 @@ namespace LWMS.Management.Commands
                             }
                             else
                             {
-                                Output.WriteLine(Language.Query("ManageCmd.Config.UnidentifiedKey", "Unidentified Key: {0}", setitem), AuthContext);
+                                GlobalConfiguration.SetValue(setitem, args[2],AuthContext);
+//                                Output.WriteLine(Language.Query("ManageCmd.Config.UnidentifiedKey", "Unidentified Key: {0}", setitem), AuthContext);
                             }
                         }
                         else
@@ -183,6 +184,10 @@ namespace LWMS.Management.Commands
                                 catch (Exception)
                                 {
                                 }
+                            }
+                            else
+                            {
+                                GlobalConfiguration.DelValue(setitem, AuthContext);
                             }
                         }
                         else

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using LWMS.Core.RemoteShell.ClientCore;
 
@@ -26,11 +27,15 @@ namespace LWMS.RemoteShell.ConsoleClient
             IPEndPoint endPoint;
             string Address = null;
             int port = -1;
+            string AcceptedPubKey=null;
             if (config is not null)
             {
                 Address = config.GetValue("ServerAddress", null);
                 {
                     _ = int.TryParse(config.GetValue("ServerPort", null), out port);
+                }
+                {
+                    AcceptedPubKey = config.GetValue("ServerPubKey", null);
                 }
             }
             if (Address is null)
@@ -44,6 +49,7 @@ namespace LWMS.RemoteShell.ConsoleClient
 
                 if (int.TryParse(Console.ReadLine(), out port) == false) port = 22;
             }
+
             endPoint = new IPEndPoint(Dns.GetHostAddresses(Address).First(), port);
             RSClient client = new RSClient(endPoint);
             var pubKey = client.Handshake00();
@@ -51,7 +57,17 @@ namespace LWMS.RemoteShell.ConsoleClient
             Console.Write(FingerPrint(pubKey));
             Console.WriteLine("Please make sure if the key is from server.");
             Console.WriteLine("Enter \"Yes\" to accept the key.");
-            if (Console.ReadLine().ToUpper() == "YES")
+            bool isAccepted = false;
+            if(AcceptedPubKey is not null)
+            {
+                if (Convert.ToBase64String(pubKey) == AcceptedPubKey) isAccepted = true;
+            }
+            else
+            {
+                isAccepted = Console.ReadLine().ToUpper() == "YES";
+            }
+
+            if (isAccepted == true)
             {
                 Console.WriteLine("Please enter your user name:");
                 var un = Console.ReadLine();
@@ -64,9 +80,9 @@ namespace LWMS.RemoteShell.ConsoleClient
                     while (true)
                     {
                         var cmd = Console.ReadLine();
-                        if (cmd.ToUpper() == "EXIT")
+                        if (cmd.ToUpper() == "EXIT"|| cmd.ToUpper() == "/Q"|| cmd.ToUpper() == "QUIT")
                         {
-                            return;
+                            Environment.Exit(0);
                         }
                         else
                         {

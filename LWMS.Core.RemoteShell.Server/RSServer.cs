@@ -51,7 +51,6 @@ namespace LWMS.Core.RemoteShell.Server
         {
             rsa.ImportRSAPrivateKey(RSAPrivateKey, out _);
             rsa.ImportRSAPublicKey(RSAPublicKey, out _);
-            byte[] b = BitConverter.GetBytes(100);
             Listener.Listen(100);
             Task.Run(() =>
             {
