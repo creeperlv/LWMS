@@ -34,6 +34,7 @@ namespace LWMS.Core.RemoteShell.ClientCore
             s.Connect(target);
             int length = 1024;
             byte[] KeyLength = new byte[4];
+            
             s.Receive(KeyLength, 4, SocketFlags.None);
             length = BitConverter.ToInt32(KeyLength);
             RSAPubKey = new byte[length];
@@ -147,24 +148,24 @@ namespace LWMS.Core.RemoteShell.ClientCore
             rsa.ImportRSAPublicKey(RSAPubKey, out _);
             {
                 //Send AES Key
-                byte[] Part1 = new byte[190];
-                for (int i = 0; i < 190; i++)
-                {
-                    Part1[i] = aes.Key[i];
-                }
-                var FData0 = rsa.Encrypt(Part1, RSAEncryptionPadding.OaepSHA256);
+                //byte[] Part1 = new byte[190];
+                //for (int i = 0; i < 32; i++)
+                //{
+                //    Part1[i] = aes.Key[i];
+                //}
+                var FData0 = rsa.Encrypt(aes.Key, RSAEncryptionPadding.OaepSHA256);
                 s.Send(FData0, 256, SocketFlags.None);
             }
-            {
-                //Send AES Key
-                byte[] Part2 = new byte[66];
-                for (int i = 0; i < 66; i++)
-                {
-                    Part2[i] = aes.Key[i + 190];
-                }
-                var FData1 = rsa.Encrypt(Part2, RSAEncryptionPadding.OaepSHA256);
-                s.Send(FData1, 256, SocketFlags.None);
-            }
+            //{
+            //    //Send AES Key
+            //    byte[] Part2 = new byte[66];
+            //    for (int i = 0; i < 66; i++)
+            //    {
+            //        Part2[i] = aes.Key[i + 190];
+            //    }
+            //    var FData1 = rsa.Encrypt(Part2, RSAEncryptionPadding.OaepSHA256);
+            //    s.Send(FData1, 256, SocketFlags.None);
+            //}
             {
                 //Send AES IV
                 var FinalEncIV = rsa.Encrypt(aes.IV, RSAEncryptionPadding.OaepSHA256);
@@ -232,6 +233,22 @@ namespace LWMS.Core.RemoteShell.ClientCore
             Decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
             Encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
         }
+        static string FingerPrint(byte[] data)
+        {
+            var d = SHA256.HashData(data);
+            string str = "";
+
+            for (int i = 0; i < d.Length; i++)
+            {
+                var item = d[i];
+                str += string.Format("{0:x2}", item) + " ";
+                if (i == (d.Length / 2) - 1)
+                {
+                    str += "\r\n";
+                }
+            }
+            return str.ToUpper();
+        }
         public void Write(byte[] data)
         {
             if (client.Connected == false)
@@ -242,14 +259,16 @@ namespace LWMS.Core.RemoteShell.ClientCore
                 byte[] length = BitConverter.GetBytes(data.Length);
                 var _data = PaddingByte(length, 16);
                 byte[] final = new byte[_data.Length];
-                Encryptor.TransformBlock(_data, 0, _data.Length, final, 0);
-                client.Send(final);
+                Encryptor.TransformBlock(_data,0, _data.Length, final,0);
+
+                //Decryptor.TransformBlock(_data,0, _data.Length, final,0);
+                client.Send(final,final.Length, SocketFlags.None);
             }
             {
                 var _data = PaddingByte(data, 16);
                 byte[] final = new byte[_data.Length];
                 Encryptor.TransformBlock(_data, 0, _data.Length, final, 0);
-                client.Send(final);
+                client.Send(final, final.Length, SocketFlags.None);
             }
         }
         public void Read(out byte[] data)
@@ -283,7 +302,12 @@ namespace LWMS.Core.RemoteShell.ClientCore
                 int NewSize = ((OriginalData.Length / Size) + 1) * Size;
                 byte[] b = new byte[NewSize];
                 b.Initialize();
-                OriginalData.CopyTo(b, 0);
+                for (int i = 0; i < OriginalData.Length; i++)
+                {
+                    b[i] = OriginalData[i];
+
+                }
+                //OriginalData.CopyTo(b, 0);
                 return b;
             }
         }

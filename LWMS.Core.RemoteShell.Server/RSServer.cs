@@ -54,14 +54,18 @@ namespace LWMS.Core.RemoteShell.Server
             Trace.WriteLine("Remote Shell Server inited.");
             if (RSAPrivateKey is not null)
                 rsa.ImportRSAPrivateKey(RSAPrivateKey, out _);
+            else RSAPrivateKey = rsa.ExportRSAPrivateKey();
             if (RSAPublicKey is not null)
                 rsa.ImportRSAPublicKey(RSAPublicKey, out _);
+            else RSAPublicKey = rsa.ExportRSAPublicKey();
             Listener.Listen(100);
             Task.Run(() =>
             {
                 while (Stop is false)
                 {
+
                     var s = Listener.Accept();
+                    Trace.WriteLine("New Remote Connection Request:"+s.RemoteEndPoint.ToString());
                     var v = ValidAndLogin(s);
                     if (v.Item1)
                     {
@@ -116,27 +120,38 @@ namespace LWMS.Core.RemoteShell.Server
                   }
               });
         }
+        static string FingerPrint(byte[] data)
+        {
+            var d = SHA256.HashData(data);
+            string str = "";
+
+            for (int i = 0; i < d.Length; i++)
+            {
+                var item = d[i];
+                str += string.Format("{0:x2}", item) + " ";
+                if (i == (d.Length / 2) - 1)
+                {
+                    str += "\r\n";
+                }
+            }
+            return str.ToUpper();
+        }
         internal (bool, AESLayer) ValidAndLogin(Socket client)
         {
             client.ReceiveTimeout = 30 * 1000;//Set time-out to 30 seconds.
             client.Send(BitConverter.GetBytes(RSAPublicKey.Length));
             client.Send(RSAPublicKey);
+
             byte[] Key;
             byte[] IV;
             AESLayer layer;
             {
                 byte[] d0 = new byte[256];
                 client.Receive(d0, 256, SocketFlags.None);
-                var D0 = rsa.Decrypt(d0, RSAEncryptionPadding.OaepSHA256);
-                d0 = new byte[256];
-                client.Receive(d0, 256, SocketFlags.None);
-                var D1 = rsa.Decrypt(d0, RSAEncryptionPadding.OaepSHA256);
+                Key = rsa.Decrypt(d0, RSAEncryptionPadding.OaepSHA256);
                 d0 = new byte[256];
                 client.Receive(d0, 256, SocketFlags.None);
                 IV = rsa.Decrypt(d0, RSAEncryptionPadding.OaepSHA256);
-                List<byte> d = new List<byte>(D0);
-                d.AddRange(D1);
-                Key = d.ToArray();
                 layer = new AESLayer(Key, IV, client);
                 {
                     byte[] NameD;
@@ -175,8 +190,8 @@ namespace LWMS.Core.RemoteShell.Server
             this.client = client;
             aes.Key = AESKey;
             aes.IV = AESIV;
-            Decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
             Encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+            Decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
         }
         public void Write(byte[] data)
         {
@@ -196,6 +211,7 @@ namespace LWMS.Core.RemoteShell.Server
                 byte[] final = new byte[_data.Length];
                 Encryptor.TransformBlock(_data, 0, _data.Length, final, 0);
                 client.Send(final);
+                
             }
         }
         public void Read(out byte[] data)
@@ -204,8 +220,13 @@ namespace LWMS.Core.RemoteShell.Server
             {
                 byte[] rD = new byte[16];
                 byte[] d = new byte[16];
-                client.Receive(rD, 16, SocketFlags.None);
+                client.Receive(rD,0, 16, SocketFlags.None);
                 Decryptor.TransformBlock(rD, 0, 16, d, 0);
+                    Console.WriteLine("Length Header:");
+                foreach(var item in d)
+                {
+                    Console.WriteLine(item);
+                }
                 length = BitConverter.ToInt32(new byte[] { d[0], d[1], d[2], d[3] });
             }
             {

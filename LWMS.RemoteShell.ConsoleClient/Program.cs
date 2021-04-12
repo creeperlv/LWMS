@@ -54,7 +54,7 @@ namespace LWMS.RemoteShell.ConsoleClient
             RSClient client = new RSClient(endPoint);
             var pubKey = client.Handshake00();
             Console.WriteLine("Received public key from server:");
-            Console.Write(FingerPrint(pubKey));
+            Console.WriteLine(FingerPrint(pubKey));
             Console.WriteLine("Please make sure if the key is from server.");
             Console.WriteLine("Enter \"Yes\" to accept the key.");
             bool isAccepted = false;
@@ -73,6 +73,7 @@ namespace LWMS.RemoteShell.ConsoleClient
                 var un = Console.ReadLine();
                 Console.WriteLine("Please enter your password:");
                 var pw = ReadPassword();
+                Console.WriteLine(pw);
                 var r = client.Handshake01(un, pw);
                 if (r == true)
                 {
