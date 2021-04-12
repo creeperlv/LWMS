@@ -211,7 +211,7 @@ namespace LWMS.Core.Configuration
                     var v = ConfigurationData.FindValue(Key.ToUpper());
                     if (v is not null) value = v;
                 }
-            }, false, false, PermissionID.ReadConfig);
+            }, false, true, PermissionID.ReadConfig);
             return value;
         }
         public static void SetValue(string Key, string Value, string AuthContext)
@@ -223,7 +223,7 @@ namespace LWMS.Core.Configuration
                     ConfigurationData.AddValue(Key.ToUpper(), Value, false, true);
                     ConfigurationData.Flush();
                 }
-            }, false, false, PermissionID.ModifyConfig);
+            }, false, true, PermissionID.ModifyConfig);
         }
         public static void DelValue(string Key, string AuthContext)
         {
@@ -234,7 +234,7 @@ namespace LWMS.Core.Configuration
                     ConfigurationData.DeleteKey(Key.ToUpper(), true);
                     ConfigurationData.Flush();
                 }
-            }, false, false, PermissionID.Config_Delete);
+            }, false, true, PermissionID.Config_Delete);
         }
         internal static TreeStructureData RProcessUnits { get; set; }
         internal static TreeStructureData WProcessUnits { get; set; }

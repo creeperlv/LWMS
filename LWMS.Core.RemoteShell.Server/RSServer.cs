@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -19,8 +20,8 @@ namespace LWMS.Core.RemoteShell.Server
         int _MaxConnections;
         //BufferManager
         //SocketAsyncEventArgsPool eventArgsPool;
-        internal static byte[] RSAPublicKey;
-        internal static byte[] RSAPrivateKey;
+        internal static byte[] RSAPublicKey = null;
+        internal static byte[] RSAPrivateKey = null;
         public Socket Listener;
         Semaphore ThreadLimitation;
         RSA rsa = RSA.Create();
@@ -39,9 +40,10 @@ namespace LWMS.Core.RemoteShell.Server
             this._MaxConnections = MaxConnections;
             ThreadLimitation = new Semaphore(MaxConnections, MaxConnections);
         }
-        public static void SetFunctions(Func<string, List<CommandPack>> ResolveCommand, Action<string, CommandPack[]> Control,string Auth)
+        public static void SetFunctions(Func<string, List<CommandPack>> ResolveCommand, Action<string, CommandPack[]> Control, string Auth)
         {
-            OperatorAuthentication.AuthedAction(Auth, () => {
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
                 RSServer.ResolveCommand = ResolveCommand;
                 RSServer.Control = Control;
             }, false, false, PermissionID.RS_SetFunctions, PermissionID.RS_All);
@@ -49,8 +51,11 @@ namespace LWMS.Core.RemoteShell.Server
         bool Stop = false;
         public void Start()
         {
-            rsa.ImportRSAPrivateKey(RSAPrivateKey, out _);
-            rsa.ImportRSAPublicKey(RSAPublicKey, out _);
+            Trace.WriteLine("Remote Shell Server inited.");
+            if (RSAPrivateKey is not null)
+                rsa.ImportRSAPrivateKey(RSAPrivateKey, out _);
+            if (RSAPublicKey is not null)
+                rsa.ImportRSAPublicKey(RSAPublicKey, out _);
             Listener.Listen(100);
             Task.Run(() =>
             {
@@ -113,7 +118,7 @@ namespace LWMS.Core.RemoteShell.Server
         }
         internal (bool, AESLayer) ValidAndLogin(Socket client)
         {
-            client.ReceiveTimeout = 30*1000;//Set time-out to 30 seconds.
+            client.ReceiveTimeout = 30 * 1000;//Set time-out to 30 seconds.
             client.Send(BitConverter.GetBytes(RSAPublicKey.Length));
             client.Send(RSAPublicKey);
             byte[] Key;

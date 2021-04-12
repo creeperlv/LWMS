@@ -45,6 +45,12 @@ namespace LWMS.Core
                 DomainManager.SetTrustedInstaller(TrustedInstallerAuth);
                 RSServer.SetFunctions(Tools00.ResolveCommand, ServerController.Control, TrustedInstallerAuth);
             }
+            ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString() + "-Preview";
+            Inited = true;
+        }
+        void LoadRemoteShell()
+        {
+
             try
             {
                 //RemoteShell
@@ -52,7 +58,7 @@ namespace LWMS.Core
                 bool.TryParse(GlobalConfiguration.GetValue("isRemoteShellEnabled", TrustedInstallerAuth, false.ToString()), out isRemoteShellEnabled);
                 if (isRemoteShellEnabled)
                 {
-                    var PubKey64 = GlobalConfiguration.GetValue("RemoteShellPublicKey", TrustedInstallerAuth);
+                    var PubKey64 = GlobalConfiguration.GetValue("RemoteShellPublicKey", TrustedInstallerAuth, null);
                     if (PubKey64 is not null)
                     {
                         try
@@ -65,7 +71,7 @@ namespace LWMS.Core
                         }
 
                     }
-                    var PriKey64 = GlobalConfiguration.GetValue("RemoteShellPrivateKey", TrustedInstallerAuth);
+                    var PriKey64 = GlobalConfiguration.GetValue("RemoteShellPrivateKey", TrustedInstallerAuth, null);
                     if (PriKey64 is not null)
                     {
                         try
@@ -80,20 +86,19 @@ namespace LWMS.Core
                     var ListenIP = "127.0.0.1";
                     var ListenPort = 22;
                     ListenIP = GlobalConfiguration.GetValue("RemoteShellIP", TrustedInstallerAuth, ListenIP);
-                    if(!int.TryParse(GlobalConfiguration.GetValue("RemoteShellPort",TrustedInstallerAuth,"22"),out ListenPort))
+                    if (!int.TryParse(GlobalConfiguration.GetValue("RemoteShellPort", TrustedInstallerAuth, "22"), out ListenPort))
                     {
                         ListenPort = 22;
                     }
                     IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse(ListenIP), ListenPort);
-                    RSServer rs = new RSServer(iPEndPoint,100);
+                    RSServer rs = new RSServer(iPEndPoint, 100);
                     rs.Start();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Trace.WriteLine(e);
             }
-            ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString() + "-Preview";
-            Inited = true;
         }
         public LWMSCoreServer()
         {
@@ -288,6 +293,7 @@ namespace LWMS.Core
             });
             //Load Manage Modules
             LoadCommandsFromManifest();
+            LoadRemoteShell();
             //Start invoke scheduled tasks.
             TaskRunner.StartRun();
         }
