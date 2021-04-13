@@ -17,6 +17,11 @@ namespace LWMS.Core.RemoteShell.ClientCore
         }
         Socket s = null; byte[] RSAPubKey;
         List<IOutput> Outputs = new List<IOutput>();
+        Action OnConnectionLost = null;
+        public void RegisterOnConnectionLost(Action action)
+        {
+            OnConnectionLost = action;
+        }
         public void RegisterOutput(IOutput output)
         {
             Outputs.Add(output);
@@ -48,8 +53,7 @@ namespace LWMS.Core.RemoteShell.ClientCore
         {
             //try
             //{
-                Console.WriteLine("Listening...");
-                while (Stop is not true)
+            while (Stop is not true)
             {
                 try
                 {
@@ -141,8 +145,14 @@ namespace LWMS.Core.RemoteShell.ClientCore
                 }
                 catch (Exception)
                 {
+                    if (s.Connected == false)
+                    {
+                        if (OnConnectionLost is not null)
+                            OnConnectionLost();
+                        return;
+                    }
                 }
-                }
+            }
             //}
             //catch (Exception)
             //{
@@ -205,9 +215,21 @@ namespace LWMS.Core.RemoteShell.ClientCore
         }
         public void SendOut(string cmd)
         {
-            layer.Write(BitConverter.GetBytes(1));
-            layer.Write(Encoding.UTF8.GetBytes(cmd));
-            layer.Write(Encoding.UTF8.GetBytes(Auth));
+            try
+            {
+
+                layer.Write(BitConverter.GetBytes(1));
+                layer.Write(Encoding.UTF8.GetBytes(cmd));
+                layer.Write(Encoding.UTF8.GetBytes(Auth));
+            }
+            catch (Exception)
+            {
+                if (s.Connected == false)
+                {
+                    if (OnConnectionLost is not null)
+                        OnConnectionLost();
+                }
+            }
         }
 
         public void Dispose()
@@ -216,6 +238,7 @@ namespace LWMS.Core.RemoteShell.ClientCore
             if (s is not null) s.Dispose();
             Outputs.Clear();
             Outputs = null;
+            OnConnectionLost();
         }
     }
     public interface IOutput
@@ -273,8 +296,8 @@ namespace LWMS.Core.RemoteShell.ClientCore
                 byte[] final = new byte[_data.Length];
 
                 final = Encryptor.TransformFinalBlock(_data, 0, _data.Length);
-                
-                
+
+
                 client.Send(final, final.Length, SocketFlags.None);
             }
             {

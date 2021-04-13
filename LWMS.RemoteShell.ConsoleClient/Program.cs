@@ -19,12 +19,18 @@ namespace LWMS.RemoteShell.ConsoleClient
             Console.WriteLine("Copyright (C) 2020-2021 Creeper Lv");
             Console.WriteLine("This software is licensed under the MIT License");
             var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            path = Path.Combine(path, "LWMS.RemoveShell.ConsoleClient");
+            Console.WriteLine(path);
             var Conf = Path.Combine(path, "Settings.ini");
             SimpleConfig config = null;
             if (File.Exists(Conf))
             {
                 config = SimpleConfig.LoadFromFile(Conf);
+            }
+            var conf = Path.Combine(Environment.CurrentDirectory, "Settings.ini");
+            if (File.Exists(conf))
+            {
+                config = SimpleConfig.LoadFromFile(conf);
+
             }
             IPEndPoint endPoint;
             string Address = null;
@@ -54,21 +60,27 @@ namespace LWMS.RemoteShell.ConsoleClient
 
             endPoint = new IPEndPoint(Dns.GetHostAddresses(Address).First(), port);
             RSClient client = new RSClient(endPoint);
+            client.RegisterOutput(new ConsoleOut());
+            client.RegisterOnConnectionLost(() => {
+                Console.WriteLine("Connection Lost.");
+            });
             var pubKey = client.Handshake00();
             Console.WriteLine("Received public key from server:");
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(FingerPrint(pubKey));
             Console.ResetColor();
             Console.WriteLine("Please make sure if the key is from server.");
-            Console.WriteLine("Enter \"Yes\" to accept the key.");
             bool isAccepted = false;
             if (AcceptedPubKey is not null)
             {
+                Console.WriteLine("The key is automatically accpeted.");
                 if (Convert.ToBase64String(pubKey) == AcceptedPubKey) isAccepted = true;
             }
             else
             {
-                isAccepted = Console.ReadLine().ToUpper() == "YES";
+                Console.WriteLine("Enter \"Yes\" or \"Y\" to accept the key.");
+                var r = Console.ReadLine().ToUpper();
+                isAccepted = r == "YES" || r == "Y";
             }
 
             if (isAccepted == true)
@@ -81,7 +93,6 @@ namespace LWMS.RemoteShell.ConsoleClient
                 if (r == true)
                 {
                     Console.WriteLine("Logged in.");
-                    client.RegisterOutput(new ConsoleOut());
                     while (true)
                     {
                         var cmd = Console.ReadLine();
