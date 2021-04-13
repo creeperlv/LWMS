@@ -66,39 +66,42 @@ namespace LWMS.Core.RemoteShell.Server
 
                     var s = Listener.Accept();
                     Trace.WriteLine("New Remote Connection Request:" + s.RemoteEndPoint.ToString());
-                    var v = ValidAndLogin(s);
-                    if (v.Item1)
-                    {
                         ThreadLimitation.WaitOne();
-                        AESLayer _s = v.Item2;
-                        RSCMDReciver.AddSocket(_s);
-                        Watch(_s);
-                    }
-                    else s.Close();
+                        Watch(s);
                 }
             });
         }
         static Func<string, List<CommandPack>> ResolveCommand;
         static Action<string, CommandPack[]> Control;
-        internal void Watch(AESLayer s)
+        internal void Watch(Socket s)
         {
-            s.client.ReceiveTimeout = 0;
+
+            var v = ValidAndLogin(s);
+
+            AESLayer _s;
+            if (v.Item1)
+            {
+                _s = v.Item2;
+                RSCMDReciver.AddSocket(_s);
+            }
+            else { s.Close();return; }
+            _s.client.ReceiveTimeout = 0;
             _ = Task.Run(() =>
               {
-                  Trace.WriteLine("Conntection Logged in:"+s.client.RemoteEndPoint.ToString());
-                  while (s.isDisposed is false)
+                  Trace.WriteLine("Conntection Logged in:"+ _s.client.RemoteEndPoint.ToString());
+                  while (_s.isDisposed is false)
                   {
                       try
                       {
-                          s.Read(out byte[] d);
+                          _s.Read(out byte[] d);
                           int Operatation = BitConverter.ToInt32(d);
                           switch (Operatation)
                           {
                               case 1:
                                   {
                                       // Receieve Command.
-                                      s.Read(out byte[] c);
-                                      s.Read(out byte[] a);
+                                      _s.Read(out byte[] c);
+                                      _s.Read(out byte[] a);
                                       string command = Encoding.UTF8.GetString(c);
                                       string auth = Encoding.UTF8.GetString(a);
                                       var cmdList = ResolveCommand(command);
@@ -109,7 +112,7 @@ namespace LWMS.Core.RemoteShell.Server
                                   {
 
                                       byte[] Refuse = new byte[] { (byte)'?', (byte)'?', (byte)'?' };
-                                      s.Write(Refuse);
+                                      _s.Write(Refuse);
                                   }
                                   break;
                           }
@@ -189,6 +192,8 @@ namespace LWMS.Core.RemoteShell.Server
         internal AESLayer(byte[] AESKey, byte[] AESIV, Socket client)
         {
             this.client = client;
+            client.ReceiveBufferSize = 16;
+            client.SendBufferSize = 16;
             aes.Key = AESKey;
             aes.IV = AESIV;
             aes.Padding = PaddingMode.None;

@@ -99,6 +99,9 @@ namespace LWMS.RemoteShell.ConsoleClient
                         if (cmd.ToUpper() == "EXIT" || cmd.ToUpper() == "/Q" || cmd.ToUpper() == "QUIT")
                         {
                             Environment.Exit(0);
+                        }else if(cmd.ToUpper() == "CLS"|| cmd.ToUpper() == "CLEAR")
+                        {
+                            Console.Clear();
                         }
                         else
                         {

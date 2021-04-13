@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -261,6 +262,8 @@ namespace LWMS.Core.RemoteShell.ClientCore
         internal AESLayer(byte[] AESKey, byte[] AESIV, Socket client)
         {
             this.client = client;
+            client.ReceiveBufferSize = 16;
+            client.SendBufferSize = 16;
             aes.Key = AESKey;
             aes.Padding = PaddingMode.None;
             aes.IV = AESIV;
@@ -300,6 +303,7 @@ namespace LWMS.Core.RemoteShell.ClientCore
 
                 client.Send(final, final.Length, SocketFlags.None);
             }
+
             {
                 var _data = PaddingByte(data, 16);
                 byte[] final = new byte[_data.Length];
@@ -307,15 +311,26 @@ namespace LWMS.Core.RemoteShell.ClientCore
                 client.Send(final, final.Length, SocketFlags.None);
             }
         }
+        bool FindNoEmpty(byte[]d,int startIndex)
+        {
+            for (int i = startIndex; i < d.Length; i++)
+            {
+                if (
+                d[i] != 0) return true;
+            }
+            return false;
+        }
         public void Read(out byte[] data)
         {
             int length;
             {
                 byte[] rD = new byte[16];
                 byte[] d;
-                client.Receive(rD, 16, SocketFlags.None);
+                int l = client.Receive(rD,16, SocketFlags.None);
+                
                 d = Decryptor.TransformFinalBlock(rD, 0, 16);
                 length = -BitConverter.ToInt32(new byte[] { d[0], d[1], d[2], d[3] });
+                if (FindNoEmpty(d, 4)) throw new Exception();
             }
             {
                 int Padded = ((length / 16) + 1) * 16;
@@ -333,6 +348,15 @@ namespace LWMS.Core.RemoteShell.ClientCore
         }
         byte[] PaddingByte(byte[] OriginalData, int Size)
         {
+            if (OriginalData.Length == 0)
+            {
+                var b = new byte[Size];
+                for (int i = 0; i < Size; i++)
+                {
+                    b[i] = 0;
+                }
+                return b;
+            }
             if (OriginalData.Length % Size == 0) return OriginalData;
             else
             {
