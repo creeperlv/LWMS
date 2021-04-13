@@ -65,7 +65,7 @@ namespace LWMS.Core.RemoteShell.Server
                 {
 
                     var s = Listener.Accept();
-                    Trace.WriteLine("New Remote Connection Request:"+s.RemoteEndPoint.ToString());
+                    Trace.WriteLine("New Remote Connection Request:" + s.RemoteEndPoint.ToString());
                     var v = ValidAndLogin(s);
                     if (v.Item1)
                     {
@@ -85,6 +85,7 @@ namespace LWMS.Core.RemoteShell.Server
             s.client.ReceiveTimeout = 0;
             _ = Task.Run(() =>
               {
+                  Trace.WriteLine("Conntection Logged in:"+s.client.RemoteEndPoint.ToString());
                   while (s.isDisposed is false)
                   {
                       try
@@ -190,6 +191,7 @@ namespace LWMS.Core.RemoteShell.Server
             this.client = client;
             aes.Key = AESKey;
             aes.IV = AESIV;
+            aes.Padding = PaddingMode.None;
             Encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
             Decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
         }
@@ -200,18 +202,18 @@ namespace LWMS.Core.RemoteShell.Server
                 Dispose();
             }
             {
-                byte[] length = BitConverter.GetBytes(data.Length);
+                byte[] length = BitConverter.GetBytes(-data.Length);
                 var _data = PaddingByte(length, 16);
-                byte[] final = new byte[_data.Length];
-                Encryptor.TransformBlock(_data, 0, _data.Length, final, 0);
+                byte[] final;
+                final=Encryptor.TransformFinalBlock(_data, 0, _data.Length);
                 client.Send(final);
             }
             {
                 var _data = PaddingByte(data, 16);
-                byte[] final = new byte[_data.Length];
-                Encryptor.TransformBlock(_data, 0, _data.Length, final, 0);
+                byte[] final;
+                final = Encryptor.TransformFinalBlock(_data, 0, _data.Length);
                 client.Send(final);
-                
+
             }
         }
         public void Read(out byte[] data)
@@ -220,21 +222,18 @@ namespace LWMS.Core.RemoteShell.Server
             {
                 byte[] rD = new byte[16];
                 byte[] d = new byte[16];
-                client.Receive(rD,0, 16, SocketFlags.None);
-                Decryptor.TransformBlock(rD, 0, 16, d, 0);
-                    Console.WriteLine("Length Header:");
-                foreach(var item in d)
-                {
-                    Console.WriteLine(item);
-                }
-                length = BitConverter.ToInt32(new byte[] { d[0], d[1], d[2], d[3] });
+                client.Receive(rD, 0, 16, SocketFlags.None);
+               
+                d = Decryptor.TransformFinalBlock(rD, 0, 16);
+               
+                length = -BitConverter.ToInt32(new byte[] { d[0], d[1], d[2], d[3] });
             }
             {
                 int Padded = ((length / 16) + 1) * 16;
                 byte[] rD = new byte[Padded];
                 byte[] d = new byte[Padded];
                 client.Receive(rD, Padded, SocketFlags.None);
-                Decryptor.TransformBlock(rD, 0, Padded, d, 0);
+                d=Decryptor.TransformFinalBlock(rD, 0, Padded);
                 data = new byte[length];
                 for (int i = 0; i < length; i++)
                 {
@@ -244,6 +243,15 @@ namespace LWMS.Core.RemoteShell.Server
         }
         byte[] PaddingByte(byte[] OriginalData, int Size)
         {
+            if (OriginalData.Length == 0)
+            {
+                var b = new byte[Size];
+                for (int i = 0; i < Size; i++)
+                {
+                    b[i] = 0;
+                }
+                return b;
+            }
             if (OriginalData.Length % Size == 0) return OriginalData;
             else
             {
@@ -303,8 +311,10 @@ namespace LWMS.Core.RemoteShell.Server
                         }
                         else
                         {
+                            //Console.WriteLine($"Is {item.Auth } equals to {option.AuthContext}?");
                             if (item.Auth == option.AuthContext)
                             {
+                                //Console.WriteLine("Wrote Line.");
                                 item.Write(BitConverter.GetBytes(1));
                                 item.Write(Encoding.UTF8.GetBytes((string)Input.PrimaryData));
                             }

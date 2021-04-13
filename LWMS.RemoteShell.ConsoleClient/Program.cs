@@ -14,6 +14,8 @@ namespace LWMS.RemoteShell.ConsoleClient
     {
         static void Main(string[] args)
         {
+            Console.InputEncoding = Encoding.UTF8;
+            Console.OutputEncoding = Encoding.UTF8;
             Console.WriteLine("Copyright (C) 2020-2021 Creeper Lv");
             Console.WriteLine("This software is licensed under the MIT License");
             var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -27,7 +29,7 @@ namespace LWMS.RemoteShell.ConsoleClient
             IPEndPoint endPoint;
             string Address = null;
             int port = -1;
-            string AcceptedPubKey=null;
+            string AcceptedPubKey = null;
             if (config is not null)
             {
                 Address = config.GetValue("ServerAddress", null);
@@ -54,11 +56,13 @@ namespace LWMS.RemoteShell.ConsoleClient
             RSClient client = new RSClient(endPoint);
             var pubKey = client.Handshake00();
             Console.WriteLine("Received public key from server:");
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(FingerPrint(pubKey));
+            Console.ResetColor();
             Console.WriteLine("Please make sure if the key is from server.");
             Console.WriteLine("Enter \"Yes\" to accept the key.");
             bool isAccepted = false;
-            if(AcceptedPubKey is not null)
+            if (AcceptedPubKey is not null)
             {
                 if (Convert.ToBase64String(pubKey) == AcceptedPubKey) isAccepted = true;
             }
@@ -73,15 +77,15 @@ namespace LWMS.RemoteShell.ConsoleClient
                 var un = Console.ReadLine();
                 Console.WriteLine("Please enter your password:");
                 var pw = ReadPassword();
-                Console.WriteLine(pw);
                 var r = client.Handshake01(un, pw);
                 if (r == true)
                 {
+                    Console.WriteLine("Logged in.");
                     client.RegisterOutput(new ConsoleOut());
                     while (true)
                     {
                         var cmd = Console.ReadLine();
-                        if (cmd.ToUpper() == "EXIT"|| cmd.ToUpper() == "/Q"|| cmd.ToUpper() == "QUIT")
+                        if (cmd.ToUpper() == "EXIT" || cmd.ToUpper() == "/Q" || cmd.ToUpper() == "QUIT")
                         {
                             Environment.Exit(0);
                         }

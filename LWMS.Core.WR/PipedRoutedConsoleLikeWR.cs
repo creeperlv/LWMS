@@ -121,7 +121,7 @@ namespace LWMS.Core.WR
         public void WriteLine(string Str, string AuthContext)
         {
             Processor.Process(new PipelineData(Str, null,
-                  new PipedRoutedWROption(PipedRoutedWROperation.WRITELINE, AutoFlush)));
+                  new PipedRoutedWROption(PipedRoutedWROperation.WRITELINE, AutoFlush,AuthContext)));
         }
 
         public Task WriteLineAsync(string str)

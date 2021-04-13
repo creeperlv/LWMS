@@ -34,7 +34,7 @@ namespace LWMS.Core.RemoteShell.ClientCore
             s.Connect(target);
             int length = 1024;
             byte[] KeyLength = new byte[4];
-            
+
             s.Receive(KeyLength, 4, SocketFlags.None);
             length = BitConverter.ToInt32(KeyLength);
             RSAPubKey = new byte[length];
@@ -46,10 +46,14 @@ namespace LWMS.Core.RemoteShell.ClientCore
         bool Stop = false;
         void Listen()
         {
-            try
-            {
+            //try
+            //{
+                Console.WriteLine("Listening...");
                 while (Stop is not true)
+            {
+                try
                 {
+
                     int Operation = -1;
                     {
                         layer.Read(out byte[] d);
@@ -135,10 +139,14 @@ namespace LWMS.Core.RemoteShell.ClientCore
                         }
                     }
                 }
-            }
-            catch (Exception)
-            {
-            }
+                catch (Exception)
+                {
+                }
+                }
+            //}
+            //catch (Exception)
+            //{
+            //}
         }
         public bool Handshake01(string UserName, string Password)
         {
@@ -197,7 +205,9 @@ namespace LWMS.Core.RemoteShell.ClientCore
         }
         public void SendOut(string cmd)
         {
+            layer.Write(BitConverter.GetBytes(1));
             layer.Write(Encoding.UTF8.GetBytes(cmd));
+            layer.Write(Encoding.UTF8.GetBytes(Auth));
         }
 
         public void Dispose()
@@ -229,6 +239,7 @@ namespace LWMS.Core.RemoteShell.ClientCore
         {
             this.client = client;
             aes.Key = AESKey;
+            aes.Padding = PaddingMode.None;
             aes.IV = AESIV;
             Decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
             Encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
@@ -251,23 +262,25 @@ namespace LWMS.Core.RemoteShell.ClientCore
         }
         public void Write(byte[] data)
         {
+
             if (client.Connected == false)
             {
                 Dispose();
             }
             {
-                byte[] length = BitConverter.GetBytes(data.Length);
+                byte[] length = BitConverter.GetBytes(-data.Length);
                 var _data = PaddingByte(length, 16);
                 byte[] final = new byte[_data.Length];
-                Encryptor.TransformBlock(_data,0, _data.Length, final,0);
 
-                //Decryptor.TransformBlock(_data,0, _data.Length, final,0);
-                client.Send(final,final.Length, SocketFlags.None);
+                final = Encryptor.TransformFinalBlock(_data, 0, _data.Length);
+                
+                
+                client.Send(final, final.Length, SocketFlags.None);
             }
             {
                 var _data = PaddingByte(data, 16);
                 byte[] final = new byte[_data.Length];
-                Encryptor.TransformBlock(_data, 0, _data.Length, final, 0);
+                final = Encryptor.TransformFinalBlock(_data, 0, _data.Length);
                 client.Send(final, final.Length, SocketFlags.None);
             }
         }
@@ -276,17 +289,18 @@ namespace LWMS.Core.RemoteShell.ClientCore
             int length;
             {
                 byte[] rD = new byte[16];
-                byte[] d = new byte[16];
+                byte[] d;
                 client.Receive(rD, 16, SocketFlags.None);
-                Decryptor.TransformBlock(rD, 0, 16, d, 0);
-                length = BitConverter.ToInt32(new byte[] { d[0], d[1], d[2], d[3] });
+                d = Decryptor.TransformFinalBlock(rD, 0, 16);
+                length = -BitConverter.ToInt32(new byte[] { d[0], d[1], d[2], d[3] });
             }
             {
                 int Padded = ((length / 16) + 1) * 16;
                 byte[] rD = new byte[Padded];
-                byte[] d = new byte[Padded];
+                byte[] d;
                 client.Receive(rD, Padded, SocketFlags.None);
-                Decryptor.TransformBlock(rD, 0, Padded, d, 0);
+                d = Decryptor.TransformFinalBlock(rD, 0, Padded);
+                //Console.WriteLine("Length:" + length);
                 data = new byte[length];
                 for (int i = 0; i < length; i++)
                 {
