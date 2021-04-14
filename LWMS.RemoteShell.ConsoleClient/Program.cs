@@ -36,6 +36,8 @@ namespace LWMS.RemoteShell.ConsoleClient
             string Address = null;
             int port = -1;
             string AcceptedPubKey = null;
+            string Username = null;
+            string Password = null;
             if (config is not null)
             {
                 Address = config.GetValue("ServerAddress", null);
@@ -45,6 +47,9 @@ namespace LWMS.RemoteShell.ConsoleClient
                 {
                     AcceptedPubKey = config.GetValue("ServerPubKey", null);
                 }
+                Username = config.GetValue("Username", null);
+                Password = config.GetValue("Password", null);
+
             }
             if (Address is null)
             {
@@ -61,7 +66,8 @@ namespace LWMS.RemoteShell.ConsoleClient
             endPoint = new IPEndPoint(Dns.GetHostAddresses(Address).First(), port);
             RSClient client = new RSClient(endPoint);
             client.RegisterOutput(new ConsoleOut());
-            client.RegisterOnConnectionLost(() => {
+            client.RegisterOnConnectionLost(() =>
+            {
                 Console.WriteLine("Connection Lost.");
             });
             var pubKey = client.Handshake00();
@@ -86,10 +92,10 @@ namespace LWMS.RemoteShell.ConsoleClient
             if (isAccepted == true)
             {
                 Console.WriteLine("Please enter your user name:");
-                var un = Console.ReadLine();
+                Username = Console.ReadLine();
                 Console.WriteLine("Please enter your password:");
-                var pw = ReadPassword();
-                var r = client.Handshake01(un, pw);
+                Password = ReadPassword();
+                var r = client.Handshake01(Username, Password);
                 if (r == true)
                 {
                     Console.WriteLine("Logged in.");
@@ -99,7 +105,8 @@ namespace LWMS.RemoteShell.ConsoleClient
                         if (cmd.ToUpper() == "EXIT" || cmd.ToUpper() == "/Q" || cmd.ToUpper() == "QUIT")
                         {
                             Environment.Exit(0);
-                        }else if(cmd.ToUpper() == "CLS"|| cmd.ToUpper() == "CLEAR")
+                        }
+                        else if (cmd.ToUpper() == "CLS" || cmd.ToUpper() == "CLEAR")
                         {
                             Console.Clear();
                         }

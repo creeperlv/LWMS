@@ -270,22 +270,6 @@ namespace LWMS.Core.RemoteShell.ClientCore
             Decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
             Encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
         }
-        static string FingerPrint(byte[] data)
-        {
-            var d = SHA256.HashData(data);
-            string str = "";
-
-            for (int i = 0; i < d.Length; i++)
-            {
-                var item = d[i];
-                str += string.Format("{0:x2}", item) + " ";
-                if (i == (d.Length / 2) - 1)
-                {
-                    str += "\r\n";
-                }
-            }
-            return str.ToUpper();
-        }
         public void Write(byte[] data)
         {
 
