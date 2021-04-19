@@ -4,6 +4,7 @@ using LWMS.Core.FileSystem;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,11 +36,17 @@ namespace LWMS.Core.Configuration
             }
         }
         internal static Dictionary<string, ApplicationConfiguration> keyValuePairs = new Dictionary<string, ApplicationConfiguration>();
+        StorageFile sf;
         internal ApplicationConfiguration(string ModuleName)
         {
             var moduleConfigFolder = ApplicationStorage.Configuration.CreateFolder(GlobalConfiguration.TrustedInstaller, "Modules", true);
-            StorageFile sf;
             bool b = moduleConfigFolder.CreateFile(GlobalConfiguration.TrustedInstaller, ModuleName + ".ini", out sf);
+
+            FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(sf.Parent.ItemPath, sf.Name);
+            fileSystemWatcher.Changed += (_a, _b) =>
+            {
+                RawData = INILikeData.LoadFromWR(new FileWR(sf.ToFileInfo(GlobalConfiguration.TrustedInstaller)));
+            };
             //var fs = moduleConfigFolder.GetFiles(GlobalConfiguration.TrustedInstaller);
             //foreach (var item in fs)
             //{
@@ -54,6 +61,10 @@ namespace LWMS.Core.Configuration
             else RawData = INILikeData.CreateToWR(new FileWR(sf.ToFileInfo(GlobalConfiguration.TrustedInstaller)));
 
 
+        }
+        public void Reload()
+        {
+            RawData = INILikeData.LoadFromWR(new FileWR(sf.ToFileInfo(GlobalConfiguration.TrustedInstaller)));
         }
         INILikeData RawData;
         public string GetValue(string Key, string fallback = null)
