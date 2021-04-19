@@ -207,7 +207,7 @@
 			&lt;/div&gt;
             &lt;div class="cardDiv"&gt;
                 &lt;div&gt;
-                   &lt;p&gt; %Content%&lt;/p&gt;
+                   &lt;pre&gt;%Content%&lt;/pre&gt;
                 &lt;/div&gt;
 			&lt;/div&gt;
         &lt;/div&gt;
