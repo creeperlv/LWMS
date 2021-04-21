@@ -99,9 +99,13 @@ namespace LWMS.Core.WR
         }
         public void ResetColor(string AuthContext)
         {
-
             Processor.Process(new PipelineData(null, null,
                   new PipedRoutedWROption(PipedRoutedWROperation.RESETCOLOR, AutoFlush, AuthContext)));
+        }
+        public void Clear(string AuthContext)
+        {
+            Processor.Process(new PipelineData(null, null,
+                  new PipedRoutedWROption(PipedRoutedWROperation.CLEAR, AutoFlush, AuthContext)));
         }
         public void WriteBytes(byte[] b, int length, int offset)
         {
@@ -148,6 +152,6 @@ namespace LWMS.Core.WR
     }
     public enum PipedRoutedWROperation
     {
-        WRITE, WRITECHAR, WRITEBYTES, WRITELINE, READ, READBYTES, READLINE, FLUSH, DISPOSE,FGCOLOR,BGCOLOR,RESETCOLOR
+        WRITE, WRITECHAR, WRITEBYTES, WRITELINE, READ, READBYTES, READLINE, FLUSH, DISPOSE,FGCOLOR,BGCOLOR,RESETCOLOR,CLEAR
     }
 }

@@ -28,6 +28,9 @@ namespace LWMS.Management
                 else if (option.PipedRoutedWROperation == PipedRoutedWROperation.FLUSH)
                 {
                     Console.Out.Flush();
+                }else if(option.PipedRoutedWROperation== PipedRoutedWROperation.CLEAR)
+                {
+                    Console.Clear();
                 }
                 else if (LWMSTraceListener.BeautifyConsoleOutput == true)
                 {

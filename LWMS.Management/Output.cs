@@ -20,6 +20,14 @@ namespace LWMS.Management
         {
             CoreStream = new PipedRoutedConsoleLikeWR();
         }
+        public static void Clear()
+        {
+            Clear(null);
+        }
+        public static void Clear(string AuthContext)
+        {
+            CoreStream.Clear(AuthContext);
+        }
         /// <summary>
         /// Ask all process units to set their foreground color.
         /// </summary>

@@ -103,7 +103,8 @@ namespace LWMS.Core
             }
             else if (args[0].ToUpper() == "CLS" || args[0].ToUpper() == "CLEAR")
             {
-                Console.Clear();
+                Output.Clear(Auth);
+                //Console.Clear();
             }
             else if (args[0].ToUpper() == "SUSPEND")
             {
