@@ -45,6 +45,26 @@ namespace LWMS.Core
                 DomainManager.SetTrustedInstaller(TrustedInstallerAuth);
                 RSServer.SetFunctions(Tools00.ResolveCommand, ServerController.Control, TrustedInstallerAuth);
             }
+            {
+                //Init MIME-Types
+                try
+                {
+                    var count = GlobalConfiguration.GetValue("MIMETYPE.COUNT", TrustedInstallerAuth, "0");
+                    var _count = int.Parse(count);
+                    for (int i = 0; i < _count; i++)
+                    {
+                        var m = GlobalConfiguration.GetValue("MIMETYPE." + i, TrustedInstallerAuth, null);
+                        if(m is not null)
+                        {
+                            var d=m.Split(';');
+                            Tools00.SetMimeType(new(d[0], d[1]), TrustedInstallerAuth);
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
             ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString() + "-Preview";
             Inited = true;
         }

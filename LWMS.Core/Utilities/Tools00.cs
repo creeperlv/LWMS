@@ -1,4 +1,5 @@
-﻿using LWMS.Core.Configuration;
+﻿using LWMS.Core.Authentication;
+using LWMS.Core.Configuration;
 using LWMS.Core.FileSystem;
 using LWMS.Core.HttpRoutedLayer;
 using LWMS.Localization;
@@ -183,6 +184,7 @@ namespace LWMS.Core.Utilities
             { ".h", "text/plain" },
             { ".rs", "text/plain" },//Rust Source File.
             { ".vala", "text/plain" },//Vala Source File.
+            { ".s", "text/plain" },//Assembly Source File.
             { ".html", "text/html" },
             { ".rtf", "text/rtf" },
             { ".xml", "text/xml" } ,
@@ -242,20 +244,135 @@ namespace LWMS.Core.Utilities
             return cmdList;
         }
         /// <summary>
+        /// Add or update a mime type to the known MIME-Type list.
+        /// </summary>
+        /// <param name="MType"></param>
+        /// <param name="Auth"></param>
+        public static void SetMimeType(KeyValuePair<string,string> MType,string Auth)
+        {
+            OperatorAuthentication.AuthedAction(Auth, () => {
+                if (types.ContainsKey(MType.Key))
+                {
+                    types[MType.Key] = MType.Value;
+                }
+                else types.Add(MType.Key, MType.Value);
+            }, false, true, PermissionID.ModifyRuntimeConfig,PermissionID.ModifyConfig,PermissionID.ConfigAll);
+        }
+        /// <summary>
+        /// Analyze a command line into command pack list.(single pack will not be parted)
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <returns></returns>
+        public static List<CommandPack> CommandParseV2(string cmd)
+        {
+            List<CommandPack> vs = new List<CommandPack>();
+            StringBuilder stringBuilder = new StringBuilder();
+            bool a = false;
+            bool b = false;
+            int l = cmd.Length; char c;
+            for (int i = 0; i < l; i++)
+            {
+                c = cmd[i];
+                if (b == true)
+                {
+                    switch (c)
+                    {
+                        case '\"':
+                            stringBuilder.Append('\"');
+                            break;
+                        case '\\':
+                            stringBuilder.Append('\\');
+                            break;
+                        case '\'':
+                            stringBuilder.Append('\'');
+                            break;
+                        case 't':
+                            stringBuilder.Append('\t');
+                            break;
+                        case 'r':
+                            stringBuilder.Append('\r');
+                            break;
+                        case 'n':
+                            stringBuilder.Append('\n');
+                            break;
+                        default:
+                            break;
+                    }
+                    b = false;
+                    continue;
+                }
+                else
+                {
+                    if (c == '\"')
+                    {
+
+                        if (a == false)
+                        {
+                            a = true;
+                            continue;
+                        }
+                        else
+                        {
+                            a = false;
+                            vs.Add(new CommandPack() { PackTotal = stringBuilder.ToString(),PackParted=new List<string>() { stringBuilder.ToString() } });
+                            stringBuilder.Clear();
+                            continue;
+                        }
+                    }
+                    if (c == ' ')
+                    {
+                        if (a == false)
+                        {
+                            if (stringBuilder.Length > 0)
+                            {
+
+                                vs.Add(new CommandPack() { PackTotal = stringBuilder.ToString(), PackParted = new List<string>() { stringBuilder.ToString() } });
+                                stringBuilder.Clear();
+
+                            }
+                            continue;
+                        }
+                    }
+                    if (c == '\\')
+                    {
+                        b = true;
+                        continue;
+                    }
+                    if (c == '#' || c == ';')
+                    {
+                        if (a == false)
+                        {
+                            vs.Add(new CommandPack() { PackTotal = stringBuilder.ToString(), PackParted = new List<string>() { stringBuilder.ToString() } });
+                            stringBuilder.Clear();
+                            break;
+                        }
+                    }
+                }
+                stringBuilder.Append(c);
+            }
+            if (stringBuilder.Length > 0)
+            {
+                vs.Add(new CommandPack() { PackTotal = stringBuilder.ToString(), PackParted = new List<string>() { stringBuilder.ToString() } });
+                stringBuilder.Clear();
+
+            }
+            return vs;
+        }
+        /// <summary>
         /// Analyze a command line into a CommandPack list.
         /// </summary>
         /// <param name="cmd"></param>
         /// <returns></returns>
         public static List<CommandPack> ResolveCommand(string cmd)
         {
-            List<CommandPack> cmdps = new List<CommandPack>();
-            foreach (var item in CommandParse(cmd))
-            {
-                var cmdp = CommandPack.FromRegexMatch(item);
-                if (cmdp.PackTotal != "")
-                    cmdps.Add(cmdp);
-            }
-            return cmdps;
+            //List<CommandPack> cmdps = new List<CommandPack>();
+            //foreach (var item in CommandParse(cmd))
+            //{
+            //    var cmdp = CommandPack.FromRegexMatch(item);
+            //    if (cmdp.PackTotal != "")
+            //        cmdps.Add(cmdp);
+            //}
+            return CommandParseV2(cmd);
         }
     }
 }
