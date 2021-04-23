@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -66,8 +67,8 @@ namespace LWMS.Core.RemoteShell.Server
 
                     var s = Listener.Accept();
                     Trace.WriteLine("New Remote Connection Request:" + s.RemoteEndPoint.ToString());
-                        ThreadLimitation.WaitOne();
-                        Watch(s);
+                    ThreadLimitation.WaitOne();
+                    Watch(s);
                 }
             });
         }
@@ -84,11 +85,11 @@ namespace LWMS.Core.RemoteShell.Server
                 _s = v.Item2;
                 RSCMDReciver.AddSocket(_s);
             }
-            else { s.Close();return; }
+            else { s.Close(); return; }
             _s.client.ReceiveTimeout = 0;
             _ = Task.Run(() =>
               {
-                  Trace.WriteLine("Conntection Logged in:"+ _s.client.RemoteEndPoint.ToString());
+                  Trace.WriteLine("Conntection Logged in:" + _s.client.RemoteEndPoint.ToString());
                   while (_s.isDisposed is false)
                   {
                       try
@@ -106,6 +107,33 @@ namespace LWMS.Core.RemoteShell.Server
                                       string auth = Encoding.UTF8.GetString(a);
                                       var cmdList = ResolveCommand(command);
                                       Control(auth, cmdList.ToArray());
+                                  }
+                                  break;
+                              case 2:
+                                  {
+                                      //Receieve File.
+                                      _s.Read(out byte[] c);
+                                      _s.Read(out byte[] a);
+                                      string file = Encoding.UTF8.GetString(c);
+                                      string auth = Encoding.UTF8.GetString(a);
+                                      OperatorAuthentication.AuthedAction(auth, () =>
+                                      {
+                                          _s.Read(out byte[] d);
+                                          int FileLength = BitConverter.ToInt32(d);
+                                          int receieved = 0;
+                                          var fi = new FileInfo(file);
+                                          var fs = fi.OpenWrite();
+                                          using (fs)
+                                          {
+                                              while (receieved < FileLength)
+                                              {
+                                                  _s.Read(out byte[] e);
+
+                                                  fs.Write(e, 0, e.Length);
+                                                  receieved += e.Length;
+                                              }
+                                          }
+                                      }, false, false, PermissionID.RS_PushFile, PermissionID.RS_DelFile);
                                   }
                                   break;
                               default:
@@ -210,7 +238,7 @@ namespace LWMS.Core.RemoteShell.Server
                 byte[] length = BitConverter.GetBytes(-data.Length);
                 var _data = PaddingByte(length, 16);
                 byte[] final;
-                final=Encryptor.TransformFinalBlock(_data, 0, _data.Length);
+                final = Encryptor.TransformFinalBlock(_data, 0, _data.Length);
                 client.Send(final);
             }
             {
@@ -228,9 +256,9 @@ namespace LWMS.Core.RemoteShell.Server
                 byte[] rD = new byte[16];
                 byte[] d = new byte[16];
                 client.Receive(rD, 0, 16, SocketFlags.None);
-               
+
                 d = Decryptor.TransformFinalBlock(rD, 0, 16);
-               
+
                 length = -BitConverter.ToInt32(new byte[] { d[0], d[1], d[2], d[3] });
             }
             {
@@ -238,7 +266,7 @@ namespace LWMS.Core.RemoteShell.Server
                 byte[] rD = new byte[Padded];
                 byte[] d = new byte[Padded];
                 client.Receive(rD, Padded, SocketFlags.None);
-                d=Decryptor.TransformFinalBlock(rD, 0, Padded);
+                d = Decryptor.TransformFinalBlock(rD, 0, Padded);
                 data = new byte[length];
                 for (int i = 0; i < length; i++)
                 {

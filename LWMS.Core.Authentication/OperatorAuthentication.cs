@@ -55,6 +55,8 @@ namespace LWMS.Core.Authentication
         public const string RS_SetPubKey = "Core.RemoteShell.SetPublicKey";
         public const string RS_SetPriKey = "Core.RemoteShell.SetPrivateKey";
         public const string RS_SetFunctions = "Core.RemoteShell.SetFunctions";
+        public const string RS_PushFile = "Core.RemoteShell.PushFile";
+        public const string RS_DelFile = "Core.RemoteShell.DelFile";
     }
     public static class OperatorAuthentication
     {
