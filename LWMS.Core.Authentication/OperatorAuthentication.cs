@@ -56,7 +56,10 @@ namespace LWMS.Core.Authentication
         public const string RS_SetPriKey = "Core.RemoteShell.SetPrivateKey";
         public const string RS_SetFunctions = "Core.RemoteShell.SetFunctions";
         public const string RS_PushFile = "Core.RemoteShell.PushFile";
+        public const string RS_AllFile = "Core.RemoteShell.AllFile";
         public const string RS_DelFile = "Core.RemoteShell.DelFile";
+        public const string RS_MoveFile = "Core.RemoteShell.MoveFile";
+        public const string RS_ListFile = "Core.RemoteShell.ListFile";
     }
     public static class OperatorAuthentication
     {

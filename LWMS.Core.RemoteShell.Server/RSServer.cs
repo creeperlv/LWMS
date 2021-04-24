@@ -133,7 +133,37 @@ namespace LWMS.Core.RemoteShell.Server
                                                   receieved += e.Length;
                                               }
                                           }
-                                      }, false, false, PermissionID.RS_PushFile, PermissionID.RS_DelFile);
+                                      }, false, false, PermissionID.RS_PushFile, PermissionID.RS_AllFile);
+                                  }
+                                  break;
+                              case 3:
+                                  {
+                                      //Delete File
+                                      _s.Read(out byte[] c);
+                                      _s.Read(out byte[] a);
+                                      string file = Encoding.UTF8.GetString(c);
+                                      string auth = Encoding.UTF8.GetString(a);
+                                      OperatorAuthentication.AuthedAction(auth, () =>
+                                      {
+                                          var fi = new FileInfo(file);
+
+                                          fi.Delete();
+                                      }, false, false, PermissionID.RS_DelFile, PermissionID.RS_AllFile);
+                                  }
+                                  break;
+                              case 4:
+                                  {
+                                      //Move File
+                                      _s.Read(out byte[] c);
+                                      _s.Read(out byte[] c0);
+                                      _s.Read(out byte[] a);
+                                      string file0 = Encoding.UTF8.GetString(c);
+                                      string file1= Encoding.UTF8.GetString(c0);
+                                      string auth = Encoding.UTF8.GetString(a);
+                                      OperatorAuthentication.AuthedAction(auth, () =>
+                                      {
+                                          File.Move(file0, file1);
+                                      }, false, false, PermissionID.RS_MoveFile, PermissionID.RS_AllFile);
                                   }
                                   break;
                               default:
