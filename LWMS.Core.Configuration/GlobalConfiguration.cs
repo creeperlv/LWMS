@@ -214,6 +214,22 @@ namespace LWMS.Core.Configuration
             }, false, true, PermissionID.ReadConfig);
             return value;
         }
+        public static List<KeyValuePair<string, string>> ListValues(string Auth)
+        {
+            List<KeyValuePair<string, string>> rs = new();
+
+            OperatorAuthentication.AuthedAction(Auth, () =>
+            {
+                if (ConfigurationData != null)
+                {
+                    foreach (var item in ConfigurationData)
+                    {
+                        rs.Add(new(item.Key, item.Value));
+                    }
+                }
+            }, false, true, PermissionID.ReadConfig);
+            return rs;
+        }  
         public static void SetValue(string Key, string Value, string AuthContext)
         {
             OperatorAuthentication.AuthedAction(AuthContext, () =>

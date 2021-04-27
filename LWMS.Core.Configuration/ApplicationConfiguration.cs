@@ -78,6 +78,22 @@ namespace LWMS.Core.Configuration
         {
             RawData.AddValue(Key, Value, false, true);
         }
+
+        public List<KeyValuePair<string, string>> ListValues()
+        {
+            List<KeyValuePair<string, string>> rs = new();
+
+            {
+                if (RawData != null)
+                {
+                    foreach (var item in RawData)
+                    {
+                        rs.Add(new(item.Key, item.Value));
+                    }
+                }
+            }
+            return rs;
+        }
         public string[] GetValueArray(string Key)
         {
             string[] v = null;

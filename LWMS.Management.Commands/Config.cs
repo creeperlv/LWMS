@@ -71,6 +71,13 @@ namespace LWMS.Management.Commands
                     {
                         GlobalConfiguration.LoadConfiguation();
                         GlobalConfiguration.ClearLoadedSettings();
+                    }else if (operation.ToUpper() == "LS")
+                    {
+                        var list = GlobalConfiguration.ListValues(AuthContext);
+                        foreach (var item in list)
+                        {
+                            Output.WriteLine(item.Key + " : " + item.Value, AuthContext);
+                        }
                     }
                     else if (operation.ToUpper() == "SET")
                     {
