@@ -78,7 +78,10 @@ namespace LWMS.Core.Configuration
         {
             RawData.AddValue(Key, Value, false, true);
         }
-
+        public void Clear()
+        {
+            RawData.Clear();
+        }
         public List<KeyValuePair<string, string>> ListValues()
         {
             List<KeyValuePair<string, string>> rs = new();
