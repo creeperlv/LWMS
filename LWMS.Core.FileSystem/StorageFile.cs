@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace LWMS.Core.FileSystem
 {
@@ -143,11 +144,73 @@ namespace LWMS.Core.FileSystem
                 OperatorAuthentication.AuthedAction(AuthContext, () =>
                 {
                     _WriteAllText(content);
-                }, false, false, BaseWritePermission);
+                }, false, true, BaseWritePermission);
             else
             {
                 _WriteAllText(content);
             }
+        }
+        internal string _ReadAllText()
+        {
+            return File.ReadAllText(realPath);
+        }
+        internal List<string> _ReadAllLines()
+        {
+            return File.ReadAllLines(realPath).ToList();
+        }
+        /// <summary>
+        /// Read all content of target file as text.
+        /// </summary>
+        /// <returns></returns>
+        public virtual string ReadAllText()
+        {
+            if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
+            return _ReadAllText();
+        }
+        /// <summary>
+        /// Read all content of target file as text.
+        /// </summary>
+        /// <param name="AuthContext"></param>
+        /// <returns></returns>
+        public virtual string ReadAllText(string AuthContext)
+        {
+            if (BaseReadPermission is not null)
+            {
+                var content = "";
+                OperatorAuthentication.AuthedAction(AuthContext, () =>
+                {
+                    content = _ReadAllText();
+                }, false, true, BaseReadPermission);
+                return content;
+            }
+            else return _ReadAllText();
+        }
+        /// <summary>
+        /// Read all content of target file as text, splited by line.
+        /// </summary>
+        /// <returns></returns>
+        public virtual List<string> ReadAllLines()
+        {
+            if (BaseReadPermission is not null) throw new UnauthorizedException(null, BaseReadPermission[0]);
+            return _ReadAllLines();
+        }
+        /// <summary>
+        /// Read all content of target file as text, splited by line.
+        /// </summary>
+        /// <param name="AuthContext"></param>
+        /// <returns></returns>
+        public virtual List<string> ReadAllLines(string AuthContext)
+        {
+            if (BaseReadPermission is not null)
+            {
+                List<string> content = null;
+                OperatorAuthentication.AuthedAction(AuthContext, () =>
+                {
+                    content = _ReadAllLines();
+                }, false, true, BaseReadPermission);
+                return content;
+            }
+            else return _ReadAllLines();
         }
         /// <summary>
         /// Convert to FileInfo.
