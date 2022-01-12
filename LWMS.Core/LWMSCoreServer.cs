@@ -142,7 +142,7 @@ namespace LWMS.Core
             //Add listening prefixes
             foreach (var item in GlobalConfiguration.GetListenPrefixes(TrustedInstallerAuth))
             {
-                Listener.Prefixes.Add(item);
+                Listener.Prefixes.Add(item.Replace("\\","/"));
             }
             //Load process units.
             {

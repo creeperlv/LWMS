@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CLUNL.Pipeline" Version="0.0.2" />
+    <PackageReference Include="CLUNL.Pipeline" Version="0.0.3" />
   </ItemGroup>
 
 </Project>

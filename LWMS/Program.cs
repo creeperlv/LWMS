@@ -26,7 +26,7 @@ namespace LWMS
                 OperatorAuthentication.SetLocalHostAuth(Auth);
                 LWMSCoreServer.FirstInit();
             }
-            Console.WriteLine("Copyright (C) 2020 Creeper Lv");
+            Console.WriteLine("Copyright (C) 2020-2022 Creeper Lv");
             Console.WriteLine("This software is licensed under the MIT License");
             var _commands = Tools00.ResolveCommand(Environment.CommandLine);
             bool ignore_Arg = false;

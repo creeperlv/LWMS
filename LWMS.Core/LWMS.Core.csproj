@@ -1,30 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <Version>0.5.0.0</Version>
-    <Authors>Creeper Lv</Authors>
-    <Product>LWMS</Product>
-    <PackageTags>https://github.com/creeperlv/LWMS</PackageTags>
-    <PackageLicenseExpression>https://raw.githubusercontent.com/creeperlv/LWMS/Primary/LICENSE</PackageLicenseExpression>
-    <Copyright>Copyright (C) 2020 Creeper Lv</Copyright>
-    <Description>Core of LightWeight Managed Server</Description>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Version>0.6.0.0</Version>
+		<Authors>Creeper Lv</Authors>
+		<Product>LWMS</Product>
+		<PackageTags>https://github.com/creeperlv/LWMS</PackageTags>
+		<PackageLicenseExpression>https://raw.githubusercontent.com/creeperlv/LWMS/Primary/LICENSE</PackageLicenseExpression>
+		<Copyright>Copyright (C) 2020 Creeper Lv</Copyright>
+		<Description>Core of LightWeight Managed Server</Description>
+		<SignAssembly>true</SignAssembly>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CLUNL" Version="0.0.2.3" />
-    <PackageReference Include="CLUNL.Pipeline" Version="0.0.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CLUNL" Version="0.0.5" />
+		<PackageReference Include="CLUNL.Pipeline" Version="0.0.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LWMS.Core.Configuration\LWMS.Core.Configuration.csproj" />
-    <ProjectReference Include="..\LWMS.Core.FileSystem\LWMS.Core.FileSystem.csproj" />
-    <ProjectReference Include="..\LWMS.Core.Logger\LWMS.Core.Logger.csproj" />
-    <ProjectReference Include="..\LWMS.Core.RemoteShell.Server\LWMS.Core.RemoteShell.Server.csproj" />
-    <ProjectReference Include="..\LWMS.Core.SBSDomain\LWMS.Core.SBSDomain.csproj" />
-    <ProjectReference Include="..\LWMS.Localization\LWMS.Localization.csproj" />
-    <ProjectReference Include="..\LWMS.Management\LWMS.Management.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\LWMS.Core.Configuration\LWMS.Core.Configuration.csproj" />
+		<ProjectReference Include="..\LWMS.Core.FileSystem\LWMS.Core.FileSystem.csproj" />
+		<ProjectReference Include="..\LWMS.Core.Logger\LWMS.Core.Logger.csproj" />
+		<ProjectReference Include="..\LWMS.Core.RemoteShell.Server\LWMS.Core.RemoteShell.Server.csproj" />
+		<ProjectReference Include="..\LWMS.Core.SBSDomain\LWMS.Core.SBSDomain.csproj" />
+		<ProjectReference Include="..\LWMS.Localization\LWMS.Localization.csproj" />
+		<ProjectReference Include="..\LWMS.Management\LWMS.Management.csproj" />
+	</ItemGroup>
 
 </Project>

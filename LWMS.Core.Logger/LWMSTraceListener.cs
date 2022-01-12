@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using LWMS.Core.Authentication;
+using System.Runtime.CompilerServices;
 
 namespace LWMS.Core.Log
 {
@@ -31,7 +32,7 @@ namespace LWMS.Core.Log
         internal static int _MAX_LOG_SIZE = 0;
         public static void SetTrustedInstaller(string TrustedInstaller)
         {
-            if(LWMSTraceListener.TrustedInstaller is null)
+            if (LWMSTraceListener.TrustedInstaller is null)
             {
                 LWMSTraceListener.TrustedInstaller = TrustedInstaller;
             }
@@ -42,6 +43,7 @@ namespace LWMS.Core.Log
         /// <param name="Auth"></param>
         /// <param name="Property"></param>
         /// <param name="value"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetProperty(string Auth, int Property, object value)
         {
             OperatorAuthentication.AuthedAction(Auth, () =>
@@ -76,7 +78,7 @@ namespace LWMS.Core.Log
                     default:
                         break;
                 }
-            }, false, true, PermissionID.ModifyRuntimeConfig,PermissionID.RuntimeAll,PermissionID.Log_All);
+            }, false, true, PermissionID.ModifyRuntimeConfig, PermissionID.RuntimeAll, PermissionID.Log_All);
 
         }
         /// <summary>
@@ -93,7 +95,7 @@ namespace LWMS.Core.Log
             LogDir = ApplicationStorage.Logs.ItemPath;
             var Now = DateTime.Now;
             StorageFile storageFile;
-            ApplicationStorage.Logs.CreateFile(TrustedInstaller,$"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log", out storageFile);
+            ApplicationStorage.Logs.CreateFile(TrustedInstaller, $"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log", out storageFile);
             CurrentLogFile = storageFile.ItemPath;
             LogFile = new FileWR(storageFile.ToFileInfo(TrustedInstaller));
             Random random = new Random();
@@ -119,7 +121,7 @@ namespace LWMS.Core.Log
             //if (LogTask != null) thread.;
             var Now = DateTime.Now;
             StorageFile storageFile;
-            ApplicationStorage.Logs.CreateFile(TrustedInstaller,$"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log", out storageFile);
+            ApplicationStorage.Logs.CreateFile(TrustedInstaller, $"{Now.Year}-{Now.Month}-{Now.Day}-{Now.Minute}-{Now.Second}-{Now.Millisecond}.log", out storageFile);
             CurrentLogFile = storageFile.ItemPath;
             LogFile = new FileWR(storageFile.ToFileInfo(TrustedInstaller));
             thread = new Thread(new ThreadStart(delegate () { LogWatcher(); }));
@@ -203,6 +205,7 @@ namespace LWMS.Core.Log
         /// Add a message to ContentToLog but not showing to Console.
         /// </summary>
         /// <param name="message"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteFile(string message)
         {
             StackTrace stackTrace = new StackTrace(4);
@@ -258,6 +261,7 @@ namespace LWMS.Core.Log
         /// Add a message to ContentToLog and write to Console.
         /// </summary>
         /// <param name="message"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Write(string message)
         {
             StackTrace stackTrace = new StackTrace(4);
@@ -305,11 +309,13 @@ namespace LWMS.Core.Log
         /// Add a message to ContentToLog with a new line and write to Console.
         /// </summary>
         /// <param name="message"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void WriteLine(string message)
         {
             StackTrace stackTrace = new StackTrace(true);
             StringBuilder stringBuilder = new StringBuilder();
-            var t = stackTrace.GetFrame(3).GetMethod().ReflectedType;
+            int TypeTraceLayer = 4;
+            var t = stackTrace.GetFrame(TypeTraceLayer).GetMethod().ReflectedType;
             var now = DateTime.Now;
             stringBuilder.Append("[");
             stringBuilder.Append(now);
@@ -317,9 +323,32 @@ namespace LWMS.Core.Log
             stringBuilder.Append("[");
 
             if (t != typeof(Trace))
-                stringBuilder.Append(t.FullName);
+            {
+                if (t == typeof(OperatorAuthentication))
+                {
+                    TypeTraceLayer++;
+                    t = stackTrace.GetFrame(TypeTraceLayer).GetMethod().ReflectedType;
+                }
+                else
+                {
+
+                }
+            }
             else
-                stringBuilder.Append(stackTrace.GetFrame(4).GetMethod().ReflectedType.FullName);
+            {
+                TypeTraceLayer++;
+                t = stackTrace.GetFrame(TypeTraceLayer).GetMethod().ReflectedType;
+                if (t == typeof(OperatorAuthentication))
+                {
+                    TypeTraceLayer++;
+                    t = stackTrace.GetFrame(TypeTraceLayer).GetMethod().ReflectedType;
+                }
+                else
+                {
+
+                }
+            }
+            stringBuilder.Append(t.FullName);
             stringBuilder.Append("]");
             stringBuilder.Append(message);
             stringBuilder.Append(Environment.NewLine);

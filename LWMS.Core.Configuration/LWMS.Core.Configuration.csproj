@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <OutputType>Library</OutputType>
-    <Version>0.5.0.0</Version>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<OutputType>Library</OutputType>
+		<Version>0.6.0.0</Version>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CLUNL" Version="0.0.2.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CLUNL" Version="0.0.5.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LWMS.Core.Authentication\LWMS.Core.Authentication.csproj" />
-    <ProjectReference Include="..\LWMS.Core.FileSystem\LWMS.Core.FileSystem.csproj" />
-    <ProjectReference Include="..\LWMS.Core.Logger\LWMS.Core.Logger.csproj" />
-    <ProjectReference Include="..\LWMS.Localization\LWMS.Localization.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\LWMS.Core.Authentication\LWMS.Core.Authentication.csproj" />
+		<ProjectReference Include="..\LWMS.Core.FileSystem\LWMS.Core.FileSystem.csproj" />
+		<ProjectReference Include="..\LWMS.Core.Logger\LWMS.Core.Logger.csproj" />
+		<ProjectReference Include="..\LWMS.Localization\LWMS.Localization.csproj" />
+	</ItemGroup>
 
 </Project>
