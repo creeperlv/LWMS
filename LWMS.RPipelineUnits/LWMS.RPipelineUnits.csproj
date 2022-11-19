@@ -2,11 +2,10 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-	  <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CLUNL.Pipeline" Version="0.0.3" />
+    <PackageReference Include="CLUNL.Pipeline" Version="0.0.4" />
   </ItemGroup>
 
   <ItemGroup>

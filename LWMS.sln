@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30524.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33103.201
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS", "LWMS\LWMS.csproj", "{DC9429BF-3DE6-4225-AF74-56E1FF46368E}"
 EndProject
@@ -46,11 +46,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.SimpleDirectoryBrowser
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Core.RemoteShell.Server", "LWMS.Core.RemoteShell.Server\LWMS.Core.RemoteShell.Server.csproj", "{2D38C3E8-6220-4640-B77F-8D3C95AA45D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWMS.Core.RemoteShell.ClientCore", "LWMS.Core.RemoteShell.ClientCore\LWMS.Core.RemoteShell.ClientCore.csproj", "{6123C2E4-0E6F-42CC-9813-EF709A1FF1DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.Core.RemoteShell.ClientCore", "LWMS.Core.RemoteShell.ClientCore\LWMS.Core.RemoteShell.ClientCore.csproj", "{6123C2E4-0E6F-42CC-9813-EF709A1FF1DA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{3229E42F-63DE-44C5-B29B-B855F7A89D48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWMS.RemoteShell.ConsoleClient", "LWMS.RemoteShell.ConsoleClient\LWMS.RemoteShell.ConsoleClient.csproj", "{AB91FB5B-2CEF-47E9-AB66-F7556FD141E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LWMS.RemoteShell.ConsoleClient", "LWMS.RemoteShell.ConsoleClient\LWMS.RemoteShell.ConsoleClient.csproj", "{AB91FB5B-2CEF-47E9-AB66-F7556FD141E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

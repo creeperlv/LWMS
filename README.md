@@ -6,7 +6,7 @@ Including `conhost.exe`, it occupies only 17 MB memory on Windows 10 when there'
 
 ## Compatibility
 
-It runs on .Net 5, it should be a cross-platform server. :P
+It runs on .Net 6, it should be a cross-platform server. :P
 
 **NOTE:** LWMS uses HttpListener as its backend, if you configured LWMS and your OS/.NET correctly, LWMS should be able to handle HTTPS.
 

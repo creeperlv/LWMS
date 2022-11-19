@@ -2,13 +2,6 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-	  <TargetFramework>net6.0</TargetFramework>
-    <Version>0.6.0.0</Version>
-    <Authors>Creeper Lv</Authors>
-    <Description>LightWeight Managed Server</Description>
-    <PackageLicenseExpression>https://raw.githubusercontent.com/creeperlv/LWMS/Primary/LICENSE</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/creeperlv/LWMS</RepositoryUrl>
-    <Copyright>Copyright (C) 2020-2022 Creeper Lv</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

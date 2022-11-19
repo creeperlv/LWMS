@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<Version>0.6.0.0</Version>
 		<Authors>Creeper Lv</Authors>
 		<Product>LWMS</Product>
 		<PackageTags>https://github.com/creeperlv/LWMS</PackageTags>
@@ -13,8 +11,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CLUNL" Version="0.0.5" />
-		<PackageReference Include="CLUNL.Pipeline" Version="0.0.3" />
+		<PackageReference Include="CLUNL" Version="0.0.6" />
+		<PackageReference Include="CLUNL.Pipeline" Version="0.0.4" />
 	</ItemGroup>
 
 	<ItemGroup>
